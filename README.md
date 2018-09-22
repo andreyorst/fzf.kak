@@ -4,6 +4,7 @@
 tool. This plugin is being tested against Kakoune 2018.09.04.
 
 ## Installation
+This plugin requires Tmux. Support for X11 is planned in the near future.
 
 Assuming you're using [plug.kak](https://github.com/andreyorst/plug.kak)  plugin
 manager, add this to your `.kakrc`:

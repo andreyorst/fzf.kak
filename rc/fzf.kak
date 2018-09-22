@@ -95,9 +95,9 @@ define-command -override -hidden fzf-cd %{
     fzf "change-directory $1" "find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print"
 }
 
-define-command -override -hidden fzf -params 2 %{ exec %sh{
+define-command -override -hidden fzf -params 2 %{ evaluate-commands %sh{
     if [ -z "${kak_client_env_TMUX}" ]; then
-        echo '<esc>:fail "client was not started under tmux"<ret>'
+        echo 'fail "client was not started under tmux"'
         exit
     fi
     tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
@@ -136,7 +136,6 @@ define-command -override -hidden fzf-buffer %{ evaluate-commands %sh{
     chmod 755 $setbuf
     chmod 755 $delbuf
     (
-        # todo: expect ctrl-[vw] to make execute in new windows instead
         eval "echo $kak_buflist | tr ' ' '\n' | sort |
             fzf-tmux -d 15 --color=16 -e --preview='$setbuf {}' --preview-window=up:hidden --expect ctrl-d > $tmp"
         if [ -s $tmp ]; then

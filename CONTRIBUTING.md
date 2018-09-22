@@ -46,7 +46,7 @@ like in this example - command says that it is good, but the result will be bad 
 
 ## Shell scripting
 Shell scripting should be POSIX compatible. Please avoid bashisms. You can refer to
-[Kakoune's scripting guidelines](https://github.com/mawww/kakoune/blob/master/doc/writing_scripts.asciidoc).
+[Kakoune's common shell patterns](https://github.com/mawww/kakoune/blob/master/doc/writing_scripts.asciidoc#common-shell-patterns), but reading 'POSIX programmers manual' will give more complete knowledge.
 Please test your code in POSIX shells, like [dash](https://packages.debian.org/stretch/dash),
 [ash](https://www.in-ulm.de/~mascheck/various/ash/), and in [Busybox](https://www.busybox.net/) environment
 if possible. Also please test in popular POSIX-compatible shells, e.g. [bash](https://www.gnu.org/software/bash/),

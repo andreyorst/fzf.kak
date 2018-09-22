@@ -16,13 +16,16 @@ declare-user-mode fzf
 
 # Options
 declare-option -docstring "command to provide list of files to fzf.
-Possible values:
+Supported tools:
       find - GNU Find
       ag - The Silver Searcher
       rg - ripgrep
 
-Arguments are also can be passed along with it:
-      rg 
+Arguments are also can be passed along with it.
+Default arguments are:
+      find -type f
+      ag -l -f --hidden --one-device .
+      rg -L --hidden --files
 " \
 str fzf_file_command "find"
 
@@ -55,18 +58,21 @@ Configurable options:
 fzf-file -params 0..1 %{
     evaluate-commands %sh{
         if [ -z $(command -v $kak_opt_fzf_file_command) ]; then
-    		printf %s\\n "evaluate-commands -client $kak_client echo -markup '{Information}$kak_opt_fzf_file_command is not installed. Falling back to find'" | kak -p ${kak_session}
+            printf %s\\n "evaluate-commands -client $kak_client echo -markup '{Information}$kak_opt_fzf_file_command is not installed. Falling back to find'" | kak -p ${kak_session}
             kak_opt_fzf_file_command="find"
         fi
-        case $(echo $kak_opt_fzf_file_command | head -n 1) in
+        case $kak_opt_fzf_file_command in
         find)
-            cmd="find -L %arg{1} -name .git -prune -o -name .svn -prune -o -regex '.*\b\(bower_components\|output\|.mozilla\|firefox\|node_modules\|grunt\|cache\|Cache\|config/\(Slack\|chromium\|goole-chrome\)\)\(/|$\).*' -prune -o \( -type f -o -type l \) -a -not -path %arg{1} -a -not -name '.' -print | sed 's@^\./@@'"
+            cmd="find -type f"
             ;;
         ag)
-            cmd="ag -l -f -p ~/.binignore -p ~/.ignore --hidden --one-device . %arg{1}"
+            cmd="ag -l -f --hidden --one-device . "
             ;;
         rg)
-            cmd="rg --ignore-file ~/.binignore -L --hidden --files %arg{1}"
+            cmd="rg -L --hidden --files"
+            ;;
+        find*|ag*|rg*)
+            cmd=$kak_opt_fzf_file_command
             ;;
         *)
             echo fail "fzf wrong file command: \'$kak_opt_fzf_file_command'"

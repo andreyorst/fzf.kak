@@ -96,6 +96,10 @@ define-command -override -hidden fzf-cd %{
 }
 
 define-command -override -hidden fzf -params 2 %{ exec %sh{
+    if [ -z "${kak_client_env_TMUX}" ]; then
+        echo '<esc>:fail "client was not started under tmux"<ret>'
+        exit
+    fi
     tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
     exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
     callback=$1; shift
@@ -119,6 +123,10 @@ define-command -override -hidden fzf -params 2 %{ exec %sh{
 }}
 
 define-command -override -hidden fzf-buffer %{ evaluate-commands %sh{
+    if [ -z "${kak_client_env_TMUX}" ]; then
+        echo 'fail "client was not started under tmux"'
+        exit
+    fi
     tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
     setbuf=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-setbuf.XXXXXX))
     delbuf=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-delbuf.XXXXXX))

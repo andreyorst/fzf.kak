@@ -58,7 +58,7 @@ Configurable options:
 fzf-file %{
     evaluate-commands %sh{
         if [ -z $(command -v $kak_opt_fzf_file_command) ]; then
-            echo "echo -markup '{Information}$kak_opt_fzf_file_command is not installed. Falling back to ''find'''"
+            echo "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
             kak_opt_fzf_file_command="find"
         fi
         case $kak_opt_fzf_file_command in

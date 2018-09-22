@@ -65,15 +65,15 @@ fzf-file -params 0..1 %{
 }
 
 define-command -hidden fzf-git -params 0..1 %{
-    fzf "edit \$1" "git ls-tree --name-only -r HEAD %arg{1}"
+    fzf "edit $1" "git ls-tree --name-only -r HEAD %arg{1}"
 }
 
 define-command -hidden fzf-tag -params 0..1 %{
-    fzf "ctags-search \$1" "readtags -l | cut -f1 | sort -u"
+    fzf "ctags-search $1" "readtags -l | cut -f1 | sort -u"
 }
 
 define-command -hidden fzf-cd -params 0..1 %{
-    fzf "cd \$1" "find %arg{1} -type d -path *.git -prune -o -type d -print"
+    fzf "cd $1" "find %arg{1} -type d -path *.git -prune -o -type d -print"
 }
 
 define-command -hidden fzf -params 2.. %{ exec %sh{

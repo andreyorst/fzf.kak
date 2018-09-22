@@ -12,18 +12,13 @@ manager, add this to your `.kakrc`:
 plug andreyorst/fzf.kak
 ```
 
-Reload Kakoune and run `:plug-install`. Next time you launch Kakoune plugin will
-be loaded automatically.
+Reload Kakoune config by and run `:plug-install`. Or install this plugin any other preferred way.
 
 ## Usage
 
-This plugin brings new command: `:fzf-mode` that is better should be  mapped  to
-some mapping.  **fzf.kak** doesn't provide any mapping by default  so  user  may
-configure it along with user's preference. For example:
-
-```kak
-map global normal <c-p> ':fzf-mode<ret>'
-```
+**fzf.kak** doesn't provide any mapping by default. Instead there's now a `fzf-mode` command
+which intentionally was made to simplify user mappings. 
+Each fzf command has mnemonic mapping, like `f` for opening files, `t` for tags and so on.
 
 In this mode new mappings are available:
 - <kbd>f</kbd> - Search for file and open it
@@ -31,8 +26,35 @@ In this mode new mappings are available:
 - <kbd>t</kbd> - Browse ctags tags
 - <kbd>g</kbd> - Edit file in Git tree
 
+You can set your own mapping to invoke `fzf-mode`:
+
+```
+map global normal <c-p> ': fzf-mode<ret>'
+# note that the space after colon is intentional to suppess fzf-mode to show in command history
+```
+
 So for example pressing  <kbd>Ctrl+p</kbd><kbd>f</kbd>  will  open  fzf  at  the
 bottom of the Kakoune buffer, showing you all possible files.
+
+### Settings
+You can configure what command to use to search for files, and it's arguments.
+Supported tools are [GNU Find](https://www.gnu.org/software/findutils/), [The Silver Searcher](https://github.com/ggreer/the_silver_searcher), [ripgrep](https://github.com/BurntSushi/ripgrep). GNU find is used by default, but you can switch to another one. There are some default values for those, so you can go:
+
+```kak
+set-option global fzf_file_command 'rg' # 'ag' or 'find' 
+```
+
+Or if you don't like default file arguments, which are `find -type f`, and would like to disable searching in, say `.git` directories you can set it like so:
+
+```kak
+set-option global fzf_file_command "find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type f -print"
+```
+
+Also fzf.kak supports setting different path to your `tmp` folder so you can use it an any system, or with different path:
+
+```kak
+set-option global fzf_tmp //path/to/tmp'
+```
 
 ## Some demonstration gifs:
 ### Opening files:
@@ -49,3 +71,6 @@ bottom of the Kakoune buffer, showing you all possible files.
 
 ### Changing directories
 ![dirs](https://user-images.githubusercontent.com/19470159/45917776-3988e200-be85-11e8-89bf-7c1453806c83.gif)
+
+## Special thanks
+Original script, that current implementation is based on, was implemented by [topisani](https://github.com/topisani). If you are here, thank you for your work, it is awesome!

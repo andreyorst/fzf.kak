@@ -36,17 +36,17 @@ Default value:
 str fzf_tmp "/tmp/"
 
 # default mappings
-map global fzf -docstring "open file"             f '<esc>:fzf-file<ret>'
-map global fzf -docstring "open buffer"           b '<esc>:fzf-buffer<ret>'
-map global fzf -docstring "find tag"              t '<esc>:fzf-tag<ret>'
-map global fzf -docstring "change directory"      c '<esc>:fzf-cd<ret>'
-map global fzf -docstring "edif file in git tree" g '<esc>:fzf-git<ret>'
+map global fzf -docstring "open file"             f '<esc>: fzf-file<ret>'
+map global fzf -docstring "open buffer"           b '<esc>: fzf-buffer<ret>'
+map global fzf -docstring "find tag"              t '<esc>: fzf-tag<ret>'
+map global fzf -docstring "change directory"      c '<esc>: fzf-cd<ret>'
+map global fzf -docstring "edif file in git tree" g '<esc>: fzf-git<ret>'
 
 # Commands
 define-command -docstring \
 "fzf-mode: Enter fzf-mode
 This is to be used in mappings to enter fzf-mode
-For example: map global normal <c-p> ':fzf-mode<ret>'
+For example: map global normal <c-p> ': fzf-mode<ret>'
 " \
 fzf-mode %{ evaluate-commands 'enter-user-mode fzf' }
 
@@ -92,7 +92,7 @@ define-command -hidden fzf-tag %{
 }
 
 define-command -hidden fzf-cd %{
-    fzf "change-directoryd $1" "find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print"
+    fzf "change-directory $1" "find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print"
 }
 
 define-command -hidden fzf -params 2 %{ exec %sh{

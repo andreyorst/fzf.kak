@@ -12,7 +12,7 @@
 # ╰─────────────────────────────────╯
 
 # New mode
-declare-user-mode fzf
+evaluate-commands %sh{ modes="_ "$kak_user_modes; [ -z "${modes##*fzf*}" ] || echo declare-user-mode fzf }
 
 # Options
 declare-option -docstring "command to provide list of files to fzf.
@@ -43,22 +43,22 @@ map global fzf -docstring "change directory"      c '<esc>: fzf-cd<ret>'
 map global fzf -docstring "edif file in git tree" g '<esc>: fzf-git<ret>'
 
 # Commands
-define-command -docstring \
+define-command -override -docstring \
 "fzf-mode: Enter fzf-mode
 This is to be used in mappings to enter fzf-mode
 For example: map global normal <c-p> ': fzf-mode<ret>'
 " \
 fzf-mode %{ evaluate-commands 'enter-user-mode fzf' }
 
-define-command -hidden -docstring \
+define-command -override -hidden -docstring \
 "fzf-file: Run fzf to open file
 Configurable options:
     fzf_file_command: command to run with fzf to list possible files. 
-"\
+" \
 fzf-file %{
     evaluate-commands %sh{
         if [ -z $(command -v $kak_opt_fzf_file_command) ]; then
-            printf %s\\n "evaluate-commands -client $kak_client echo -markup '{Information}$kak_opt_fzf_file_command is not installed. Falling back to find'" | kak -p ${kak_session}
+            echo "echo -markup '{Information}$kak_opt_fzf_file_command is not installed. Falling back to ''find'''"
             kak_opt_fzf_file_command="find"
         fi
         case $kak_opt_fzf_file_command in
@@ -75,27 +75,27 @@ fzf-file %{
             cmd=$kak_opt_fzf_file_command
             ;;
         *)
-            echo fail "fzf wrong file command: \'$kak_opt_fzf_file_command'"
-            exit
+            echo "echo -markup '{Information}$kak_opt_fzf_file_command is not supported by the script. It may not work as you expect."
+            cmd=$kak_opt_fzf_file_command
             ;;
         esac
         eval echo 'fzf \"edit \$1\" \"$cmd\"'
     }
 }
 
-define-command -hidden fzf-git %{
+define-command -override -hidden fzf-git %{
     fzf "edit $1" "git ls-tree --name-only -r HEAD"
 }
 
-define-command -hidden fzf-tag %{
+define-command -override -hidden fzf-tag %{
     fzf "ctags-search $1" "readtags -l | cut -f1 | sort -u"
 }
 
-define-command -hidden fzf-cd %{
+define-command -override -hidden fzf-cd %{
     fzf "change-directory $1" "find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print"
 }
 
-define-command -hidden fzf -params 2 %{ exec %sh{
+define-command -override -hidden fzf -params 2 %{ exec %sh{
     tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
     exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
     callback=$1; shift
@@ -118,7 +118,7 @@ define-command -hidden fzf -params 2 %{ exec %sh{
     ) > /dev/null 2>&1 < /dev/null &
 }}
 
-define-command -hidden fzf-buffer %{ evaluate-commands %sh{
+define-command -override -hidden fzf-buffer %{ evaluate-commands %sh{
     tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
     setbuf=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-setbuf.XXXXXX))
     delbuf=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-delbuf.XXXXXX))

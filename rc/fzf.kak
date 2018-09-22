@@ -11,28 +11,41 @@
 # │ different fzf commands.         │
 # ╰─────────────────────────────────╯
 
+# New mode
+declare-user-mode fzf
+
+# Options
 declare-option -docstring "command to provide list of files to fzf.
 Possible values:
       find - GNU Find
       ag - The Silver Searcher
       rg - ripgrep
+
+Arguments are also can be passed along with it:
+      rg 
 " \
 str fzf_file_command "find"
 
-declare-user-mode fzf
+declare-option -docstring "path to tmp folder
+Default value:
+      /tmp/
+" \
+str fzf_tmp "/tmp/"
 
+# default mappings
+map global fzf -docstring "open file"             f '<esc>:fzf-file<ret>'
+map global fzf -docstring "open buffer"           b '<esc>:fzf-buffer<ret>'
+map global fzf -docstring "find tag"              t '<esc>:fzf-tag<ret>'
+map global fzf -docstring "change directory"      c '<esc>:fzf-tag<ret>'
+map global fzf -docstring "edif file in git tree" g '<esc>:fzf-git<ret>'
+
+# Commands
 define-command -docstring \
 "fzf-mode: Enter fzf-mode
 This is to be used in mappings to enter fzf-mode
 For example: map global normal <c-p> ':fzf-mode<ret>'
 " \
 fzf-mode %{ evaluate-commands 'enter-user-mode fzf' }
-
-map global fzf -docstring "open file"             f '<esc>:fzf-file<ret>'
-map global fzf -docstring "open buffer"           b '<esc>:fzf-buffer<ret>'
-map global fzf -docstring "find tag"              t '<esc>:fzf-tag<ret>'
-map global fzf -docstring "change directory"      c '<esc>:fzf-tag<ret>'
-map global fzf -docstring "edif file in git tree" g '<esc>:fzf-git<ret>'
 
 define-command -hidden -docstring \
 "fzf-file: Run fzf to open file
@@ -45,7 +58,7 @@ fzf-file -params 0..1 %{
     		printf %s\\n "evaluate-commands -client $kak_client echo -markup '{Information}$kak_opt_fzf_file_command is not installed. Falling back to find'" | kak -p ${kak_session}
             kak_opt_fzf_file_command="find"
         fi
-        case $kak_opt_fzf_file_command in
+        case $(echo $kak_opt_fzf_file_command | head -n 1) in
         find)
             cmd="find -L %arg{1} -name .git -prune -o -name .svn -prune -o -regex '.*\b\(bower_components\|output\|.mozilla\|firefox\|node_modules\|grunt\|cache\|Cache\|config/\(Slack\|chromium\|goole-chrome\)\)\(/|$\).*' -prune -o \( -type f -o -type l \) -a -not -path %arg{1} -a -not -name '.' -print | sed 's@^\./@@'"
             ;;
@@ -77,8 +90,8 @@ define-command -hidden fzf-cd -params 0..1 %{
 }
 
 define-command -hidden fzf -params 2.. %{ exec %sh{
-    tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
-    exec=$(mktemp /tmp/kak-exec.XXXXXX)
+    tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
+    exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
     callback=$1; shift
     items_command=$1; shift
     if [ -z $(command -v $(echo $items_command | head -n 1)) ]; then
@@ -100,9 +113,9 @@ define-command -hidden fzf -params 2.. %{ exec %sh{
 }}
 
 define-command -hidden fzf-buffer %{ evaluate-commands %sh{
-    tmp=$(mktemp /tmp/kak-fzf.XXXXXX)
-    setbuf=$(mktemp /tmp/kak-setbuf.XXXXXX)
-    delbuf=$(mktemp /tmp/kak-delbuf.XXXXXX)
+    tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
+    setbuf=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-setbuf.XXXXXX))
+    delbuf=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-delbuf.XXXXXX))
     echo "echo eval -client $kak_client \"buffer        \$1\" | kak -p $kak_session" > $setbuf
     echo "echo eval -client $kak_client \"delete-buffer \$1\" | kak -p $kak_session" > $delbuf
     echo "echo eval -client $kak_client \"fzf-buffer       \" | kak -p $kak_session" >> $delbuf

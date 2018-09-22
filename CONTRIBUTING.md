@@ -68,7 +68,7 @@ expand '$cmd' to it's value.
 " \ fzf-ripgrep-good %{ 
     evaluate-commands %sh{
         if [ -z $(command -v rg) ]; then
-            echo "echo -markup '{Information}$kak_opt_fzf_file_command is not installed. Falling back to ''find'''"
+            echo "echo -markup '{Information}''rg'' is not installed. Falling back to ''find'''"
             cmd="find -type f"
         else
             cmd="rg --files"

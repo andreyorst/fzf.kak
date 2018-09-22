@@ -39,7 +39,7 @@ str fzf_tmp "/tmp/"
 map global fzf -docstring "open file"             f '<esc>:fzf-file<ret>'
 map global fzf -docstring "open buffer"           b '<esc>:fzf-buffer<ret>'
 map global fzf -docstring "find tag"              t '<esc>:fzf-tag<ret>'
-map global fzf -docstring "change directory"      c '<esc>:fzf-tag<ret>'
+map global fzf -docstring "change directory"      c '<esc>:fzf-cd<ret>'
 map global fzf -docstring "edif file in git tree" g '<esc>:fzf-git<ret>'
 
 # Commands
@@ -55,7 +55,7 @@ define-command -hidden -docstring \
 Configurable options:
     fzf_file_command: command to run with fzf to list possible files. 
 "\
-fzf-file -params 0..1 %{
+fzf-file %{
     evaluate-commands %sh{
         if [ -z $(command -v $kak_opt_fzf_file_command) ]; then
             printf %s\\n "evaluate-commands -client $kak_client echo -markup '{Information}$kak_opt_fzf_file_command is not installed. Falling back to find'" | kak -p ${kak_session}
@@ -83,19 +83,19 @@ fzf-file -params 0..1 %{
     }
 }
 
-define-command -hidden fzf-git -params 0..1 %{
-    fzf "edit $1" "git ls-tree --name-only -r HEAD %arg{1}"
+define-command -hidden fzf-git %{
+    fzf "edit $1" "git ls-tree --name-only -r HEAD"
 }
 
-define-command -hidden fzf-tag -params 0..1 %{
+define-command -hidden fzf-tag %{
     fzf "ctags-search $1" "readtags -l | cut -f1 | sort -u"
 }
 
-define-command -hidden fzf-cd -params 0..1 %{
-    fzf "cd $1" "find %arg{1} -type d -path *.git -prune -o -type d -print"
+define-command -hidden fzf-cd %{
+    fzf "change-directoryd $1" "find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print"
 }
 
-define-command -hidden fzf -params 2.. %{ exec %sh{
+define-command -hidden fzf -params 2 %{ exec %sh{
     tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
     exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
     callback=$1; shift

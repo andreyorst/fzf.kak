@@ -49,9 +49,3 @@ bottom of the Kakoune buffer, showing you all possible files.
 
 ### Changing directories
 ![dirs](https://user-images.githubusercontent.com/19470159/45917776-3988e200-be85-11e8-89bf-7c1453806c83.gif)
-
----
-
-[Kakoune]: http://kakoune.org
-[IRC]: https://webchat.freenode.net?channels=kakoune
-[IRC Badge]: https://img.shields.io/badge/IRC-%23kakoune-blue.svg

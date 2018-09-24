@@ -10,9 +10,8 @@ want to resource kakrc plugin would not provide any warnings.
 
 Good code:
 ```kak
-define-command -override -hidden -docstring \
+define-command -hidden -docstring \
 "This is an example of adding new fzf-mode command.
-    Note that '-override' is used since script should always be resourceable
 If shell scripting is involved please follow POSIX standards, and test
 your code in POSIX shells, like 'dash', 'ash', and popular POSIX-compatible
 shells, like 'bash' and 'zsh' You earn bonus points if your script works in 'fish'.
@@ -58,7 +57,7 @@ and fallback to another if not. Is so `fzf` can be called from shell expansion `
 
 Good code:
 ```kak
-define-command -override -hidden -docstring \
+define-command -hidden -docstring \
 "This is an example of using fzf command from shell expansion.
     Note that first argument should be used with escaped '$1'. This is intentional
 because you will echo whole command out of shell expansion and without escaping '$1'

@@ -1,14 +1,19 @@
 # fzf.kak
 
-**fzf.kak** is a plugin for Kakoune editor, that brings integration with fzf
-tool. This plugin is being tested against Kakoune 2018.09.04.
+[![GitHub release](https://img.shields.io/github/release/andreyorst/fzf.kak.svg)](https://github.com/andreyorst/SimpleSnippets.vim/releases)
+[![GitHub Release Date](https://img.shields.io/github/release-date/andreyorst/fzf.kak.svg)](https://github.com/andreyorst/SimpleSnippets.vim/releases)
+![Github commits (since latest release)](https://img.shields.io/github/commits-since/andreyorst/fzf.kak/latest.svg)
+![license](https://img.shields.io/github/license/andreyorst/fzf.kak.svg)
+
+> **fzf.kak** is a plugin for Kakoune editor, that brings integration with fzf
+> tool. This plugin is being tested against Kakoune 2018.09.04.
 
 ### Dependencies
-|Tool      |Information                                                                                            |
-|:--------:|:------------------------------------------------------------------------------------------------------|
-|tmux      |This plugin depends on [fzf-tmux](https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux) script.    |
-|X11       |Script should work with X11 via `termcmd` option.                                                      |
-|GNU Screen|GNU Screen is not yet supported.                                                                       |
+|Tool      |Information                                                                                        |
+|:--------:|:--------------------------------------------------------------------------------------------------|
+|tmux      |This plugin depends on [fzf-tmux](https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux) script.|
+|X11       |Script works with X11 via `termcmd` option.                                                        |
+|GNU Screen|GNU Screen is not yet supported.                                                                   |
 
 ## Installation
 

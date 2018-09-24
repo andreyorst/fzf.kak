@@ -162,6 +162,7 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
         rm $tmp
         rm $setbuf
         rm $delbuf
+        rm $buffers
     ) > /dev/null 2>&1 < /dev/null &
 }}
 

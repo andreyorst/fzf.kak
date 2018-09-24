@@ -14,47 +14,62 @@
 declare-user-mode fzf
 
 # Options
-declare-option -docstring "command to provide list of files to fzf.
+declare-option -docstring "command to provide list of files to fzf. Arguments are supported
 Supported tools:
-        find - GNU Find
-        ag - The Silver Searcher
-        rg - ripgrep
+    <package>:           <value>:
+    GNU Find:            ""find""
+    The Silver Searcher: ""ag""
+    ripgrep:             ""rg""
 
-Arguments are also can be passed along with it.
-Default arguments are:
-        find -type f
-        ag -l -f --hidden --one-device .
-        rg -L --hidden --files
+Default arguments:
+    find: ""find -type f""
+    ag:   ""ag -l -f --hidden --one-device .""
+    rg:   ""rg -L --hidden --files""
 " \
 str fzf_file_command "find"
 
+declare-option -docstring "command to provide list of files in git tree to fzf. Arguments are supported
+Supported tools:
+    <package>:                  <value>:
+    Git --fast-version-control: ""git""
+
+Default arguments:
+    ""git ls-tree --name-only -r HEAD""
+" \
+str fzf_git_command "git"
+
+declare-option -docstring "command to provide list of ctags to fzf. Arguments are supported
+Supported tools:
+    <package>:       <value>:
+    universal-ctags: ""readtags""
+
+Default arguments:
+        ""readtags -l | cut -f1 | sort -u""
+" \
+str fzf_tag_command "readtags"
+
 declare-option -docstring "path to tmp folder
-Default value:
-      /tmp/
+Default value: ""/tmp/""
 " \
 str fzf_tmp "/tmp/"
 
 # default mappings
-map global fzf -docstring "open file"             f '<esc>: fzf-file<ret>'
 map global fzf -docstring "open buffer"           b '<esc>: fzf-buffer<ret>'
-map global fzf -docstring "find tag"              t '<esc>: fzf-tag<ret>'
 map global fzf -docstring "change directory"      c '<esc>: fzf-cd<ret>'
+map global fzf -docstring "open file"             f '<esc>: fzf-file<ret>'
 map global fzf -docstring "edif file in git tree" g '<esc>: fzf-git<ret>'
+map global fzf -docstring "find tag"              t '<esc>: fzf-tag<ret>'
 
 # Commands
-define-command -docstring \
-"fzf-mode: Enter fzf-mode
-This is to be used in mappings to enter fzf-mode
-For example: map global normal <c-p> ': fzf-mode<ret>'
+define-command -docstring "Enter fzf-mode.
+fzf-mode contains mnemonic key bindings for every fzf.kak command
+
+Best used with mapping like:
+    map global normal '<some key>' ': fzf-mode<ret>'
 " \
 fzf-mode %{ evaluate-commands 'enter-user-mode fzf' }
 
-define-command -hidden -docstring \
-"fzf-file: Run fzf to open file
-Configurable options:
-    fzf_file_command: command to run with fzf to list possible files. 
-" \
-fzf-file %{
+define-command -hidden fzf-file %{
     evaluate-commands %sh{
         if [ -z $(command -v $kak_opt_fzf_file_command) ]; then
             echo "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
@@ -74,7 +89,7 @@ fzf-file %{
             cmd=$kak_opt_fzf_file_command
             ;;
         *)
-            echo "echo -markup '{Information}$kak_opt_fzf_file_command is not supported by the script. It may not work as you expect."
+            echo "echo -markup '{Information}$kak_opt_fzf_file_command is not supported by the script. fzf.kak may not work as you expect."
             cmd=$kak_opt_fzf_file_command
             ;;
         esac
@@ -83,13 +98,40 @@ fzf-file %{
 }
 
 define-command -hidden fzf-git %{
-    fzf "edit $1" "git ls-tree --name-only -r HEAD"
+    evaluate-commands %sh{
+        case $kak_opt_fzf_git_command in
+        git)
+            cmd="git ls-tree --name-only -r HEAD"
+            ;;
+        git*)
+            cmd=$kak_opt_fzf_git_command
+            ;;
+        *)
+            echo "echo -markup '{Information}$kak_opt_fzf_git_command vcs is not supported by the script. fzf.kak may not work as you expect."
+            cmd=$kak_opt_fzf_git_command
+            ;;
+        esac
+        eval echo 'fzf \"edit \$1\" \"$cmd\"'
+    }
 }
 
 define-command -hidden fzf-tag %{
-    fzf "ctags-search $1" "readtags -l | cut -f1 | sort -u"
+    evaluate-commands %sh{
+        case $kak_opt_fzf_tag_command in
+        readtags)
+            cmd="readtags -l | cut -f1 | sort -u"
+            ;;
+        readtags*)
+            cmd=$kak_opt_fzf_tag_command
+            ;;
+        *)
+            echo "echo -markup '{Information}$kak_opt_fzf_tag_command is not supported by the script. fzf.kak may not work as you expect."
+            cmd=$kak_opt_fzf_tag_command
+            ;;
+        esac
+        eval echo 'fzf \"edit \$1\" \"$cmd\"'
+    }
 }
-
 define-command -hidden fzf-cd %{
     fzf "change-directory $1" "find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print"
 }

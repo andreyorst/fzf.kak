@@ -1,7 +1,7 @@
 # fzf.kak
 
-[![GitHub release](https://img.shields.io/github/release/andreyorst/fzf.kak.svg)](https://github.com/andreyorst/SimpleSnippets.vim/releases)
-[![GitHub Release Date](https://img.shields.io/github/release-date/andreyorst/fzf.kak.svg)](https://github.com/andreyorst/SimpleSnippets.vim/releases)
+[![GitHub release](https://img.shields.io/github/release/andreyorst/fzf.kak.svg)](https://github.com/andreyorst/fzf.kak/releases)
+[![GitHub Release Date](https://img.shields.io/github/release-date/andreyorst/fzf.kak.svg)](https://github.com/andreyorst/fzf.kak/releases)
 ![Github commits (since latest release)](https://img.shields.io/github/commits-since/andreyorst/fzf.kak/latest.svg)
 ![license](https://img.shields.io/github/license/andreyorst/fzf.kak.svg)
 

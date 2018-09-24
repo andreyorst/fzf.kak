@@ -4,17 +4,11 @@
 tool. This plugin is being tested against Kakoune 2018.09.04.
 
 ### Dependencies
-
-#### tmux
-If you're using tmux make sure, that fzf-tmux script is installed and available.
-
-#### X11
-Script works with X11 via `termcmd` option, but needs more testing, so think of
-it as experimental feature for now.
-
-#### GNU Screen
-
-GNU Screen is not yet supported.
+|Tool      |Information                                                                                            |
+|:--------:|:------------------------------------------------------------------------------------------------------|
+|tmux      |This plugin depends on [fzf-tmux](https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux) script.    |
+|X11       |Script should work with X11 via `termcmd` option.                                                      |
+|GNU Screen|GNU Screen is not yet supported.                                                                       |
 
 ## Installation
 

@@ -125,21 +125,28 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
 }}
 
 define-command -hidden fzf-buffer %{ evaluate-commands %sh{
-    if [ -z "${kak_client_env_TMUX}" ]; then
-        echo 'fail "client was not started under tmux"'
-        exit
-    fi
     tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
     setbuf=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-setbuf.XXXXXX))
     delbuf=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-delbuf.XXXXXX))
+    buffers=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-buffers.XXXXXX))
+    items_command="echo $kak_buflist | tr ' ' '\n' | sort"
+    if [ ! -z "${kak_client_env_TMUX}" ]; then
+        # cmd="$items_command | fzf-tmux -d 15 --color=16 -e --preview='$setbuf {}' --preview-window=up:hidden --expect ctrl-d > $tmp"
+        cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-d > $tmp"
+    elif [ ! -z "${kak_opt_termcmd}" ]; then
+        path=$(pwd)
+        eval "echo $kak_buflist | tr ' ' '\n' | sort > $buffers"
+        cmd="$kak_opt_termcmd \"sh -c 'cat $buffers | fzf --color=16 --expect ctrl-d > $tmp'\""
+    else
+        echo "fail termcmd option is not set"
+    fi
     echo "echo eval -client $kak_client \"buffer        \$1\" | kak -p $kak_session" > $setbuf
     echo "echo eval -client $kak_client \"delete-buffer \$1\" | kak -p $kak_session" > $delbuf
     echo "echo eval -client $kak_client \"fzf-buffer       \" | kak -p $kak_session" >> $delbuf
     chmod 755 $setbuf
     chmod 755 $delbuf
     (
-        eval "echo $kak_buflist | tr ' ' '\n' | sort |
-            fzf-tmux -d 15 --color=16 -e --preview='$setbuf {}' --preview-window=up:hidden --expect ctrl-d > $tmp"
+        eval "$cmd"
         if [ -s $tmp ]; then
             ( read action
               read buf

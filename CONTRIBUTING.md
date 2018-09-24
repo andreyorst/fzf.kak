@@ -23,7 +23,7 @@ fzf-mode key bindings. User should not remember all possible commands.
     # after fzf returns its result
     # Second argument is a command to the fzf itself, which will be used
     # to provide list for fzf to show.
-    fzf "echo $1" "echo 'this␤is␤an␤example'"
+    fzf "echo $1" "echo 'this is an example' | tr ' ' '\n'"
 }
 
 map global fzf -docstring "fzf example command" e '<esc>: fzf-good-example<ret>'
@@ -33,7 +33,7 @@ map global fzf -docstring "fzf example command" e '<esc>: fzf-good-example<ret>'
 Bad code:
 ```kak
 # example
-def fzf-good-exmpl %{ fzf "echo $1" "echo 'actually I'm bad example'" }
+def fzf-good-exmpl %{ fzf "echo $1" "echo 'actually I''m bad example' | tr ' ' '\n'" }
 ```
 
 Although such code is short, it is not *safe*, because reloading kakrc will cause an error here.

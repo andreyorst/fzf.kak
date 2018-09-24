@@ -133,7 +133,7 @@ define-command -hidden fzf-tag %{
     }
 }
 define-command -hidden fzf-cd %{
-    fzf "change-directory $1" "find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print"
+    fzf "change-directory $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
 }
 
 define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
@@ -149,7 +149,8 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
     else
         echo "fail termcmd option is not set"
     fi
-    items_executable=$(echo $items_command | awk '{print $1}')
+    # 'tr' - if '(cmd1 && cmd2) | fzf' was passed 'awk' will return '(cmd1'
+    items_executable=$(echo $items_command | awk '{print $1}' | tr '(' ' ')
     if [ -z $(command -v $items_executable) ]; then
         echo "fail \'$items_executable' executable not found"
         exit

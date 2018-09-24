@@ -52,6 +52,7 @@ So for example pressing  <kbd>Ctrl+p</kbd><kbd>f</kbd>  will  open  fzf  at  the
 bottom of the Kakoune buffer, showing you all possible files.
 
 ### Settings
+#### Files
 You can configure what command to use to search for files, and it's arguments.
 Supported tools are [GNU Find](https://www.gnu.org/software/findutils/), [The Silver Searcher](https://github.com/ggreer/the_silver_searcher), [ripgrep](https://github.com/BurntSushi/ripgrep). GNU find is used by default, but you can switch to another one. There are some default values for those, so you can go:
 
@@ -65,11 +66,32 @@ Or if you don't like default file arguments, which are `find -type f`, and would
 set-option global fzf_file_command "find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type f -print"
 ```
 
-Also fzf.kak supports setting different path to your `tmp` folder so you can use it an any system, or with different path:
+The same pattern applies for other commands, except `buffer`, and `cd`.
+
+#### Git
+You also able to set what git command to use to provide git-tree. These are default argumens:
+
+```kak
+set-option global fzf_git_command 'git ls-tree --name-only -r HEAD' 
+```
+
+Other VCS are not supported officially, but might work.
+
+#### ctags
+It is also possible to add parametees to ctags search executable:
+
+```kak
+set-option global fzf_tag_command 'readtags -l | cut -f1 | sort -u | ... ' 
+```
+
+#### Misc
+**fzf.kak** relies on tmp folder to work with all possible environments, however not every system features
+the same path to `tmp`. You can set different path to your or to any other directory with:
 
 ```kak
 set-option global fzf_tmp //path/to/tmp'
 ```
+
 
 ## Some demonstration gifs:
 ### Opening files:

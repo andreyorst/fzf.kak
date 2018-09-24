@@ -103,7 +103,7 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
         cmd="$items_command | fzf-tmux -d 15 --color=16 > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
-        cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf > $tmp'\""
+        cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16  > $tmp'\""
     else
         echo "fail termcmd option is not set"
     fi
@@ -131,7 +131,6 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
     buffers=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-buffers.XXXXXX))
     items_command="echo $kak_buflist | tr ' ' '\n' | sort"
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        # cmd="$items_command | fzf-tmux -d 15 --color=16 -e --preview='$setbuf {}' --preview-window=up:hidden --expect ctrl-d > $tmp"
         cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-d > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)

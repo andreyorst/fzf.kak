@@ -36,7 +36,11 @@ Bad code:
 def fzf-good-exmpl %{ fzf "echo $1" "echo 'actually I''m bad example' | tr ' ' '\n'" }
 ```
 
-Although such code is short, it is not *safe*, because reloading kakrc will cause an error here.
+Although such code is short, the main idea of programming language is being a language, and speak
+with the one who writes the code later. This may not be the best example of code that was made short
+by sacrificing readability, but can give you an idea what kind of code is welcomed in this project,
+and what isn't. "Write-only" code should be avoided in projects of any size and any task.
+
 Also user doesn't know about all fzf commands, and by not adding command to `fzf-mode` you force
 user to search for fzf commands in command-line which isn't the way how plugin should work. And even
 if user finds this command in command-line, there's no documentation, and name is short and may be not

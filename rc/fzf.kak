@@ -109,7 +109,7 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
     fi
     items_executable=$(echo $items_command | awk '{print $1}')
     if [ -z $(command -v $items_executable) ]; then
-        eval echo fail "\'$items_executable' executable not found. Is it installed?"
+        echo "fail \'$items_executable' executable not found"
         exit
     fi
     echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec

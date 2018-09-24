@@ -97,17 +97,16 @@ define-command -hidden fzf-cd %{
 define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
     callback=$1
     items_command=$2
-    if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$items_command | fzf-tmux -d 15 --color=16"
-    fi
-    if [ ! -z "${kak_opt_termcmd}" ]; then
-        cmd="$kak_opt_termcmd \"sh -c '$items_command | fzf'\""
-    else
-        echo "fail termcmd option is not set"
-        # exit
-    fi
     tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
     exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
+    if [ ! -z "${kak_client_env_TMUX}" ]; then
+        cmd="$items_command | fzf-tmux -d 15 --color=16 > $tmp"
+    elif [ ! -z "${kak_opt_termcmd}" ]; then
+        path=$(pwd)
+        cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf > $tmp'\""
+    else
+        echo "fail termcmd option is not set"
+    fi
     items_executable=$(echo $items_command | awk '{print $1}')
     if [ -z $(command -v $items_executable) ]; then
         eval echo fail "\'$items_executable' executable not found. Is it installed?"
@@ -116,7 +115,7 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
     echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
     chmod 755 $exec
     (
-        eval "$cmd > $tmp"
+        eval "$cmd"
         (while read file; do
             $exec $file
         done) < $tmp

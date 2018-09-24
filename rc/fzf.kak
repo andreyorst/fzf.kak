@@ -11,7 +11,7 @@
 # │ different fzf commands.         │
 # ╰─────────────────────────────────╯
 
-declare-user-mode fzf
+try %{ declare-user-mode fzf }
 
 # Options
 declare-option -docstring "command to provide list of files to fzf. Arguments are supported

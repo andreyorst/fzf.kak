@@ -129,7 +129,7 @@ define-command -hidden fzf-tag %{
             cmd=$kak_opt_fzf_tag_command
             ;;
         esac
-        eval echo 'fzf \"edit \$1\" \"$cmd\"'
+        eval echo 'fzf \"ctags-search \$1\" \"$cmd\"'
     }
 }
 define-command -hidden fzf-cd %{

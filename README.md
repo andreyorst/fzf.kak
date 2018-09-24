@@ -3,17 +3,31 @@
 **fzf.kak** is a plugin for Kakoune editor, that brings integration with fzf
 tool. This plugin is being tested against Kakoune 2018.09.04.
 
-## Installation
-This plugin requires Tmux. Support for X11 is planned in the near future.
+### Dependencies
 
-Assuming you're using [plug.kak](https://github.com/andreyorst/plug.kak)  plugin
-manager, add this to your `.kakrc`:
+#### tmux
+If you're using tmux make sure, that fzf-tmux script is installed and available.
+
+#### X11
+Script works with X11 via `termcmd` option, but needs more testing, so think of
+it as experimental feature for now.
+
+#### GNU Screen
+
+GNU Screen is not yet supported.
+
+## Installation
+
+Recommended way to install is to use [plug.kak](https://github.com/andreyorst/plug.kak)  plugin
+manager. You can install **fzf.kak** by adding this to your `kakrc`:
 
 ```kak
 plug andreyorst/fzf.kak
 ```
 
-Reload Kakoune config by and run `:plug-install`. Or install this plugin any other preferred way.
+Then reload Kakoune config or restart Kakoune and run `:plug-install`. 
+
+Or install this plugin any other preferred way.
 
 ## Usage
 

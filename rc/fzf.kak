@@ -254,13 +254,13 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
 		eval "$cmd"
 		if [ -s $tmp ]; then
 			(
-    			read action
+				read action
 				read buf
 				if [ "$action" = "ctrl-d" ]; then
-				  $setbuf $kak_bufname
-				  $delbuf $buf
+					$setbuf $kak_bufname
+					$delbuf $buf
 				else
-				  $setbuf $buf
+					$setbuf $buf
 				fi
 			) < $tmp
 		else

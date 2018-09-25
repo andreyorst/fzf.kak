@@ -140,6 +140,39 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
     callback=$1
     items_command=$2
 
+    case $callback in
+        cd*)
+            title="fzf change directory"
+            message="Change the server''s working directory"
+            additional_flags=
+            ;;
+        ctags-search*)
+            title="fzf tag"
+            [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+<c-s>: open tag in horizontal split
+<c-v>: open tag in vertical split"
+            message="Jump to a symbol''s definition.
+<ret>: open tag in new buffer.
+<c-w>: open tag in new window $additional_keybindings"
+            additional_flags="--expect ctrl-v --expect ctrl-s"
+            ;;
+        edit*)
+            title="fzf edit"
+            [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+<c-s>: open file in horizontal split
+<c-v>: open file in vertical split"
+            message="Open single or multiple files.
+<ret>: open file in new buffer.
+<c-w>: open file in new window $additional_keybindings"
+            additional_flags="-m --expect ctrl-v --expect ctrl-s"
+            ;;
+        *)
+            title="fzf unknown command"
+            message="This command is not known by fzf.kak plugin. You can send a PR with it to https://github.com/andreyorst/fzf.kak"
+            ;;
+    esac
+
+    echo "info -title '$title' '$message'"
     # 'tr' - if '(cmd1 && cmd2) | fzf' was passed 'awk' will return '(cmd1'
     items_executable=$(echo $items_command | awk '{print $1}' | tr '(' ' ')
     if [ -z $(command -v $items_executable) ]; then
@@ -151,12 +184,10 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
     exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$items_command | fzf-tmux -d 15 --color=16 -m --expect ctrl-w --expect ctrl-v --expect ctrl-s > $tmp"
-        [ "${callback% *}" != "cd" ] && echo "echo -markup '{Information}<c-w>: new window, <c-v>: vertical split, <c-s>: horizontal split'"
+        cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-w $additional_flags> $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
         cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 -m --expect ctrl-w > $tmp'\""
-        [ "${callback% *}" != "cd" ] && echo "echo -markup '{Information}<c-w>: new window'"
     else
         echo "fail termcmd option is not set"
     fi
@@ -209,7 +240,8 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
         echo "fail termcmd option is not set"
     fi
 
-    echo "echo -markup '{Information}<c-d>: delete selected buffer'"
+    echo "info -title 'fzf buffer' 'Set buffer to edit in current client
+<c-d>: delete selected buffer'"
 
     echo "echo eval -client $kak_client \"buffer        \$1\" | kak -p $kak_session" > $setbuf
     echo "echo eval -client $kak_client \"delete-buffer \$1\" | kak -p $kak_session" > $delbuf

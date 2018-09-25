@@ -11,7 +11,7 @@
 # │ different fzf commands.         │
 # ╰─────────────────────────────────╯
 
-try %{ declare-user-mode fzf }
+try %{ declare-user-mode fzf } catch %{fail "Can't declare mode 'fzf' - already exists"}
 
 # Options
 declare-option -docstring "command to provide list of files to fzf. Arguments are supported
@@ -101,7 +101,7 @@ define-command -hidden fzf-file %{
 		message="Open single or multiple files.
 <ret>: open file in new buffer.
 <c-w>: open file in new window $additional_keybindings"
-        echo "info -title '$title' '$message'"
+		echo "info -title '$title' '$message'"
 		[ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
 		eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
 	}
@@ -128,8 +128,9 @@ define-command -hidden fzf-git %{
 		message="Open single or multiple files from git tree.
 <ret>: open file in new buffer.
 <c-w>: open file in new window $additional_keybindings"
-        echo "info -title '$title' '$message'"
-		eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-v --expect ctrl-s\"'
+		echo "info -title '$title' '$message'"
+		[ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+		eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
 	}
 }
 
@@ -155,9 +156,11 @@ define-command -hidden fzf-tag %{
 <ret>: open tag in new buffer.
 <c-w>: open tag in new window $additional_keybindings"
 		echo "info -title '$title' '$message'"
-		eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-v --expect ctrl-s\"'
+		[ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+		eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags\"'
 	}
 }
+
 define-command -hidden fzf-cd %{
 	evaluate-commands %sh{
 		title="fzf change directory"
@@ -167,7 +170,7 @@ define-command -hidden fzf-cd %{
 	fzf "cd $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
 }
 
-define-command fzf-buffer-search %{
+define-command -hidden fzf-buffer-search %{
 	evaluate-commands %sh{
 		title="fzf buffer search"
 		message="Search buffer with fzf, and jump to result location"
@@ -192,10 +195,10 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 	exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
 
 	if [ ! -z "${kak_client_env_TMUX}" ]; then
-		cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-w $additional_flags > $tmp"
+		cmd="$items_command | fzf-tmux -d 15 --color=16 $additional_flags > $tmp"
 	elif [ ! -z "${kak_opt_termcmd}" ]; then
 		path=$(pwd)
-		cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 -m --expect ctrl-w $additional_flags> $tmp'\""
+		cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 $additional_flags> $tmp'\""
 	else
 		echo "fail termcmd option is not set"
 	fi

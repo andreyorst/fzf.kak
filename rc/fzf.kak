@@ -195,10 +195,10 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 	exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
 
 	if [ ! -z "${kak_client_env_TMUX}" ]; then
-		cmd="$items_command | fzf-tmux -d 15 --color=16 $additional_flags > $tmp"
+		cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-w $additional_flags > $tmp"
 	elif [ ! -z "${kak_opt_termcmd}" ]; then
 		path=$(pwd)
-		cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 $additional_flags> $tmp'\""
+		cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 --expect ctrl-w $additional_flags > $tmp'\""
 	else
 		echo "fail termcmd option is not set"
 	fi

@@ -140,6 +140,13 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
     callback=$1
     items_command=$2
 
+    # 'tr' - if '(cmd1 && cmd2) | fzf' was passed 'awk' will return '(cmd1'
+    items_executable=$(echo $items_command | awk '{print $1}' | tr '(' ' ' | cut -d " " -f 2)
+    if [ -z $(command -v $items_executable) ]; then
+        echo "fail \'$items_executable' executable not found"
+        exit
+    fi
+
     case $callback in
         cd*)
             title="fzf change directory"
@@ -158,10 +165,11 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
             ;;
         edit*)
             title="fzf edit"
+            [ "$items_executable" = "git" ] && additional_info=" from git tree"
             [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
 <c-s>: open file in horizontal split
 <c-v>: open file in vertical split"
-            message="Open single or multiple files.
+            message="Open single or multiple files$additional_info.
 <ret>: open file in new buffer.
 <c-w>: open file in new window $additional_keybindings"
             additional_flags="-m --expect ctrl-v --expect ctrl-s"
@@ -173,12 +181,6 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
     esac
 
     echo "info -title '$title' '$message'"
-    # 'tr' - if '(cmd1 && cmd2) | fzf' was passed 'awk' will return '(cmd1'
-    items_executable=$(echo $items_command | awk '{print $1}' | tr '(' ' ')
-    if [ -z $(command -v $items_executable) ]; then
-        echo "fail \'$items_executable' executable not found"
-        exit
-    fi
 
     tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
     exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))

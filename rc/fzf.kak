@@ -217,10 +217,10 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
                             wincmd= ;;
                     esac
                     callback="$wincmd$callback"
-                    echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
+                    echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
                 else
-                    echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
-                    echo "echo eval -client $kak_client \"fzf-cd\"    | kak -p $kak_session" >> $exec
+                    echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
+                    echo "echo evaluate-commands -client $kak_client \"fzf-cd\"    | kak -p $kak_session" >> $exec
                 fi
                 chmod 755 $exec
                 while read file; do
@@ -253,9 +253,9 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
     echo "info -title 'fzf buffer' 'Set buffer to edit in current client
 <c-d>: delete selected buffer'"
 
-    echo "echo eval -client $kak_client \"buffer        \$1\" | kak -p $kak_session" > $setbuf
-    echo "echo eval -client $kak_client \"delete-buffer \$1\" | kak -p $kak_session" > $delbuf
-    echo "echo eval -client $kak_client \"fzf-buffer       \" | kak -p $kak_session" >> $delbuf
+    echo "echo evaluate-commands -client $kak_client \"buffer        \$1\" | kak -p $kak_session" > $setbuf
+    echo "echo evaluate-commands -client $kak_client \"delete-buffer \$1\" | kak -p $kak_session" > $delbuf
+    echo "echo evaluate-commands -client $kak_client \"fzf-buffer       \" | kak -p $kak_session" >> $delbuf
     chmod 755 $setbuf
     chmod 755 $delbuf
     (

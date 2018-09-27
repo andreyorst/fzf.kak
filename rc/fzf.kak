@@ -167,7 +167,7 @@ define-command -hidden fzf-cd %{
 		message="Change the server''s working directory"
 		echo "info -title '$title' '$message'"
 	}
-	fzf "cd $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
+	fzf "change-directory $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
 }
 
 define-command -hidden fzf-buffer-search %{
@@ -208,7 +208,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 		if [ -s $tmp ]; then
 			(
 				read action
-				if [ "${callback% *}" != "cd" ]; then
+				if [ "${callback% *}" != "change-directory" ]; then
 					case $action in
 						"ctrl-w")
 							wincmd="x11-new"
@@ -221,8 +221,11 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 							wincmd= ;;
 					esac
 					callback="$wincmd $callback"
+    				echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
+				else
+    				echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
+    				echo "echo eval -client $kak_client \"fzf-cd\" | kak -p $kak_session" >> $exec
 				fi
-				echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
 				chmod 755 $exec
 				while read file; do
 					$exec $file

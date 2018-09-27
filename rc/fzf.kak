@@ -11,7 +11,7 @@
 # │ different fzf commands.         │
 # ╰─────────────────────────────────╯
 
-try %{ declare-user-mode fzf }
+try %{ declare-user-mode fzf } catch %{fail "Can't declare mode 'fzf' - already exists"}
 
 # Options
 declare-option -docstring "command to provide list of files to fzf. Arguments are supported
@@ -58,6 +58,7 @@ map global fzf -docstring "open buffer"           b '<esc>: fzf-buffer<ret>'
 map global fzf -docstring "change directory"      c '<esc>: fzf-cd<ret>'
 map global fzf -docstring "open file"             f '<esc>: fzf-file<ret>'
 map global fzf -docstring "edif file in git tree" g '<esc>: fzf-git<ret>'
+map global fzf -docstring "search in buffer"      s '<esc>: fzf-buffer-search<ret>'
 map global fzf -docstring "find tag"              t '<esc>: fzf-tag<ret>'
 
 # Commands
@@ -93,7 +94,16 @@ define-command -hidden fzf-file %{
 			cmd=$kak_opt_fzf_file_command
 			;;
 		esac
-		eval echo 'fzf \"edit \$1\" \"$cmd\"'
+		title="fzf file"
+		[ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+<c-s>: open file in horizontal split
+<c-v>: open file in vertical split"
+		message="Open single or multiple files.
+<ret>: open file in new buffer.
+<c-w>: open file in new window $additional_keybindings"
+		echo "info -title '$title' '$message'"
+		[ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+		eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
 	}
 }
 
@@ -111,7 +121,16 @@ define-command -hidden fzf-git %{
 			cmd=$kak_opt_fzf_git_command
 			;;
 		esac
-		eval echo 'fzf \"edit \$1\" \"$cmd\"'
+		title="fzf git"
+		[ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+<c-s>: open file in horizontal split
+<c-v>: open file in vertical split"
+		message="Open single or multiple files from git tree.
+<ret>: open file in new buffer.
+<c-w>: open file in new window $additional_keybindings"
+		echo "info -title '$title' '$message'"
+		[ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+		eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
 	}
 }
 
@@ -129,16 +148,41 @@ define-command -hidden fzf-tag %{
 			cmd=$kak_opt_fzf_tag_command
 			;;
 		esac
-		eval echo 'fzf \"ctags-search \$1\" \"$cmd\"'
+		title="fzf tag"
+		[ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+<c-s>: open tag in horizontal split
+<c-v>: open tag in vertical split"
+		message="Jump to a symbol''s definition.
+<ret>: open tag in new buffer.
+<c-w>: open tag in new window $additional_keybindings"
+		echo "info -title '$title' '$message'"
+		[ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+		eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags\"'
 	}
 }
+
 define-command -hidden fzf-cd %{
-	fzf "cd $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
+	evaluate-commands %sh{
+		title="fzf change directory"
+		message="Change the server''s working directory"
+		echo "info -title '$title' '$message'"
+	}
+	fzf "change-directory $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
 }
 
-define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
+define-command -hidden fzf-buffer-search %{
+	evaluate-commands %sh{
+		title="fzf buffer search"
+		message="Search buffer with fzf, and jump to result location"
+		echo "info -title '$title' '$message'"
+	}
+	fzf "execute-keys $1 gx" "nl -b a -n ln %val{buffile}" "--reverse | awk '{print $1}'"
+}
+
+define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 	callback=$1
 	items_command=$2
+	additional_flags=$3
 
 	# 'tr' - if '(cmd1 && cmd2) | fzf' was passed 'awk' will return '(cmd1'
 	items_executable=$(echo $items_command | awk '{print $1}' | tr '(' ' ' | cut -d " " -f 2)
@@ -147,73 +191,42 @@ define-command -hidden fzf -params 2 %{ evaluate-commands %sh{
 		exit
 	fi
 
-	case $callback in
-		cd*)
-			title="fzf change directory"
-			message="Change the server''s working directory"
-			additional_flags=
-			;;
-		ctags-search*)
-			title="fzf tag"
-			[ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
-<c-s>: open tag in horizontal split
-<c-v>: open tag in vertical split"
-			message="Jump to a symbol''s definition.
-<ret>: open tag in new buffer.
-<c-w>: open tag in new window $additional_keybindings"
-			additional_flags="--expect ctrl-v --expect ctrl-s"
-			;;
-		edit*)
-			title="fzf edit"
-			[ "$items_executable" = "git" ] && additional_info=" from git tree"
-			[ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
-<c-s>: open file in horizontal split
-<c-v>: open file in vertical split"
-			message="Open single or multiple files$additional_info.
-<ret>: open file in new buffer.
-<c-w>: open file in new window $additional_keybindings"
-			additional_flags="-m --expect ctrl-v --expect ctrl-s"
-			;;
-		*)
-			title="fzf unknown command"
-			message="This command is not known by fzf.kak plugin. You can send a PR with it to https://github.com/andreyorst/fzf.kak"
-			;;
-	esac
-
-	echo "info -title '$title' '$message'"
-
 	tmp=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-fzf.XXXXXX))
 	exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
 
 	if [ ! -z "${kak_client_env_TMUX}" ]; then
-		cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-w $additional_flags> $tmp"
+		cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-q $additional_flags > $tmp"
 	elif [ ! -z "${kak_opt_termcmd}" ]; then
 		path=$(pwd)
-		cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 -m --expect ctrl-w > $tmp'\""
+		cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 --expect ctrl-q $additional_flags > $tmp'\""
 	else
 		echo "fail termcmd option is not set"
 	fi
+	echo $cmd > ~/cmd
 
 	(
 		eval "$cmd"
 		if [ -s $tmp ]; then
 			(
 				read action
-				if [ "${callback% *}" != "cd" ]; then
+				if [ "${callback% *}" != "change-directory" ]; then
 					case $action in
 						"ctrl-w")
-							wincmd="x11-new"
-							[ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window" ;;
+							wincmd="x11-new "
+							[ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window " ;;
 						"ctrl-s")
-							wincmd="tmux-new-vertical" ;;
+							wincmd="tmux-new-vertical " ;;
 						"ctrl-v")
-							wincmd="tmux-new-horizontal" ;;
+							wincmd="tmux-new-horizontal " ;;
 						*)
 							wincmd= ;;
 					esac
-					callback="$wincmd $callback"
+					callback="$wincmd$callback"
+    				echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
+				else
+    				echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
+    				echo "echo eval -client $kak_client \"fzf-cd\" | kak -p $kak_session" >> $exec
 				fi
-				echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
 				chmod 755 $exec
 				while read file; do
 					$exec $file

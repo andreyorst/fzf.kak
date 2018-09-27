@@ -176,7 +176,7 @@ define-command -hidden fzf-buffer-search %{
 		message="Search buffer with fzf, and jump to result location"
 		echo "info -title '$title' '$message'"
 	}
-	fzf "execute-keys $1 gx" "nl -b a -n ln %val{buffile}" "--reverse | cut -f '1'"
+	fzf "execute-keys $1 gx" "nl -b a -n ln %val{buffile}" "--reverse | awk '{print $1}'"
 }
 
 define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
@@ -195,13 +195,14 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 	exec=$(mktemp $(eval echo $kak_opt_fzf_tmp/kak-exec.XXXXXX))
 
 	if [ ! -z "${kak_client_env_TMUX}" ]; then
-		cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-w $additional_flags > $tmp"
+		cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-q $additional_flags > $tmp"
 	elif [ ! -z "${kak_opt_termcmd}" ]; then
 		path=$(pwd)
-		cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 --expect ctrl-w $additional_flags > $tmp'\""
+		cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 --expect ctrl-q $additional_flags > $tmp'\""
 	else
 		echo "fail termcmd option is not set"
 	fi
+	echo $cmd > ~/cmd
 
 	(
 		eval "$cmd"
@@ -211,16 +212,16 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 				if [ "${callback% *}" != "change-directory" ]; then
 					case $action in
 						"ctrl-w")
-							wincmd="x11-new"
-							[ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window" ;;
+							wincmd="x11-new "
+							[ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window " ;;
 						"ctrl-s")
-							wincmd="tmux-new-vertical" ;;
+							wincmd="tmux-new-vertical " ;;
 						"ctrl-v")
-							wincmd="tmux-new-horizontal" ;;
+							wincmd="tmux-new-horizontal " ;;
 						*)
 							wincmd= ;;
 					esac
-					callback="$wincmd $callback"
+					callback="$wincmd$callback"
     				echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
 				else
     				echo "echo eval -client $kak_client \"$callback\" | kak -p $kak_session" > $exec

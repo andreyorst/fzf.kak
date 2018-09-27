@@ -85,14 +85,6 @@ It is also possible to add parametees to ctags search executable:
 set-option global fzf_tag_command 'readtags -l | cut -f1 | sort -u | ... ' 
 ```
 
-#### Misc
-**fzf.kak** relies on tmp folder to work with all possible environments, however not every system features
-the same path to `tmp`. You can set different path to your or to any other directory with:
-
-```kak
-set-option global fzf_tmp //path/to/tmp'
-```
-
 ## Some demonstration gifs:
 ### Opening files:
 ![files](https://user-images.githubusercontent.com/19470159/45917778-3988e200-be85-11e8-890d-b180d013b99e.gif)

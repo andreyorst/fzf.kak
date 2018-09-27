@@ -35,10 +35,12 @@ which intentionally was made to simplify user mappings.
 Each fzf command has mnemonic mapping, like `f` for opening files, `t` for tags and so on.
 
 In this mode new mappings are available:
-- <kbd>f</kbd> - Search for file and open it
 - <kbd>b</kbd> - Select buffer
-- <kbd>t</kbd> - Browse ctags tags
+- <kbd>c</kbd> - Switch servers working directory
+- <kbd>f</kbd> - Search for file and open it
 - <kbd>g</kbd> - Edit file in Git tree
+- <kbd>s</kbd> - Search over buffer contents and jump to result line
+- <kbd>t</kbd> - Browse ctags tags
 
 You can set your own mapping to invoke `fzf-mode`:
 
@@ -90,7 +92,6 @@ the same path to `tmp`. You can set different path to your or to any other direc
 ```kak
 set-option global fzf_tmp //path/to/tmp'
 ```
-
 
 ## Some demonstration gifs:
 ### Opening files:

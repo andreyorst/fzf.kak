@@ -104,7 +104,9 @@ define-command -hidden fzf-file %{
 <c-w>: open file in new window $additional_keybindings"
         echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+        printf -v preview_opt -- "--preview '(highlight --failsafe -O ansi {} || cat {}) 2> /dev/null | head -n %d'" 200
+        printf -v additional_flags "%s %s" "$additional_flags" "$preview_opt"
+        printf 'fzf "edit %s" "%s" "-m --expect ctrl-w %s"' '$1' "$cmd" "$additional_flags"
     }
 }
 
@@ -196,7 +198,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     exec=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-exec.XXXXXX))
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-q $additional_flags > $tmp"
+        cmd="$items_command | fzf-tmux -d 20 --color=16 --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
         cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 --expect ctrl-q $additional_flags > $tmp'\""

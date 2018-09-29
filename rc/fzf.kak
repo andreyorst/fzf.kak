@@ -104,7 +104,9 @@ define-command -hidden fzf-file %{
 <c-w>: open file in new window $additional_keybindings"
         echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+        printf -v preview_opt -- "--preview '(highlight --failsafe -O ansi {} || cat {}) 2> /dev/null | head -n %d'" 200
+        printf -v additional_flags "%s %s" "$additional_flags" "$preview_opt"
+        printf 'fzf "edit %s" "%s" "-m --expect ctrl-w %s"' '$1' "$cmd" "$additional_flags"
     }
 }
 

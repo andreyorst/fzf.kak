@@ -20,11 +20,13 @@ Supported tools:
     GNU Find:            ""find""
     The Silver Searcher: ""ag""
     ripgrep:             ""rg""
+    fd:                  ""fd""
 
 Default arguments:
-    find: ""find -type f""
+    find: ""find -type f -follow""
     ag:   ""ag -l -f --hidden --one-device .""
     rg:   ""rg -L --hidden --files""
+    fd:   ""fd --type f --follow""
 " \
 str fzf_file_command "find"
 
@@ -73,7 +75,7 @@ define-command -hidden fzf-file %{
         fi
         case $kak_opt_fzf_file_command in
         find)
-            cmd="find -type f"
+            cmd="find -type f -follow"
             ;;
         ag)
             cmd="ag -l -f --hidden --one-device . "
@@ -81,11 +83,15 @@ define-command -hidden fzf-file %{
         rg)
             cmd="rg -L --hidden --files"
             ;;
-        find*|ag*|rg*)
+        fd)
+            cmd="fd --type f --follow"
+            ;;
+        find*|ag*|rg*|fd*)
             cmd=$kak_opt_fzf_file_command
             ;;
         *)
-            echo "echo -markup '{Information}$kak_opt_fzf_file_command is not supported by the script. fzf.kak may not work as you expect."
+            executable=$(echo $kak_opt_fzf_file_command | awk '{print $1}'| tr '(' ' ')
+            echo "echo -markup '{Information}''$executable'' is not supported by the script. fzf.kak may not work as you expect.'"
             cmd=$kak_opt_fzf_file_command
             ;;
         esac
@@ -98,7 +104,7 @@ define-command -hidden fzf-file %{
 <c-w>: open file in new window $additional_keybindings"
         echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+        eval echo 'fzf \"edit ''\$1''\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
     }
 }
 
@@ -125,7 +131,7 @@ define-command -hidden fzf-git %{
 <c-w>: open file in new window $additional_keybindings"
         echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+        eval echo 'fzf \"edit ''\$1''\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
     }
 }
 
@@ -162,7 +168,7 @@ define-command -hidden fzf-cd %{
         message="Change the server''s working directory"
         echo "info -title '$title' '$message'"
     }
-    fzf "change-directory $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
+    fzf "change-directory '$1'" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
 }
 
 define-command -hidden fzf-buffer-search %{
@@ -171,7 +177,7 @@ define-command -hidden fzf-buffer-search %{
         message="Search buffer with fzf, and jump to result location"
         echo "info -title '$title' '$message'"
     }
-    fzf "execute-keys $1 gx" "(nl -b a -n ln %val{buffile}" "--reverse | cut -f 1)"
+    fzf "execute-keys $1 gx" "(nl -b a -n ln '%val{buffile}'" "--reverse | cut -f 1)"
 }
 
 define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
@@ -198,7 +204,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         echo "fail termcmd option is not set"
         exit
     fi
-    echo $cmd > ~/cmd
+
     (
         eval "$cmd"
         if [ -s $tmp ]; then
@@ -224,7 +230,9 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
                 fi
                 chmod 755 $exec
                 while read file; do
+                    file='"'$file'"'
                     $exec $file
+                    echo "$exec $file" > ~/vaiv
                 done
             ) < $tmp
         fi
@@ -244,7 +252,12 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
         cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-d > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
-        eval "echo $kak_buflist | tr ' ' '\n' | sort > $buffers"
+        buffers=
+        for buffer in $kak_buflist; do
+            buffer="${buffer%\'}"; buffer="${buffer#\'}"
+            buffers=$buffers"$buffer\n"
+        done
+        eval "echo -n $buffers | sort > $buffers"
         cmd="$kak_opt_termcmd \"sh -c 'cat $buffers | fzf --color=16 --expect ctrl-d > $tmp'\""
     else
         echo "fail termcmd option is not set"

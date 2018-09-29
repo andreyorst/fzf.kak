@@ -65,7 +65,7 @@ fzf-mode contains mnemonic key bindings for every fzf.kak command
 Best used with mapping like:
     map global normal '<some key>' ': fzf-mode<ret>'
 " \
-fzf-mode %{ evaluate-commands 'enter-user-mode fzf' }
+fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
 
 define-command -hidden fzf-file %{
     evaluate-commands %sh{
@@ -90,7 +90,7 @@ define-command -hidden fzf-file %{
             cmd=$kak_opt_fzf_file_command
             ;;
         *)
-            executable=$(echo $kak_opt_fzf_file_command | awk '{print $1}'| tr '(' ' ')
+            executable=$(echo $kak_opt_fzf_file_command | awk '{print $1}'| tr '(' ' ' | cut -d " " -f 2)
             echo "echo -markup '{Information}''$executable'' is not supported by the script. fzf.kak may not work as you expect.'"
             cmd=$kak_opt_fzf_file_command
             ;;
@@ -104,7 +104,7 @@ define-command -hidden fzf-file %{
 <c-w>: open file in new window $additional_keybindings"
         echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit ''\$1''\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
     }
 }
 
@@ -230,9 +230,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
                 fi
                 chmod 755 $exec
                 while read file; do
-                    file='"'$file'"'
                     $exec $file
-                    echo "$exec $file" > ~/vaiv
                 done
             ) < $tmp
         fi

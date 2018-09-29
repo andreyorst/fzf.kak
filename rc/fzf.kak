@@ -131,7 +131,7 @@ define-command -hidden fzf-git %{
 <c-w>: open file in new window $additional_keybindings"
         echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit ''\$1''\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
     }
 }
 
@@ -168,7 +168,7 @@ define-command -hidden fzf-cd %{
         message="Change the server''s working directory"
         echo "info -title '$title' '$message'"
     }
-    fzf "change-directory '$1'" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
+    fzf "change-directory $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
 }
 
 define-command -hidden fzf-buffer-search %{
@@ -230,7 +230,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
                 fi
                 chmod 755 $exec
                 while read file; do
-                    $exec $file
+                    $exec "\'$file'"
                 done
             ) < $tmp
         fi
@@ -244,18 +244,13 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
     setbuf=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-setbuf.XXXXXX))
     delbuf=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-delbuf.XXXXXX))
     buffers=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-buffers.XXXXXX))
-    items_command="echo $kak_buflist | tr ' ' '\n' | sort"
-
+    IFS="'"
+    for buffer in $kak_buflist; do
+        [ ! -z $buffer ] && [ $buffer != ' ' ] && echo $buffer >> $buffers
+    done
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-d > $tmp"
+        cmd="cat $buffers | fzf-tmux -d 15 --color=16 --expect ctrl-d > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
-        path=$(pwd)
-        buffers=
-        for buffer in $kak_buflist; do
-            buffer="${buffer%\'}"; buffer="${buffer#\'}"
-            buffers=$buffers"$buffer\n"
-        done
-        eval "echo -n $buffers | sort > $buffers"
         cmd="$kak_opt_termcmd \"sh -c 'cat $buffers | fzf --color=16 --expect ctrl-d > $tmp'\""
     else
         echo "fail termcmd option is not set"
@@ -264,8 +259,8 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
     echo "info -title 'fzf buffer' 'Set buffer to edit in current client
 <c-d>: delete selected buffer'"
 
-    echo "echo evaluate-commands -client $kak_client \"buffer        \$1\" | kak -p $kak_session" > $setbuf
-    echo "echo evaluate-commands -client $kak_client \"delete-buffer \$1\" | kak -p $kak_session" > $delbuf
+    echo "echo evaluate-commands -client $kak_client \"buffer        \'\$1'\" | kak -p $kak_session" > $setbuf
+    echo "echo evaluate-commands -client $kak_client \"delete-buffer \'\$1'\" | kak -p $kak_session" > $delbuf
     echo "echo evaluate-commands -client $kak_client \"fzf-buffer       \" | kak -p $kak_session" >> $delbuf
     chmod 755 $setbuf
     chmod 755 $delbuf

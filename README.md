@@ -79,7 +79,7 @@ set-option global fzf_git_command 'git ls-tree --name-only -r HEAD'
 Other VCS are not supported officially, but might work.
 
 #### ctags
-It is also possible to add parametees to ctags search executable:
+It is also possible to add parameters to ctags search executable:
 
 ```kak
 set-option global fzf_tag_command 'readtags -l | cut -f1 | sort -u | ... ' 

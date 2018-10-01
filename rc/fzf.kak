@@ -152,7 +152,7 @@ define-command -hidden fzf-file %{
                 highlighter=$kak_opt_fzf_highlighter
                 ;;
             esac
-            cmd="sleep 0.1; if [ \$(tput cols) -gt \$(tput lines) ]; then pos=right:50%%; else pos=top:60%%; fi; $cmd"
+            cmd="sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \\* 2) ]; then pos=right:50%%; else pos=top:60%%; fi; $cmd"
             preview_opt="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos"
             additional_flags="$preview_opt $additional_flags"
         fi
@@ -203,7 +203,7 @@ define-command -hidden fzf-git %{
                 highlighter=$kak_opt_fzf_highlighter
                 ;;
             esac
-            cmd="sleep 0.1; if [ \$(tput cols) -gt \$(tput lines) ]; then pos=right:50%%; else pos=top:60%%; fi; $cmd"
+            cmd="sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \\* 2) ]; then pos=right:50%%; else pos=top:60%%; fi; $cmd"
             preview_opt="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos"
             additional_flags="$preview_opt $additional_flags"
         fi

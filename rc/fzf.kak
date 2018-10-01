@@ -152,9 +152,8 @@ define-command -hidden fzf-file %{
                 highlighter=$kak_opt_fzf_highlighter
                 ;;
             esac
-            sleep 0.1
-            [ $(tput cols) -gt $(tput lines) ] && pos="right:50%%" || pos="top:60%%"
-            preview_opt="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=$pos"
+            cmd="sleep 0.1; if [ \$(tput cols) -gt \$(tput lines) ]; then pos=right:50%%; else pos=top:60%%; fi; $cmd"
+            preview_opt="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos"
             additional_flags="$preview_opt $additional_flags"
         fi
         eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
@@ -201,12 +200,11 @@ define-command -hidden fzf-git %{
             *)
                 executable=$(echo $kak_opt_fzf_highlighter | awk '{print $1}'| tr '(' ' ' | cut -d " " -f 2)
                 echo "echo -markup '{Information}''$executable'' highlighter is not supported by the script. fzf.kak may not work as you expect.'"
-                cmd=$kak_opt_fzf_highlighter
+                highlighter=$kak_opt_fzf_highlighter
                 ;;
             esac
-            sleep 0.1
-            [ $(tput cols) -gt $(tput lines) ] && pos="right:50%%" || pos="top:60%%"
-            preview_opt="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=$pos"
+            cmd="sleep 0.1; if [ \$(tput cols) -gt \$(tput lines) ]; then pos=right:50%%; else pos=top:60%%; fi; $cmd"
+            preview_opt="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos"
             additional_flags="$preview_opt $additional_flags"
         fi
         eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
@@ -277,6 +275,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         cmd="$items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --color=16 --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
+        additional_flags=$(echo $additional_flags | sed "s:\$pos:\\\\\$pos:")
         cmd="$kak_opt_termcmd \"sh -c \\\"cd $path && $items_command | fzf --color=16 --expect ctrl-q $additional_flags > $tmp\\\"\""
     else
         echo "fail termcmd option is not set"

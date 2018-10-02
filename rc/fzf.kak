@@ -1,3 +1,4 @@
+sdfsdfdf
 # ╭─────────────╥───────────────────╮
 # │ Author:     ║ Plugin:           │
 # │ Andrey Orst ║ fzf.kak           │
@@ -182,8 +183,8 @@ define-command -hidden fzf-buffer-search %{
         echo "execute-keys $line g $char l"
         echo "fzf \"execute-keys \$1 gx\" \"(nl -b a -n ln $buffer_content\" \"--reverse | cut -f 1)\""
         (echo "fzf \"execute-keys \$1 gx\" \"(nl -b a -n ln $buffer_content\" \"--reverse | cut -f 1)\"") 1>&2
-        # sleep 2 is needed to because everything is done asynchronously, so file should not be deleted until it was read by fzf
-        echo "nop %sh{sleep 2; rm $buffer_content}"
+        # sleep 1 is needed to because everything is done asynchronously, so file should not be deleted until it was read by fzf
+        echo "nop %sh{sleep 1; rm $buffer_content}"
     }
 }
 

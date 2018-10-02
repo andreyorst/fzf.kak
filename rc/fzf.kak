@@ -153,8 +153,7 @@ define-command -hidden fzf-tag %{
         [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
 <c-s>: open tag in horizontal split
 <c-v>: open tag in vertical split"
-        message="Jump to a symbol''s definition.
-<ret>: open tag in new buffer.
+        message="Jump to a symbol''s definition.<ret>: open tag in new buffer.
 <c-w>: open tag in new window $additional_keybindings"
         echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
@@ -176,12 +175,13 @@ define-command -hidden fzf-buffer-search %{
         title="fzf buffer search"
         message="Search buffer with fzf, and jump to result location"
         echo "info -title '$title' '$message'"
-        current_line=$kak_cursor_line
-        tmp=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-curr-buff.XXXXXX))
-        echo "execute-keys %{%<a-|>cat<space>><space>$tmp<ret>}"
-        # echo "execute-keys %{$current_line g}"
-        echo "fzf \"execute-keys \$1 gx\" \"(nl -b a -n ln $tmp\" \"--reverse | cut -f 1)\""
-        rm -rf $tmp
+        line=$kak_cursor_line
+        char=$(expr $kak_cursor_char_column - 1)
+        buffer_content=$(mktemp ${TMPDIR:-/tmp}/kak-curr-buff.XXXXXX)
+        echo "execute-keys %{%<a-|>cat<space>><space>$buffer_content<ret>;}"
+        echo "execute-keys $line g $char l"
+        echo "fzf \"execute-keys \$1 gx\" \"(nl -b a -n ln $buffer_content\" \"--reverse | cut -f 1)\""
+        echo "nop %sh{rm $buffer_content}"
     }
 }
 

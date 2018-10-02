@@ -1,4 +1,3 @@
-sdfsdfdf
 # ╭─────────────╥───────────────────╮
 # │ Author:     ║ Plugin:           │
 # │ Andrey Orst ║ fzf.kak           │

@@ -176,8 +176,13 @@ define-command -hidden fzf-buffer-search %{
         title="fzf buffer search"
         message="Search buffer with fzf, and jump to result location"
         echo "info -title '$title' '$message'"
+        current_line=$kak_cursor_line
+        tmp=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-curr-buff.XXXXXX))
+        echo "execute-keys %{%<a-|>cat<space>><space>$tmp<ret>}"
+        # echo "execute-keys %{$current_line g}"
+        echo "fzf \"execute-keys \$1 gx\" \"(nl -b a -n ln $tmp\" \"--reverse | cut -f 1)\""
+        rm -rf $tmp
     }
-    fzf "execute-keys $1 gx" "(nl -b a -n ln '%val{buffile}'" "--reverse | cut -f 1)"
 }
 
 define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{

@@ -50,6 +50,34 @@ Default arguments:
 " \
 str fzf_tag_command "readtags"
 
+declare-option -docstring "allow showing preview window
+Default value:
+    false
+" \
+bool fzf_preview true
+
+declare-option -docstring "amount of lines to pass to preview window
+Default value: 100" \
+int fzf_preview_lines 100
+
+declare-option -docstring "highlighter to use in preview window
+Supported tools:
+    <package>: <value>:
+    Coderay:   ""coderay""
+    Highlight: ""highlight""
+    Rouge:     ""rouge""
+
+Default arguments:
+    coderay:   ""coderay {}""
+    highlight: ""highlight --failsafe -O ansi -l {}""
+    rouge:     ""rougify {}""
+"\
+str fzf_highlighter "highlight"
+
+declare-option -docstring "height of fzf tmux split
+Default value: 15" \
+int fzf_tmux_height 15
+
 # default mappings
 map global fzf -docstring "open buffer"           b '<esc>: fzf-buffer<ret>'
 map global fzf -docstring "change directory"      c '<esc>: fzf-cd<ret>'
@@ -104,6 +132,30 @@ define-command -hidden fzf-file %{
 <c-w>: open file in new window $additional_keybindings"
         echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+        if [ $kak_opt_fzf_preview = "true" ]; then
+            case $kak_opt_fzf_highlighter in
+            coderay)
+                highlighter="coderay {}"
+                ;;
+            highlight)
+                highlighter="highlight --failsafe -O ansi {}"
+                ;;
+            rouge)
+                highlighter="rougify {}"
+                ;;
+            coderay*|highlight*|rougify*)
+                highlighter=$kak_opt_fzf_highlighter
+                ;;
+            *)
+                executable=$(echo $kak_opt_fzf_highlighter | awk '{print $1}'| tr '(' ' ' | cut -d " " -f 2)
+                echo "echo -markup '{Information}''$executable'' highlighter is not supported by the script. fzf.kak may not work as you expect.'"
+                highlighter=$kak_opt_fzf_highlighter
+                ;;
+            esac
+            cmd="sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \\* 2) ]; then pos=right:50%%; else pos=top:60%%; fi; $cmd"
+            preview_opt="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos"
+            additional_flags="$preview_opt $additional_flags"
+        fi
         eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
     }
 }
@@ -131,6 +183,30 @@ define-command -hidden fzf-git %{
 <c-w>: open file in new window $additional_keybindings"
         echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+        if [ $kak_opt_fzf_preview = "true" ]; then
+            case $kak_opt_fzf_highlighter in
+            coderay)
+                highlighter="coderay {}"
+                ;;
+            highlight)
+                highlighter="highlight --failsafe -O ansi {}"
+                ;;
+            rouge)
+                highlighter="rougify {}"
+                ;;
+            coderay*|highlight*|rougify*)
+                highlighter=$kak_opt_fzf_highlighter
+                ;;
+            *)
+                executable=$(echo $kak_opt_fzf_highlighter | awk '{print $1}'| tr '(' ' ' | cut -d " " -f 2)
+                echo "echo -markup '{Information}''$executable'' highlighter is not supported by the script. fzf.kak may not work as you expect.'"
+                highlighter=$kak_opt_fzf_highlighter
+                ;;
+            esac
+            cmd="sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \\* 2) ]; then pos=right:50%%; else pos=top:60%%; fi; $cmd"
+            preview_opt="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos"
+            additional_flags="$preview_opt $additional_flags"
+        fi
         eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
     }
 }
@@ -202,10 +278,11 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     exec=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-exec.XXXXXX))
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$items_command | fzf-tmux -d 15 --color=16 --expect ctrl-q $additional_flags > $tmp"
+        cmd="$items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
-        cmd="$kak_opt_termcmd \"sh -c 'cd $path && $items_command | fzf --color=16 --expect ctrl-q $additional_flags > $tmp'\""
+        additional_flags=$(echo $additional_flags | sed "s:\$pos:\\\\\$pos:")
+        cmd="$kak_opt_termcmd \"sh -c \\\"cd $path && $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
     else
         echo "fail termcmd option is not set"
         exit
@@ -255,9 +332,9 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
         [ ! -z $buffer ] && [ $buffer != ' ' ] && echo $buffer >> $buffers
     done
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="cat $buffers | fzf-tmux -d 15 --color=16 --expect ctrl-d > $tmp"
+        cmd="cat $buffers | fzf-tmux -d 15 --expect ctrl-d > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
-        cmd="$kak_opt_termcmd \"sh -c 'cat $buffers | fzf --color=16 --expect ctrl-d > $tmp'\""
+        cmd="$kak_opt_termcmd \"sh -c 'cat $buffers | fzf --expect ctrl-d > $tmp'\""
     else
         echo "fail termcmd option is not set"
     fi

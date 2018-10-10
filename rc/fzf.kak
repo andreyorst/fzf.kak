@@ -272,11 +272,11 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     exec=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-exec.XXXXXX))
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --color=16 --expect ctrl-q $additional_flags > $tmp"
+        cmd="$items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
         additional_flags=$(echo $additional_flags | sed "s:\$pos:\\\\\$pos:")
-        cmd="$kak_opt_termcmd \"sh -c \\\"cd $path && $items_command | fzf --color=16 --expect ctrl-q $additional_flags > $tmp\\\"\""
+        cmd="$kak_opt_termcmd \"sh -c \\\"cd $path && $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
     else
         echo "fail termcmd option is not set"
         exit
@@ -326,9 +326,9 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
         [ ! -z $buffer ] && [ $buffer != ' ' ] && echo $buffer >> $buffers
     done
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="cat $buffers | fzf-tmux -d 15 --color=16 --expect ctrl-d > $tmp"
+        cmd="cat $buffers | fzf-tmux -d 15 --expect ctrl-d > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
-        cmd="$kak_opt_termcmd \"sh -c 'cat $buffers | fzf --color=16 --expect ctrl-d > $tmp'\""
+        cmd="$kak_opt_termcmd \"sh -c 'cat $buffers | fzf --expect ctrl-d > $tmp'\""
     else
         echo "fail termcmd option is not set"
     fi

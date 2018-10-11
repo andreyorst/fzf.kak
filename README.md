@@ -16,7 +16,6 @@
 |GNU Screen|GNU Screen is not yet supported.                                                                   |
 
 ## Installation
-
 Recommended way to install is to use [plug.kak](https://github.com/andreyorst/plug.kak)  plugin
 manager. You can install **fzf.kak** by adding this to your `kakrc`:
 
@@ -29,7 +28,6 @@ Then reload Kakoune config or restart Kakoune and run `:plug-install`.
 Or install this plugin any other preferred way.
 
 ## Usage
-
 **fzf.kak** doesn't provide any mapping by default. Instead there's now a `fzf-mode` command
 which intentionally was made to simplify user mappings. 
 Each fzf command has mnemonic mapping, like `f` for opening files, `t` for tags and so on.
@@ -84,6 +82,20 @@ It is also possible to add parameters to ctags search executable:
 ```kak
 set-option global fzf_tag_command 'readtags -l | cut -f1 | sort -u | ... ' 
 ```
+
+#### Preview
+You can turn on the preview window in fzf window by setting `fzf_preview` option to `true`:
+
+```kak
+set-option global fzf_preview true
+```
+
+You also can specify which highlighter to use within the preview window with `fzf_highlighter` option. 
+Supported tools are:
+
+* Rouge
+* Highlight
+* Coderay
 
 ## Some demonstration gifs:
 ### Opening files:

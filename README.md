@@ -36,7 +36,8 @@ In this mode new mappings are available:
 - <kbd>b</kbd> - Select buffer
 - <kbd>c</kbd> - Switch servers working directory
 - <kbd>f</kbd> - Search for file and open it
-- <kbd>g</kbd> - Edit file in Git tree
+- <kbd>v</kbd> - Edit file in version control system tree
+- <kbd>V</kbd> - Explicitly select which vcs command to run
 - <kbd>s</kbd> - Search over buffer contents and jump to result line
 - <kbd>t</kbd> - Browse ctags tags
 
@@ -53,10 +54,10 @@ bottom of the Kakoune buffer, showing you all possible files.
 ### Settings
 #### Files
 You can configure what command to use to search for files, and it's arguments.
-Supported tools are [GNU Find](https://www.gnu.org/software/findutils/), [The Silver Searcher](https://github.com/ggreer/the_silver_searcher), [ripgrep](https://github.com/BurntSushi/ripgrep). GNU find is used by default, but you can switch to another one. There are some default values for those, so you can go:
+Supported tools are [GNU Find](https://www.gnu.org/software/findutils/), [The Silver Searcher](https://github.com/ggreer/the_silver_searcher), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd). GNU find is used by default, but you can switch to another one. There are some default values for those, so you can go:
 
 ```kak
-set-option global fzf_file_command 'rg' # 'ag' or 'find' 
+set-option global fzf_file_command 'rg' # 'ag', 'fd' or 'find' 
 ```
 
 Or if you don't like default file arguments, which are `find -type f`, and would like to disable searching in, say `.git` directories you can set it like so:
@@ -67,14 +68,21 @@ set-option global fzf_file_command "find . \( -path '*/.svn*' -o -path '*/.git*'
 
 The same pattern applies for other commands, except `buffer`, and `cd`.
 
-#### Git
-You also able to set what git command to use to provide git-tree. These are default argumens:
+#### VCS
+This script supports these version control systems: Git, Subversion, GNU Bazaar, Mercurial.
+By default <kbd>v</kbd> mapping from `fzf mode` will detect your version control system and open fzf for you.
+If you wish to explicitly use some particular vcs command, you can use `V` mapping, which includes
+all supported vcs shortcuts.
 
-```kak
-set-option global fzf_git_command 'git ls-tree --name-only -r HEAD' 
-```
+You also able to set parameters to vcs command to use to provide project files. Supported options:
 
-Other VCS are not supported officially, but might work.
+* `fzf_git_command`
+* `fzf_svn_command`
+* `fzf_bzr_command`
+* `fzf_hg_command`
+
+Other VCS are not supported officially. Open a feature request if you want some unsupported VCS to be included.
+You also can change one of options to contain your vcs command, and use this command explicitly from vcs submode.
 
 #### ctags
 It is also possible to add parameters to ctags search executable:

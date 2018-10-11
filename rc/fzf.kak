@@ -30,8 +30,8 @@ str fzf_file_command "find"
 
 declare-option -docstring "command to provide list of files in git tree to fzf. Arguments are supported
 Supported tools:
-    <package>:                  <value>:
-    Git --fast-version-control: ""git""
+    <package>: <value>:
+    Git :      ""git""
 
 Default arguments:
     ""git ls-tree --name-only -r HEAD""
@@ -174,10 +174,10 @@ define-command -docstring "Wrapper command for fzf vcs to automatically decect
 used version control system.
 
 Supported vcs:
-    Git --fast-version-control: ""git""
-    Subversion:                 ""svn""
-    Mercurial SCM:              ""hg""
-    GNU Bazaar:                 ""bzr""
+    Git:           ""git""
+    Subversion:    ""svn""
+    Mercurial SCM: ""hg""
+    GNU Bazaar:    ""bzr""
 " \
 -hidden fzf-vcs %{ evaluate-commands %sh{
     commands="git rev-parse --is-inside-work-tree

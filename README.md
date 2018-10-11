@@ -5,7 +5,7 @@
 ![Github commits (since latest release)](https://img.shields.io/github/commits-since/andreyorst/fzf.kak/latest.svg)
 ![license](https://img.shields.io/github/license/andreyorst/fzf.kak.svg)
 
-> **fzf.kak** is a plugin for [Kakoune](https://github.com/mawww/kakoune) editor, that brings integration with fzf
+> **fzf.kak** is a plugin for [Kakoune](https://github.com/mawww/kakoune) editor, that brings integration with [fzf](https://github.com/junegunn/fzf)
 > tool. This plugin is being tested against Kakoune 2018.09.04.
 
 ### Dependencies

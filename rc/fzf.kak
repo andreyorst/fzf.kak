@@ -54,7 +54,7 @@ declare-option -docstring "allow showing preview window
 Default value:
     false
 " \
-bool fzf_preview true
+bool fzf_preview false
 
 declare-option -docstring "amount of lines to pass to preview window
 Default value: 100" \

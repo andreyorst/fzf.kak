@@ -140,40 +140,38 @@ Best used with mapping like:
 " \
 fzf-vcs-mode %{ try %{ evaluate-commands 'enter-user-mode fzf-vcs' } }
 
-define-command -hidden fzf-file %{
-    evaluate-commands %sh{
-        if [ -z $(command -v $kak_opt_fzf_file_command) ]; then
-            echo "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
-            kak_opt_fzf_file_command="find"
-        fi
-        case $kak_opt_fzf_file_command in
-        find)
-            cmd="find -type f" ;;
-        ag)
-            cmd="ag -l -f --hidden --one-device . " ;;
-        rg)
-            cmd="rg -L --hidden --files" ;;
-        fd)
-            cmd="fd --type f --follow" ;;
-        find*|ag*|rg*|fd*)
-            cmd=$kak_opt_fzf_file_command ;;
-        *)
-            executable=$(echo $kak_opt_fzf_file_command | awk '{print $1'}| tr '(' ' ' | cut -d " " -f 2)
-            echo "echo -markup '{Information}''$executable'' is not supported by the script. fzf.kak may not work as you expect.'"
-            cmd=$kak_opt_fzf_file_command ;;
-        esac
-        title="fzf file"
-        [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+define-command -hidden fzf-file %{ evaluate-commands %sh{
+    if [ -z $(command -v $kak_opt_fzf_file_command) ]; then
+        echo "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
+        kak_opt_fzf_file_command="find"
+    fi
+    case $kak_opt_fzf_file_command in
+    find)
+        cmd="find -type f" ;;
+    ag)
+        cmd="ag -l -f --hidden --one-device . " ;;
+    rg)
+        cmd="rg -L --hidden --files" ;;
+    fd)
+        cmd="fd --type f --follow" ;;
+    find*|ag*|rg*|fd*)
+        cmd=$kak_opt_fzf_file_command ;;
+    *)
+        executable=$(echo $kak_opt_fzf_file_command | awk '{print $1'}| tr '(' ' ' | cut -d " " -f 2)
+        echo "echo -markup '{Information}''$executable'' is not supported by the script. fzf.kak may not work as you expect.'"
+        cmd=$kak_opt_fzf_file_command ;;
+    esac
+    title="fzf file"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
 <c-s>: open file in horizontal split
 <c-v>: open file in vertical split"
-        message="Open single or multiple files.
+    message="Open single or multiple files.
 <ret>: open file in new buffer.
 <c-w>: open file in new window $additional_keybindings"
-        echo "info -title '$title' '$message'"
-        [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
-    }
-}
+    echo "info -title '$title' '$message'"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+}}
 
 define-command -docstring "Wrapper command for fzf vcs to automatically decect
 used version control system.
@@ -184,116 +182,97 @@ Supported vcs:
     Mercurial SCM:              ""hg""
     GNU Bazaar:                 ""bzr""
 " \
--hidden fzf-vcs %{
-    evaluate-commands %sh{
-        commands="git rev-parse --is-inside-work-tree
+-hidden fzf-vcs %{ evaluate-commands %sh{
+    commands="git rev-parse --is-inside-work-tree
 svn info
 hg --cwd . root
 bzr status"
-        IFS='
+    IFS='
 '
-        for cmd in $commands; do
-            eval $cmd >/dev/null 2>&1
-            res=$?
-            if [ "$res"  = "0" ]; then
-                vcs=$(echo $cmd | awk '{print $1}')
-                title="fzf $vcs"
-                [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+    for cmd in $commands; do
+        eval $cmd >/dev/null 2>&1
+        res=$?
+        if [ "$res"  = "0" ]; then
+            vcs=$(echo $cmd | awk '{print $1}')
+            title="fzf $vcs"
+            [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
 <c-s>: open file in horizontal split
 <c-v>: open file in vertical split"
-                message="Open single or multiple files from git tree.
+            message="Open single or multiple files from git tree.
 <ret>: open file in new buffer.
 <c-w>: open file in new window $additional_keybindings"
-                echo "info -title '$title' '$message'"
-                echo "fzf-$vcs"
-                break
-            fi
-        done
-    }
-}
+            echo "info -title '$title' '$message'"
+            echo "fzf-$vcs"
+            exit
+        fi
+    done
+    echo "echo -markup '{Information}No VCS found in current folder'"
+}}
 
-define-command -hidden fzf-git %{
-    evaluate-commands %sh{
-        case $kak_opt_fzf_git_command in
-        git)
-            cmd="git ls-tree --name-only -r HEAD"
-            ;;
-        git*)
-            cmd=$kak_opt_fzf_git_command
-            ;;
-        esac
-        [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
-    }
-}
+define-command -hidden fzf-git %{ evaluate-commands %sh{
+    case $kak_opt_fzf_git_command in
+    git)
+        cmd="git ls-tree --name-only -r HEAD" ;;
+    git*)
+        cmd=$kak_opt_fzf_git_command ;;
+    esac
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+}}
 
-define-command -hidden fzf-hg %{
-    evaluate-commands %sh{
-        case $kak_opt_fzf_hg_command in
-        hg)
-            cmd="hg locate -f -0 -I .hg locate -f -0 -I ."
-            ;;
-        hg*)
-            cmd=$kak_opt_fzf_hg_command
-            ;;
-        esac
-        [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
-    }
-}
+define-command -hidden fzf-hg %{ evaluate-commands %sh{
+    case $kak_opt_fzf_hg_command in
+    hg)
+        cmd="hg locate -f -0 -I .hg locate -f -0 -I ." ;;
+    hg*)
+        cmd=$kak_opt_fzf_hg_command ;;
+    esac
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+}}
 
-define-command -hidden fzf-svn %{
-    evaluate-commands %sh{
-        case $kak_opt_fzf_svn_command in
-        svn)
-            cmd="svn list -R . | grep -v '$/' | tr '\\n' '\\0'"
-            ;;
-        svn*)
-            cmd=$kak_opt_fzf_svn_command
-            ;;
-        esac
-        [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
-    }
-}
+define-command -hidden fzf-svn %{ evaluate-commands %sh{
+    case $kak_opt_fzf_svn_command in
+    svn)
+        cmd="svn list -R . | grep -v '$/' | tr '\\n' '\\0'" ;;
+    svn*)
+        cmd=$kak_opt_fzf_svn_command ;;
+    esac
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+}}
 
-define-command -hidden fzf-bzr %{
-    evaluate-commands %sh{
-        case $kak_opt_fzf_bzr_command in
-        bzr)
-            cmd="bzr ls -R --versioned -0"
-            ;;
-        bzr*)
-            cmd=$kak_opt_fzf_bzr_command
-            ;;
-        esac
-        [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
-    }
-}
+define-command -hidden fzf-bzr %{ evaluate-commands %sh{
+    case $kak_opt_fzf_bzr_command in
+    bzr)
+        cmd="bzr ls -R --versioned -0" ;;
+    bzr*)
+        cmd=$kak_opt_fzf_bzr_command ;;
+    esac
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+}}
 
-define-command -hidden fzf-tag %{
-    evaluate-commands %sh{
-        case $kak_opt_fzf_tag_command in
-        readtags)
-            cmd="readtags -l | cut -f1 | sort -u" ;;
-        readtags*)
-            cmd=$kak_opt_fzf_tag_command ;;
-        *)
-            echo "echo -markup '{Information}$kak_opt_fzf_tag_command is not supported by the script. fzf.kak may not work as you expect."
-            cmd=$kak_opt_fzf_tag_command ;;
-        esac
-        title="fzf tag"
-        [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+define-command -hidden fzf-tag %{ evaluate-commands %sh{
+    case $kak_opt_fzf_tag_command in
+    readtags)
+        cmd="readtags -l | cut -f1 | sort -u" ;;
+    readtags*)
+        cmd=$kak_opt_fzf_tag_command ;;
+    *)
+        echo "echo -markup '{Information}$kak_opt_fzf_tag_command is not supported by the script. fzf.kak may not work as you expect."
+        cmd=$kak_opt_fzf_tag_command ;;
+    esac
+    title="fzf tag"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
 <c-s>: open tag in horizontal split
 <c-v>: open tag in vertical split"
-        message="Jump to a symbol''s definition.<ret>: open tag in new buffer.
+    message="Jump to a symbol''s definition.<ret>: open tag in new buffer.
 <c-w>: open tag in new window $additional_keybindings"
-        echo "info -title '$title' '$message'"
-        [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags\"'
-    }
-}
+    echo "info -title '$title' '$message'"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags\"'
+}}
 
 define-command -hidden fzf-cd %{
     evaluate-commands %sh{
@@ -304,8 +283,7 @@ define-command -hidden fzf-cd %{
     fzf "change-directory $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
 }
 
-define-command -hidden fzf-buffer-search %{
-    evaluate-commands %sh{
+define-command -hidden fzf-buffer-search %{ evaluate-commands %sh{
         title="fzf buffer search"
         message="Search buffer with fzf, and jump to result location"
         echo "info -title '$title' '$message'"
@@ -315,8 +293,7 @@ define-command -hidden fzf-buffer-search %{
         echo "execute-keys %{%<a-|>cat<space>><space>$buffer_content<ret>;}"
         echo "execute-keys $line g $char l"
         echo "fzf \"execute-keys \$1 gx\" \"(nl -b a -n ln $buffer_content\" \"--reverse | cut -f 1; rm $buffer_content)\""
-    }
-}
+    } }
 
 define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     callback=$1

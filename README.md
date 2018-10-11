@@ -8,7 +8,7 @@
 > **fzf.kak** is a plugin for [Kakoune](https://github.com/mawww/kakoune) editor, that brings integration with [fzf](https://github.com/junegunn/fzf)
 > tool. This plugin is being tested against Kakoune 2018.09.04.
 
-![showcase](https://user-images.githubusercontent.com/19470159/46812837-3b580e00-cd7e-11e8-9d73-f53ed15f516b.gif)
+![showcase](https://user-images.githubusercontent.com/19470159/46813471-6ee76800-cd7f-11e8-89aa-123b3a5f9f1b.gif)
 
 ### Dependencies
 |Tool      |Information                                                                                        |

@@ -11,7 +11,8 @@
 # │ different fzf commands.         │
 # ╰─────────────────────────────────╯
 
-try %{ declare-user-mode fzf } catch %{fail "Can't declare mode 'fzf' - already exists"}
+try %{ declare-user-mode fzf } catch %{echo -markup "{Error}Can't declare mode 'fzf' - already exists"}
+try %{ declare-user-mode fzf-vcs } catch %{echo -markup "{Error}Can't declare mode 'fzf-vcs' - already exists"}
 
 # Options
 declare-option -docstring "command to provide list of files to fzf. Arguments are supported
@@ -38,7 +39,6 @@ Supported tools:
 Default arguments:
     ""git ls-tree --name-only -r HEAD""
 " \
-
 str fzf_git_command "git"
 
 declare-option -docstring "command to provide list of files in svn repository to fzf. Arguments are supported
@@ -110,12 +110,18 @@ Default value: 15" \
 int fzf_tmux_height 15
 
 # default mappings
-map global fzf -docstring "open buffer"           b '<esc>: fzf-buffer<ret>'
-map global fzf -docstring "change directory"      c '<esc>: fzf-cd<ret>'
-map global fzf -docstring "open file"             f '<esc>: fzf-file<ret>'
-map global fzf -docstring "edif file in git tree" g '<esc>: fzf-git<ret>'
-map global fzf -docstring "search in buffer"      s '<esc>: fzf-buffer-search<ret>'
-map global fzf -docstring "find tag"              t '<esc>: fzf-tag<ret>'
+map global fzf -docstring "open buffer"                  'b' '<esc>: fzf-buffer<ret>'
+map global fzf -docstring "change directory"             'c' '<esc>: fzf-cd<ret>'
+map global fzf -docstring "open file"                    'f' '<esc>: fzf-file<ret>'
+map global fzf -docstring "edit file from vcs repo"      'v' '<esc>: fzf-vcs<ret>'
+map global fzf -docstring "svitch to vcs selection mode" 'V' '<esc>: fzf-vcs-mode<ret>'
+map global fzf -docstring "search in buffer"             's' '<esc>: fzf-buffer-search<ret>'
+map global fzf -docstring "find tag"                     't' '<esc>: fzf-tag<ret>'
+
+map global fzf-vcs -docstring "edit file from Git tree"        'g' '<esc>: fzf-git<ret>'
+map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-git<ret>'
+map global fzf-vcs -docstring "edit file from mercurial tree"  'h' '<esc>: fzf-git<ret>'
+map global fzf-vcs -docstring "edit file from GNU Bazaar tree" 'b' '<esc>: fzf-git<ret>'
 
 # Commands
 define-command -docstring "Enter fzf-mode.
@@ -125,6 +131,14 @@ Best used with mapping like:
     map global normal '<some key>' ': fzf-mode<ret>'
 " \
 fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
+
+define-command -docstring "Enter fzf-mode.
+fzf-mode contains mnemonic key bindings for every fzf.kak command
+
+Best used with mapping like:
+    map global normal '<some key>' ': fzf-mode<ret>'
+" \
+fzf-vcs-mode %{ try %{ evaluate-commands 'enter-user-mode fzf-vcs' } }
 
 define-command -hidden fzf-file %{
     evaluate-commands %sh{
@@ -191,6 +205,34 @@ define-command -hidden fzf-file %{
     }
 }
 
+define-command -hidden fzf-vcs %{
+    evaluate-commands %sh{
+        commands="git rev-parse --is-inside-work-tree
+svn info
+hg --cwd . root
+bzr status"
+        IFS='
+'
+        for cmd in $commands; do
+            eval $cmd >/dev/null 2>&1
+            res=$?
+            if [ "$res"  = "0" ]; then
+                vcs=$(echo $cmd | awk '{print $1}')
+                title="fzf $vcs"
+                [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+<c-s>: open file in horizontal split
+<c-v>: open file in vertical split"
+                message="Open single or multiple files from git tree.
+<ret>: open file in new buffer.
+<c-w>: open file in new window $additional_keybindings"
+                echo "info -title '$title' '$message'"
+                echo "fzf-$vcs"
+                break
+            fi
+        done
+    }
+}
+
 define-command -hidden fzf-git %{
     evaluate-commands %sh{
         case $kak_opt_fzf_git_command in
@@ -200,44 +242,53 @@ define-command -hidden fzf-git %{
         git*)
             cmd=$kak_opt_fzf_git_command
             ;;
-        *)
-            echo "echo -markup '{Information}$kak_opt_fzf_git_command vcs is not supported by the script. fzf.kak may not work as you expect."
-            cmd=$kak_opt_fzf_git_command
+        esac
+        [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+    }
+}
+
+define-command -hidden fzf-hg %{
+    evaluate-commands %sh{
+        case $kak_opt_fzf_hg_command in
+        hg)
+            cmd="hg locate -f -0 -I .hg locate -f -0 -I ."
+            ;;
+        hg*)
+            cmd=$kak_opt_fzf_hg_command
             ;;
         esac
-        title="fzf git"
-        [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
-<c-s>: open file in horizontal split
-<c-v>: open file in vertical split"
-        message="Open single or multiple files from git tree.
-<ret>: open file in new buffer.
-<c-w>: open file in new window $additional_keybindings"
-        echo "info -title '$title' '$message'"
         [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-        if [ $kak_opt_fzf_preview = "true" ]; then
-            case $kak_opt_fzf_highlighter in
-            coderay)
-                highlighter="coderay {}"
-                ;;
-            highlight)
-                highlighter="highlight --failsafe -O ansi {}"
-                ;;
-            rouge)
-                highlighter="rougify {}"
-                ;;
-            coderay*|highlight*|rougify*)
-                highlighter=$kak_opt_fzf_highlighter
-                ;;
-            *)
-                executable=$(echo $kak_opt_fzf_highlighter | awk '{print $1}'| tr '(' ' ' | cut -d " " -f 2)
-                echo "echo -markup '{Information}''$executable'' highlighter is not supported by the script. fzf.kak may not work as you expect.'"
-                highlighter=$kak_opt_fzf_highlighter
-                ;;
-            esac
-            cmd="sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \\* 2) ]; then pos=right:50%%; else pos=top:60%%; fi; $cmd"
-            preview_opt="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos"
-            additional_flags="$preview_opt $additional_flags"
-        fi
+        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+    }
+}
+
+define-command -hidden fzf-svn %{
+    evaluate-commands %sh{
+        case $kak_opt_fzf_svn_command in
+        svn)
+            cmd="svn list -R . | grep -v '$/' | tr '\\n' '\\0'"
+            ;;
+        svn*)
+            cmd=$kak_opt_fzf_svn_command
+            ;;
+        esac
+        [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+        eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+    }
+}
+
+define-command -hidden fzf-bzr %{
+    evaluate-commands %sh{
+        case $kak_opt_fzf_bzr_command in
+        bzr)
+            cmd="bzr ls -R --versioned -0"
+            ;;
+        bzr*)
+            cmd=$kak_opt_fzf_bzr_command
+            ;;
+        esac
+        [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
         eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
     }
 }

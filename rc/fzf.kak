@@ -105,9 +105,9 @@ Default arguments:
 "\
 str fzf_highlighter "highlight"
 
-declare-option -docstring "height of fzf tmux split
-Default value: 15" \
-int fzf_tmux_height 15
+declare-option -docstring "height of fzf tmux split in screen lines or percents
+Default value: 25%%" \
+str fzf_tmux_height '25%'
 
 # default mappings
 map global fzf -docstring "open buffer"                  'b' '<esc>: fzf-buffer<ret>'

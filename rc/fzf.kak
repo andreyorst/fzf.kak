@@ -74,7 +74,7 @@ Supported tools:
     universal-ctags: ""readtags""
 
 Default arguments:
-    ""readtags -l | cut -f1 | sort -u""
+    ""readtags -l | cut -f1 ""
 " \
 str fzf_tag_command "readtags"
 
@@ -253,7 +253,7 @@ define-command -hidden fzf-bzr %{ evaluate-commands %sh{
 define-command -hidden fzf-tag %{ evaluate-commands %sh{
     case $kak_opt_fzf_tag_command in
     readtags)
-        cmd="readtags -l | cut -f1 | sort -u" ;;
+        cmd="readtags -l | cut -f1" ;;
     readtags*)
         cmd=$kak_opt_fzf_tag_command ;;
     *)

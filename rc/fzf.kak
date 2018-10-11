@@ -38,7 +38,38 @@ Supported tools:
 Default arguments:
     ""git ls-tree --name-only -r HEAD""
 " \
+
 str fzf_git_command "git"
+
+declare-option -docstring "command to provide list of files in svn repository to fzf. Arguments are supported
+Supported tools:
+    <package>:                  <value>:
+    Subversion:                 ""svn""
+
+Default arguments:
+    ""svn list -R . | grep -v '$/' | tr '\\n' '\\0'""
+" \
+str fzf_svn_command "svn"
+
+declare-option -docstring "command to provide list of files in mercurial repository to fzf. Arguments are supported
+Supported tools:
+    <package>:                  <value>:
+    Mercurial SCM:              ""hg""
+
+Default arguments:
+    ""hg locate -f -0 -I .hg locate -f -0 -I .""
+" \
+str fzf_hg_command "hg"
+
+declare-option -docstring "command to provide list of files in GNU Bazaar repository to fzf. Arguments are supported
+Supported tools:
+    <package>:                  <value>:
+    GNU Bazaar:                 ""bzr""
+
+Default arguments:
+    ""bzr ls -R --versioned -0""
+" \
+str fzf_bzr_command "bzr"
 
 declare-option -docstring "command to provide list of ctags to fzf. Arguments are supported
 Supported tools:

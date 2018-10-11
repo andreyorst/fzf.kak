@@ -121,5 +121,3 @@ Supported tools are:
 ### Changing directories
 ![dirs](https://user-images.githubusercontent.com/19470159/45917776-3988e200-be85-11e8-89bf-7c1453806c83.gif)
 
-## Special thanks
-Original script, that current implementation is based on, was implemented by [topisani](https://github.com/topisani). If you are here, thank you for your work, it is awesome!

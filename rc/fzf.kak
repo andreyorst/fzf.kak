@@ -2,9 +2,6 @@
 # │ Author:     ║ Plugin:           │
 # │ Andrey Orst ║ fzf.kak           │
 # ╞═════════════╩═══════════════════╡
-# │ Initial implementation by:      │
-# │ https://github.com/topisani     │
-# ╞═════════════════════════════════╡
 # │ This plugin implements fzf      │
 # │ mode for Kakoune. This mode     │
 # │ adds several mappings to invoke │

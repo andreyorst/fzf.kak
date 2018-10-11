@@ -119,9 +119,9 @@ map global fzf -docstring "search in buffer"             's' '<esc>: fzf-buffer-
 map global fzf -docstring "find tag"                     't' '<esc>: fzf-tag<ret>'
 
 map global fzf-vcs -docstring "edit file from Git tree"        'g' '<esc>: fzf-git<ret>'
-map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-git<ret>'
-map global fzf-vcs -docstring "edit file from mercurial tree"  'h' '<esc>: fzf-git<ret>'
-map global fzf-vcs -docstring "edit file from GNU Bazaar tree" 'b' '<esc>: fzf-git<ret>'
+map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-svn<ret>'
+map global fzf-vcs -docstring "edit file from mercurial tree"  'h' '<esc>: fzf-hg<ret>'
+map global fzf-vcs -docstring "edit file from GNU Bazaar tree" 'b' '<esc>: fzf-bzr<ret>'
 
 # Commands
 define-command -docstring "Enter fzf-mode.
@@ -158,7 +158,7 @@ define-command -hidden fzf-file %{
         find*|ag*|rg*|fd*)
             cmd=$kak_opt_fzf_file_command ;;
         *)
-            executable=$(echo $kak_opt_fzf_file_command | awk '{print $1}'| tr '(' ' ' | cut -d " " -f 2)
+            executable=$(echo $kak_opt_fzf_file_command | awk '{print $1'}| tr '(' ' ' | cut -d " " -f 2)
             echo "echo -markup '{Information}''$executable'' is not supported by the script. fzf.kak may not work as you expect.'"
             cmd=$kak_opt_fzf_file_command ;;
         esac
@@ -332,7 +332,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     tmp=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-fzf.XXXXXX))
     exec=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-exec.XXXXXX))
 
-    if [ "$(echo $items_command | awk 'print $1')" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
+    if [ "$(echo $callback | awk '{print $1}')" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
         case $kak_opt_fzf_highlighter in
         coderay)
             highlighter="coderay {}" ;;

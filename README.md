@@ -87,7 +87,7 @@ Other VCS are not supported officially. Open a feature request if you want some 
 You also can change one of options to contain your vcs command, and use this command explicitly from vcs submode.
 
 #### ctags
-It is also possible to add parameters to ctags search executable:
+It is also possible to add parameters to ctags search executable. like `sort -u` and others:
 
 ```kak
 set-option global fzf_tag_command 'readtags -l | cut -f1 | sort -u | ... ' 

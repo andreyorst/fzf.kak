@@ -324,17 +324,17 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         if [ ! -z "${kak_client_env_TMUX}" ]; then
             preview_pos='pos=right:50%;'
         else
-            preview_pos='sleep 0.1; if [ $(tput cols) -gt $(expr $(tput lines) \* 2) ]; then pos=right:50%; else pos=top:60%; fi;'
+            preview_pos='sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ]; then pos=right:50%; else pos=top:60%; fi;'
         fi
-        additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\${pos:-right:50%} $additional_flags"
+        additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos $additional_flags"
     fi
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
         cmd="$preview_pos $items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
-        additional_flags=$(echo $additional_flags | sed "s:\$pos:\\\\\$pos:")
-        cmd="$kak_opt_termcmd \"sh -c \\\"cd $path && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
+        additional_flags=$(echo $additional_flags | sed 's:\$pos:\\\\\\\$pos:')
+        cmd="$kak_opt_termcmd \"sh -c \\\"sh=$(command -v sh); SHELL=\\\$sh; export SHELL; cd $path && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
     else
         echo "fail termcmd option is not set"
         exit

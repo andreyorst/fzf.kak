@@ -10,6 +10,7 @@
 
 try %{ declare-user-mode fzf } catch %{echo -markup "{Error}Can't declare mode 'fzf' - already exists"}
 try %{ declare-user-mode fzf-vcs } catch %{echo -markup "{Error}Can't declare mode 'fzf-vcs' - already exists"}
+try %{ declare-user-mode fzf-tag } catch %{echo -markup "{Error}Can't declare mode 'fzf-tag' - already exists"}
 
 # Options
 declare-option -docstring "command to provide list of files to fzf. Arguments are supported
@@ -114,11 +115,35 @@ map global fzf -docstring "edit file from vcs repo"      'v' '<esc>: fzf-vcs<ret
 map global fzf -docstring "svitch to vcs selection mode" 'V' '<esc>: fzf-vcs-mode<ret>'
 map global fzf -docstring "search in buffer"             's' '<esc>: fzf-buffer-search<ret>'
 map global fzf -docstring "find tag"                     't' '<esc>: fzf-tag<ret>'
+map global fzf -docstring "find tag"                     'T' '<esc>: fzf-tag-mode<ret>'
 
 map global fzf-vcs -docstring "edit file from Git tree"        'g' '<esc>: fzf-git<ret>'
 map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-svn<ret>'
 map global fzf-vcs -docstring "edit file from mercurial tree"  'h' '<esc>: fzf-hg<ret>'
 map global fzf-vcs -docstring "edit file from GNU Bazaar tree" 'b' '<esc>: fzf-bzr<ret>'
+
+declare-option -docstring "fzf tag kind filter for functions" \
+str fzf_tag_function_kind "f"
+declare-option -docstring "fzf tag kind filter for members" \
+str fzf_tag_member_kind "m"
+declare-option -docstring "fzf tag kind filter for variables" \
+str fzf_tag_variable_kind "v"
+declare-option -docstring "fzf tag kind filter for includes" \
+str fzf_tag_include_kind "h"
+declare-option -docstring "fzf tag kind filter for structures" \
+str fzf_tag_structure_kind "s"
+declare-option -docstring "fzf tag kind filter for classes" \
+str fzf_tag_class_kind "c"
+declare-option -docstring "fzf tag kind filter for namespacess" \
+str fzf_tag_namespaces_kind "c"
+
+map global fzf-tag -docstring "functions"    'f' '<esc>: fzf-tag-kind f<ret>'
+map global fzf-tag -docstring "members"      'm' '<esc>: fzf-tag-kind m<ret>'
+map global fzf-tag -docstring "variables"    'v' '<esc>: fzf-tag-kind v<ret>'
+map global fzf-tag -docstring "includes"     'h' '<esc>: fzf-tag-kind h<ret>'
+map global fzf-tag -docstring "structures"   's' '<esc>: fzf-tag-kind s<ret>'
+map global fzf-tag -docstring "classes"      'c' '<esc>: fzf-tag-kind c<ret>'
+map global fzf-tag -docstring "namespacess"  'c' '<esc>: fzf-tag-kind c<ret>'
 
 # Commands
 define-command -docstring "Enter fzf-mode.
@@ -136,6 +161,14 @@ Best used with mapping like:
     map global normal '<some key>' ': fzf-mode<ret>'
 " \
 fzf-vcs-mode %{ try %{ evaluate-commands 'enter-user-mode fzf-vcs' } }
+
+define-command -docstring "Enter fzf-mode.
+fzf-mode contains mnemonic key bindings for every fzf.kak command
+
+Best used with mapping like:
+    map global normal '<some key>' ': fzf-mode<ret>'
+" \
+fzf-tag-mode %{ try %{ evaluate-commands 'enter-user-mode fzf-tag' } }
 
 define-command -hidden fzf-file %{ evaluate-commands %sh{
     if [ -z $(command -v $kak_opt_fzf_file_command) ]; then
@@ -270,6 +303,26 @@ define-command -hidden fzf-tag %{ evaluate-commands %sh{
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
     eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags\"'
 }}
+
+define-command -hidden fzf-tag-kind -params 1 %{ evaluate-commands %sh{
+    case $1 in
+    readtags*)
+        cmd=$1 ;;
+    *)
+        cmd="readtags -Q \\\"(eq? \\\$kind \\\"$1\\\")\\\" -l | cut -f1" ;;
+    esac
+    echo "echo -debug %{$cmd}"
+    title="fzf tag kind $1"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+<c-s>: open tag in horizontal split
+<c-v>: open tag in vertical split"
+    message="Jump to a symbol''s definition.<ret>: open tag in new buffer.
+<c-w>: open tag in new window $additional_keybindings"
+    echo "info -title '$title' '$message'"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags\"'
+}}
+
 
 define-command -hidden fzf-cd %{
     evaluate-commands %sh{

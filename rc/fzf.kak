@@ -334,7 +334,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
         additional_flags=$(echo $additional_flags | sed 's:\$pos:\\\\\\\$pos:')
-        cmd="$kak_opt_termcmd \"sh -c \\\"sh=$(which sh); SHELL=\\\$sh; export SHELL; cd $path && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
+        cmd="$kak_opt_termcmd \"sh -c \\\"sh=$(command -v sh); SHELL=\\\$sh; export SHELL; cd $path && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
     else
         echo "fail termcmd option is not set"
         exit

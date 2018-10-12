@@ -296,25 +296,6 @@ define-command -hidden fzf-tag %{ evaluate-commands %sh{
     eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags\"'
 }}
 
-define-command -hidden fzf-tag-kind -params 1 %{ evaluate-commands %sh{
-    case $1 in
-    readtags*)
-        cmd=$1 ;;
-    *)
-        cmd="readtags -Q \\\"(eq? \\\$kind \\\"$1\\\")\\\" -l | cut -f1" ;;
-    esac
-    echo "echo -debug %{$cmd}"
-    title="fzf tag kind $1"
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
-<c-s>: open tag in horizontal split
-<c-v>: open tag in vertical split"
-    message="Jump to a symbol''s definition.<ret>: open tag in new buffer.
-<c-w>: open tag in new window $additional_keybindings"
-    echo "info -title '$title' '$message'"
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags\"'
-}}
-
 
 define-command -hidden fzf-cd %{
     evaluate-commands %sh{
@@ -467,8 +448,8 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
     ) > /dev/null 2>&1 < /dev/null &
 }}
 
-declare-option -docstring "Set of mappings for Ada filetype" \
-str ada "
+declare-option -hidden -docstring "Set of mappings for Ada filetype" \
+str fzf_tag_ada "
     <a-P>:  package specifications
     <a-p>:  packages
     <a-T>:  type specifications [off]
@@ -496,15 +477,15 @@ str ada "
     <a-y>:  loops and blocks with no identifier [off]
     <a-S>:  (ctags internal use)"
 
-declare-option -docstring "Set of mappings for Ant filetype" \
-str ant "
+declare-option -hidden -docstring "Set of mappings for Ant filetype" \
+str fzf_tag_ant "
     <a-p>:  projects
     <a-t>:  targets
     <a-P>:  properties(global)
     <a-i>:  antfiles"
 
-declare-option -docstring "Set of mappings for Asciidoc filetype" \
-str asciidoc "
+declare-option -hidden -docstring "Set of mappings for Asciidoc filetype" \
+str fzf_tag_asciidoc "
     <a-c>:  chapters
     <a-s>:  sections
     <a-S>:  level <a-2>: sections
@@ -513,24 +494,24 @@ str asciidoc "
     <a-u>:  level <a-5>: sections
     <a-a>:  anchors"
 
-declare-option -docstring "Set of mappings for Asm filetype" \
-str asm "
+declare-option -hidden -docstring "Set of mappings for Asm filetype" \
+str fzf_tag_asm "
     <a-d>:  defines
     <a-l>:  labels
     <a-m>:  macros
     <a-t>:  types (structs and records)
     <a-s>:  sections"
 
-declare-option -docstring "Set of mappings for Asp filetype" \
-str asp "
+declare-option -hidden -docstring "Set of mappings for Asp filetype" \
+str fzf_tag_asp "
     <a-d>:  constants
     <a-c>:  classes
     <a-f>:  functions
     <a-s>:  subroutines
     <a-v>:  variables"
 
-declare-option -docstring "Set of mappings for Autoconf filetype" \
-str autoconf "
+declare-option -hidden -docstring "Set of mappings for Autoconf filetype" \
+str fzf_tag_autoconf "
     <a-p>:  packages
     <a-t>:  templates
     <a-m>:  autoconf macros
@@ -540,16 +521,16 @@ str autoconf "
     <a-c>:  automake conditions
     <a-d>:  definitions"
 
-declare-option -docstring "Set of mappings for AutoIt filetype" \
-str autoit "
+declare-option -hidden -docstring "Set of mappings for AutoIt filetype" \
+str fzf_tag_autoit "
     <a-f>:  functions
     <a-r>:  regions
     <a-g>:  global variables
     <a-l>:  local variables
     <a-S>:  included scripts"
 
-declare-option -docstring "Set of mappings for Automake filetype" \
-str automake "
+declare-option -hidden -docstring "Set of mappings for Automake filetype" \
+str fzf_tag_automake "
     <a-d>:  directories
     <a-P>:  programs
     <a-M>:  manuals
@@ -559,12 +540,12 @@ str automake "
     <a-D>:  datum
     <a-c>:  conditions"
 
-declare-option -docstring "Set of mappings for Awk filetype" \
-str awk "
+declare-option -hidden -docstring "Set of mappings for Awk filetype" \
+str fzf_tag_awk "
     <a-f>:  functions"
 
-declare-option -docstring "Set of mappings for Basic filetype" \
-str basic "
+declare-option -hidden -docstring "Set of mappings for Basic filetype" \
+str fzf_tag_basic "
     <a-c>:  constants
     <a-f>:  functions
     <a-l>:  labels
@@ -572,20 +553,20 @@ str basic "
     <a-v>:  variables
     <a-g>:  enumerations"
 
-declare-option -docstring "Set of mappings for BETA filetype" \
-str beta "
+declare-option -hidden -docstring "Set of mappings for BETA filetype" \
+str fzf_tag_beta "
     <a-f>:  fragment definitions
     <a-p>:  all patterns [off]
     <a-s>:  slots (fragment uses)
     <a-v>:  patterns (virtual or rebound)"
 
-declare-option -docstring "Set of mappings for Clojure filetype" \
-str clojure "
+declare-option -hidden -docstring "Set of mappings for Clojure filetype" \
+str fzf_tag_clojure "
     <a-f>:  functions
     <a-n>:  namespaces"
 
-declare-option -docstring "Set of mappings for CMake filetype" \
-str cmake "
+declare-option -hidden -docstring "Set of mappings for CMake filetype" \
+str fzf_tag_cmake "
     <a-f>:  functions
     <a-m>:  macros
     <a-t>:  targets
@@ -594,8 +575,8 @@ str cmake "
     <a-p>:  projects
     <a-r>:  regex"
 
-declare-option -docstring "Set of mappings for C filetype" \
-str c "
+declare-option -hidden -docstring "Set of mappings for C filetype" \
+str fzf_tag_c "
     <a-d>:  macro definitions
     <a-e>:  enumerators (values inside an enumeration)
     <a-f>:  function definitions
@@ -612,8 +593,8 @@ str c "
     <a-z>:  function parameters inside function definitions [off]
     <a-L>:  goto labels [off]"
 
-declare-option -docstring "Set of mappings for C++ filetype" \
-str cpp "
+declare-option -hidden -docstring "Set of mappings for C++ filetype" \
+str fzf_tag_cpp "
     <a-d>:  macro definitions
     <a-e>:  enumerators (values inside an enumeration)
     <a-f>:  function definitions
@@ -635,19 +616,19 @@ str cpp "
     <a-N>:  names imported via using scope::symbol [off]
     <a-U>:  using namespace statements [off]"
 
-declare-option -docstring "Set of mappings for CPreProcessor filetype" \
-str cpreprocessor "
+declare-option -hidden -docstring "Set of mappings for CPreProcessor filetype" \
+str fzf_tag_cpreprocessor "
     <a-d>:  macro definitions
     <a-h>:  included header files"
 
-declare-option -docstring "Set of mappings for CSS filetype" \
-str css "
+declare-option -hidden -docstring "Set of mappings for CSS filetype" \
+str fzf_tag_css "
     <a-c>:  classes
     <a-s>:  selectors
     <a-i>:  identities"
 
-declare-option -docstring "Set of mappings for C# filetype" \
-str c# "
+declare-option -hidden -docstring "Set of mappings for C# filetype" \
+str fzf_tag_csharp "
     <a-c>:  classes
     <a-d>:  macro definitions
     <a-e>:  enumerators (values inside an enumeration)
@@ -662,13 +643,13 @@ str c# "
     <a-s>:  structure names
     <a-t>:  typedefs"
 
-declare-option -docstring "Set of mappings for Ctags filetype" \
-str ctags "
+declare-option -hidden -docstring "Set of mappings for Ctags filetype" \
+str fzf_tag_ctags "
     <a-l>:  language definitions
     <a-k>:  kind definitions"
 
-declare-option -docstring "Set of mappings for Cobol filetype" \
-str cobol "
+declare-option -hidden -docstring "Set of mappings for Cobol filetype" \
+str fzf_tag_cobol "
     <a-p>:  paragraphs
     <a-d>:  data items
     <a-S>:  source code file
@@ -678,8 +659,8 @@ str cobol "
     <a-s>:  sections
     <a-D>:  divisions"
 
-declare-option -docstring "Set of mappings for CUDA filetype" \
-str cuda "
+declare-option -hidden -docstring "Set of mappings for CUDA filetype" \
+str fzf_tag_cuda "
     <a-d>:  macro definitions
     <a-e>:  enumerators (values inside an enumeration)
     <a-f>:  function definitions
@@ -696,8 +677,8 @@ str cuda "
     <a-z>:  function parameters inside function definitions [off]
     <a-L>:  goto labels [off]"
 
-declare-option -docstring "Set of mappings for D filetype" \
-str d "
+declare-option -hidden -docstring "Set of mappings for D filetype" \
+str fzf_tag_d "
     <a-a>:  aliases
     <a-c>:  classes
     <a-g>:  enumeration names
@@ -717,40 +698,40 @@ str d "
     <a-v>:  variable definitions
     <a-V>:  version statements"
 
-declare-option -docstring "Set of mappings for Diff filetype" \
-str diff "
+declare-option -hidden -docstring "Set of mappings for Diff filetype" \
+str fzf_tag_diff "
     <a-m>:  modified files
     <a-n>:  newly created files
     <a-d>:  deleted files
     <a-h>:  hunks"
 
-declare-option -docstring "Set of mappings for DTD filetype" \
-str dtd "
+declare-option -hidden -docstring "Set of mappings for DTD filetype" \
+str fzf_tag_dtd "
     <a-E>:  entities
     <a-p>:  parameter entities
     <a-e>:  elements
     <a-a>:  attributes
     <a-n>:  notations"
 
-declare-option -docstring "Set of mappings for DTS filetype" \
-str dts "
+declare-option -hidden -docstring "Set of mappings for DTS filetype" \
+str fzf_tag_dts "
     <a-p>:  phandlers
     <a-l>:  labels
     <a-r>:  regex"
 
-declare-option -docstring "Set of mappings for DosBatch filetype" \
-str dosbatch "
+declare-option -hidden -docstring "Set of mappings for DosBatch filetype" \
+str fzf_tag_dosbatch "
     <a-l>:  labels
     <a-v>:  variables"
 
-declare-option -docstring "Set of mappings for Eiffel filetype" \
-str eiffel "
+declare-option -hidden -docstring "Set of mappings for Eiffel filetype" \
+str fzf_tag_eiffel "
     <a-c>:  classes
     <a-f>:  features
     <a-l>:  local entities [off]"
 
-declare-option -docstring "Set of mappings for Elm filetype" \
-str elm "
+declare-option -hidden -docstring "Set of mappings for Elm filetype" \
+str fzf_tag_elm "
     <a-m>:  Module
     <a-n>:  Renamed Imported Module
     <a-p>:  Port
@@ -759,24 +740,24 @@ str elm "
     <a-a>:  Type Alias
     <a-f>:  Functions"
 
-declare-option -docstring "Set of mappings for Erlang filetype" \
-str erlang "
+declare-option -hidden -docstring "Set of mappings for Erlang filetype" \
+str fzf_tag_erlang "
     <a-d>:  macro definitions
     <a-f>:  functions
     <a-m>:  modules
     <a-r>:  record definitions
     <a-t>:  type definitions"
 
-declare-option -docstring "Set of mappings for Falcon filetype" \
-str falcon "
+declare-option -hidden -docstring "Set of mappings for Falcon filetype" \
+str fzf_tag_falcon "
     <a-c>:  classes
     <a-f>:  functions
     <a-m>:  class members
     <a-v>:  variables
     <a-i>:  imports"
 
-declare-option -docstring "Set of mappings for Flex filetype" \
-str flex "
+declare-option -hidden -docstring "Set of mappings for Flex filetype" \
+str fzf_tag_flex "
     <a-f>:  functions
     <a-c>:  classes
     <a-m>:  methods
@@ -784,8 +765,8 @@ str flex "
     <a-v>:  global variables
     <a-x>:  mxtags"
 
-declare-option -docstring "Set of mappings for Fortran filetype" \
-str fortran "
+declare-option -hidden -docstring "Set of mappings for Fortran filetype" \
+str fzf_tag_fortran "
     <a-b>:  block data
     <a-c>:  common blocks
     <a-e>:  entry points
@@ -806,19 +787,19 @@ str fortran "
     <a-v>:  program (global) and module variables
     <a-S>:  submodules"
 
-declare-option -docstring "Set of mappings for Fypp filetype" \
-str fypp "
+declare-option -hidden -docstring "Set of mappings for Fypp filetype" \
+str fzf_tag_fypp "
     <a-m>:  macros"
 
-declare-option -docstring "Set of mappings for Gdbinit filetype" \
-str gdbinit "
+declare-option -hidden -docstring "Set of mappings for Gdbinit filetype" \
+str fzf_tag_gdbinit "
     <a-d>:  definitions
     <a-D>:  documents [off]
     <a-t>:  toplevel variables
     <a-l>:  local variables [off]"
 
-declare-option -docstring "Set of mappings for Go filetype" \
-str go "
+declare-option -hidden -docstring "Set of mappings for Go filetype" \
+str fzf_tag_go "
     <a-p>:  packages
     <a-f>:  functions
     <a-c>:  constants
@@ -831,28 +812,28 @@ str go "
     <a-u>:  unknown
     <a-P>:  name for specifying imported package"
 
-declare-option -docstring "Set of mappings for HTML filetype" \
-str html "
+declare-option -hidden -docstring "Set of mappings for HTML filetype" \
+str fzf_tag_html "
     <a-a>:  named anchors
     <a-h>:  H1 headings
     <a-i>:  H2 headings
     <a-j>:  H3 headings"
 
-declare-option -docstring "Set of mappings for Iniconf filetype" \
-str iniconf "
+declare-option -hidden -docstring "Set of mappings for Iniconf filetype" \
+str fzf_tag_iniconf "
     <a-s>:  sections
     <a-k>:  keys"
 
-declare-option -docstring "Set of mappings for ITcl filetype" \
-str itcl "
+declare-option -hidden -docstring "Set of mappings for ITcl filetype" \
+str fzf_tag_itcl "
     <a-c>:  classes
     <a-m>:  methods
     <a-v>:  object-specific variables
     <a-C>:  common variables
     <a-p>:  procedures within the  class  namespace"
 
-declare-option -docstring "Set of mappings for Java filetype" \
-str java "
+declare-option -hidden -docstring "Set of mappings for Java filetype" \
+str fzf_tag_java "
     <a-a>:  annotation declarations
     <a-c>:  classes
     <a-e>:  enum constants
@@ -863,12 +844,12 @@ str java "
     <a-m>:  methods
     <a-p>:  packages"
 
-declare-option -docstring "Set of mappings for JavaProperties filetype" \
-str javaproperties "
+declare-option -hidden -docstring "Set of mappings for JavaProperties filetype" \
+str fzf_tag_javaproperties "
     <a-k>:  keys"
 
-declare-option -docstring "Set of mappings for JavaScript filetype" \
-str javascript "
+declare-option -hidden -docstring "Set of mappings for JavaScript filetype" \
+str fzf_tag_javascript "
     <a-f>:  functions
     <a-c>:  classes
     <a-m>:  methods
@@ -877,8 +858,8 @@ str javascript "
     <a-v>:  global variables
     <a-g>:  generators"
 
-declare-option -docstring "Set of mappings for JSON filetype" \
-str json "
+declare-option -hidden -docstring "Set of mappings for JSON filetype" \
+str fzf_tag_json "
     <a-o>:  objects
     <a-a>:  arrays
     <a-n>:  numbers
@@ -886,39 +867,39 @@ str json "
     <a-b>:  booleans
     <a-z>:  nulls"
 
-declare-option -docstring "Set of mappings for LdScript filetype" \
-str ldscript "
+declare-option -hidden -docstring "Set of mappings for LdScript filetype" \
+str fzf_tag_ldscript "
     <a-S>:  sections
     <a-s>:  symbols
     <a-v>:  versions
     <a-i>:  input sections"
 
-declare-option -docstring "Set of mappings for Lisp filetype" \
-str lisp "
+declare-option -hidden -docstring "Set of mappings for Lisp filetype" \
+str fzf_tag_lisp "
     <a-f>:  functions"
 
-declare-option -docstring "Set of mappings for Lua filetype" \
-str lua "
+declare-option -hidden -docstring "Set of mappings for Lua filetype" \
+str fzf_tag_lua "
     <a-f>:  functions"
 
-declare-option -docstring "Set of mappings for M4 filetype" \
-str m4 "
+declare-option -hidden -docstring "Set of mappings for M4 filetype" \
+str fzf_tag_m4 "
     <a-d>:  macros
     <a-I>:  macro files"
 
-declare-option -docstring "Set of mappings for Man filetype" \
-str man "
+declare-option -hidden -docstring "Set of mappings for Man filetype" \
+str fzf_tag_man "
     <a-t>:  titles
     <a-s>:  sections"
 
-declare-option -docstring "Set of mappings for Make filetype" \
-str make "
+declare-option -hidden -docstring "Set of mappings for Make filetype" \
+str fzf_tag_make "
     <a-m>:  macros
     <a-t>:  targets
     <a-I>:  makefiles"
 
-declare-option -docstring "Set of mappings for Markdown filetype" \
-str markdown "
+declare-option -hidden -docstring "Set of mappings for Markdown filetype" \
+str fzf_tag_markdown "
     <a-c>:  chapsters
     <a-s>:  sections
     <a-S>:  subsections
@@ -927,14 +908,14 @@ str markdown "
     <a-u>:  level <a-5>: subsections
     <a-r>:  regex"
 
-declare-option -docstring "Set of mappings for MatLab filetype" \
-str matlab "
+declare-option -hidden -docstring "Set of mappings for MatLab filetype" \
+str fzf_tag_matlab "
     <a-f>:  function
     <a-v>:  variable
     <a-c>:  class"
 
-declare-option -docstring "Set of mappings for Myrddin filetype" \
-str myrddin "
+declare-option -hidden -docstring "Set of mappings for Myrddin filetype" \
+str fzf_tag_myrddin "
     <a-f>:  functions
     <a-c>:  constants
     <a-v>:  variables
@@ -942,8 +923,8 @@ str myrddin "
     <a-r>:  traits
     <a-p>:  packages"
 
-declare-option -docstring "Set of mappings for ObjectiveC filetype" \
-str objectivec "
+declare-option -hidden -docstring "Set of mappings for ObjectiveC filetype" \
+str fzf_tag_objectivec "
     <a-i>:  class interface
     <a-I>:  class implementation
     <a-P>:  Protocol
@@ -958,8 +939,8 @@ str objectivec "
     <a-e>:  An enumeration
     <a-M>:  <a-A>: preprocessor macro"
 
-declare-option -docstring "Set of mappings for OldC++ [disabled] filetype" \
-str oldc++ [disabled] "
+declare-option -hidden -docstring "Set of mappings for OldC++ [disabled] filetype" \
+str fzf_tag_oldc++ [disabled] "
     <a-c>:  classes
     <a-d>:  macro definitions
     <a-e>:  enumerators (values inside an enumeration)
@@ -977,8 +958,8 @@ str oldc++ [disabled] "
     <a-x>:  external and forward variable declarations [off]
     <a-L>:  goto label [off]"
 
-declare-option -docstring "Set of mappings for OldC [disabled] filetype" \
-str oldc [disabled] "
+declare-option -hidden -docstring "Set of mappings for OldC [disabled] filetype" \
+str fzf_tag_oldc [disabled] "
     <a-c>:  classes
     <a-d>:  macro definitions
     <a-e>:  enumerators (values inside an enumeration)
@@ -996,8 +977,8 @@ str oldc [disabled] "
     <a-x>:  external and forward variable declarations [off]
     <a-L>:  goto label [off]"
 
-declare-option -docstring "Set of mappings for OCaml filetype" \
-str ocaml "
+declare-option -hidden -docstring "Set of mappings for OCaml filetype" \
+str fzf_tag_ocaml "
     <a-c>:  classes
     <a-m>:  Object's method
     <a-M>:  Module or functor
@@ -1009,17 +990,17 @@ str ocaml "
     <a-r>:  <a-A>: 'structure' field
     <a-e>:  An exception"
 
-declare-option -docstring "Set of mappings for Passwd filetype" \
-str passwd "
+declare-option -hidden -docstring "Set of mappings for Passwd filetype" \
+str fzf_tag_passwd "
     <a-u>:  user names"
 
-declare-option -docstring "Set of mappings for Pascal filetype" \
-str pascal "
+declare-option -hidden -docstring "Set of mappings for Pascal filetype" \
+str fzf_tag_pascal "
     <a-f>:  functions
     <a-p>:  procedures"
 
-declare-option -docstring "Set of mappings for Perl filetype" \
-str perl "
+declare-option -hidden -docstring "Set of mappings for Perl filetype" \
+str fzf_tag_perl "
     <a-c>:  constants
     <a-f>:  formats
     <a-l>:  labels
@@ -1027,8 +1008,8 @@ str perl "
     <a-s>:  subroutines
     <a-d>:  subroutine declarations [off]"
 
-declare-option -docstring "Set of mappings for Perl6 filetype" \
-str perl6 "
+declare-option -hidden -docstring "Set of mappings for Perl6 filetype" \
+str fzf_tag_perl6 "
     <a-c>:  classes
     <a-g>:  grammars
     <a-m>:  methods
@@ -1040,8 +1021,8 @@ str perl6 "
     <a-s>:  subroutines
     <a-t>:  tokens"
 
-declare-option -docstring "Set of mappings for PHP filetype" \
-str php "
+declare-option -hidden -docstring "Set of mappings for PHP filetype" \
+str fzf_tag_php "
     <a-c>:  classes
     <a-d>:  constant definitions
     <a-f>:  functions
@@ -1052,15 +1033,15 @@ str php "
     <a-v>:  variables
     <a-a>:  aliases"
 
-declare-option -docstring "Set of mappings for Pod filetype" \
-str pod "
+declare-option -hidden -docstring "Set of mappings for Pod filetype" \
+str fzf_tag_pod "
     <a-c>:  chapters
     <a-s>:  sections
     <a-S>:  subsections
     <a-t>:  subsubsections"
 
-declare-option -docstring "Set of mappings for Protobuf filetype" \
-str protobuf "
+declare-option -hidden -docstring "Set of mappings for Protobuf filetype" \
+str fzf_tag_protobuf "
     <a-p>:  packages
     <a-m>:  messages
     <a-f>:  fields
@@ -1069,16 +1050,16 @@ str protobuf "
     <a-s>:  services
     <a-r>:  RPC methods [off]"
 
-declare-option -docstring "Set of mappings for PuppetManifest filetype" \
-str puppetmanifest "
+declare-option -hidden -docstring "Set of mappings for PuppetManifest filetype" \
+str fzf_tag_puppetmanifest "
     <a-c>:  classes
     <a-d>:  definitions
     <a-n>:  nodes
     <a-r>:  resources
     <a-v>:  variables"
 
-declare-option -docstring "Set of mappings for Python filetype" \
-str python "
+declare-option -hidden -docstring "Set of mappings for Python filetype" \
+str fzf_tag_python "
     <a-c>:  classes
     <a-f>:  functions
     <a-m>:  class members
@@ -1089,69 +1070,69 @@ str python "
     <a-z>:  function parameters [off]
     <a-l>:  local variables [off]"
 
-declare-option -docstring "Set of mappings for PythonLoggingConfig filetype" \
-str pythonloggingconfig "
+declare-option -hidden -docstring "Set of mappings for PythonLoggingConfig filetype" \
+str fzf_tag_pythonloggingconfig "
     <a-L>:  logger sections
     <a-q>:  logger qualnames"
 
-declare-option -docstring "Set of mappings for QemuHX filetype" \
-str qemuhx "
+declare-option -hidden -docstring "Set of mappings for QemuHX filetype" \
+str fzf_tag_qemuhx "
     <a-q>:  QEMU Management Protocol dispatch table entries
     <a-i>:  item in texinfo doc"
 
-declare-option -docstring "Set of mappings for QtMoc filetype" \
-str qtmoc "
+declare-option -hidden -docstring "Set of mappings for QtMoc filetype" \
+str fzf_tag_qtmoc "
     <a-s>:  slots
     <a-S>:  signals
     <a-p>:  properties"
 
-declare-option -docstring "Set of mappings for R filetype" \
-str r "
+declare-option -hidden -docstring "Set of mappings for R filetype" \
+str fzf_tag_r "
     <a-f>:  functions
     <a-l>:  libraries
     <a-s>:  sources
     <a-g>:  global variables
     <a-v>:  function variables"
 
-declare-option -docstring "Set of mappings for RSpec filetype" \
-str rspec "
+declare-option -hidden -docstring "Set of mappings for RSpec filetype" \
+str fzf_tag_rspec "
     <a-d>:  describes
     <a-c>:  contexts"
 
-declare-option -docstring "Set of mappings for REXX filetype" \
-str rexx "
+declare-option -hidden -docstring "Set of mappings for REXX filetype" \
+str fzf_tag_rexx "
     <a-s>:  subroutines"
 
-declare-option -docstring "Set of mappings for Robot filetype" \
-str robot "
+declare-option -hidden -docstring "Set of mappings for Robot filetype" \
+str fzf_tag_robot "
     <a-t>:  testcases
     <a-k>:  keywords
     <a-v>:  variables"
 
-declare-option -docstring "Set of mappings for RpmSpec filetype" \
-str rpmspec "
+declare-option -hidden -docstring "Set of mappings for RpmSpec filetype" \
+str fzf_tag_rpmspec "
     <a-t>:  tags
     <a-m>:  macros
     <a-p>:  packages
     <a-g>:  global macros"
 
-declare-option -docstring "Set of mappings for ReStructuredText filetype" \
-str restructuredtext "
+declare-option -hidden -docstring "Set of mappings for ReStructuredText filetype" \
+str fzf_tag_restructuredtext "
     <a-c>:  chapters
     <a-s>:  sections
     <a-S>:  subsections
     <a-t>:  subsubsections
     <a-T>:  targets"
 
-declare-option -docstring "Set of mappings for Ruby filetype" \
-str ruby "
+declare-option -hidden -docstring "Set of mappings for Ruby filetype" \
+str fzf_tag_ruby "
     <a-c>:  classes
     <a-f>:  methods
     <a-m>:  modules
     <a-S>:  singleton methods"
 
-declare-option -docstring "Set of mappings for Rust filetype" \
-str rust "
+declare-option -hidden -docstring "Set of mappings for Rust filetype" \
+str fzf_tag_rust "
     <a-n>:  module
     <a-s>:  structural type
     <a-i>:  trait interface
@@ -1165,25 +1146,25 @@ str rust "
     <a-e>:  An enum variant
     <a-P>:  <a-A>: method"
 
-declare-option -docstring "Set of mappings for Scheme filetype" \
-str scheme "
+declare-option -hidden -docstring "Set of mappings for Scheme filetype" \
+str fzf_tag_scheme "
     <a-f>:  functions
     <a-s>:  sets"
 
-declare-option -docstring "Set of mappings for Sh filetype" \
-str sh "
+declare-option -hidden -docstring "Set of mappings for Sh filetype" \
+str fzf_tag_sh "
     <a-a>:  aliases
     <a-f>:  functions
     <a-s>:  script files
     <a-h>:  label for here document"
 
-declare-option -docstring "Set of mappings for SLang filetype" \
-str slang "
+declare-option -hidden -docstring "Set of mappings for SLang filetype" \
+str fzf_tag_slang "
     <a-f>:  functions
     <a-n>:  namespaces"
 
-declare-option -docstring "Set of mappings for SML filetype" \
-str sml "
+declare-option -hidden -docstring "Set of mappings for SML filetype" \
+str fzf_tag_sml "
     <a-e>:  exception declarations
     <a-f>:  function definitions
     <a-c>:  functor definitions
@@ -1192,8 +1173,8 @@ str sml "
     <a-t>:  type definitions
     <a-v>:  value bindings"
 
-declare-option -docstring "Set of mappings for SQL filetype" \
-str sql "
+declare-option -hidden -docstring "Set of mappings for SQL filetype" \
+str fzf_tag_sql "
     <a-c>:  cursors
     <a-d>:  prototypes [off]
     <a-f>:  functions
@@ -1218,22 +1199,22 @@ str sql "
     <a-y>:  MobiLink Conn Scripts
     <a-z>:  MobiLink Properties "
 
-declare-option -docstring "Set of mappings for SystemdUnit filetype" \
-str systemdunit "
+declare-option -hidden -docstring "Set of mappings for SystemdUnit filetype" \
+str fzf_tag_systemdunit "
     <a-u>:  units"
 
-declare-option -docstring "Set of mappings for Tcl filetype" \
-str tcl "
+declare-option -hidden -docstring "Set of mappings for Tcl filetype" \
+str fzf_tag_tcl "
     <a-p>:  procedures
     <a-n>:  namespaces"
 
-declare-option -docstring "Set of mappings for TclOO filetype" \
-str tcloo "
+declare-option -hidden -docstring "Set of mappings for TclOO filetype" \
+str fzf_tag_tcloo "
     <a-c>:  classes
     <a-m>:  methods"
 
-declare-option -docstring "Set of mappings for Tex filetype" \
-str tex "
+declare-option -hidden -docstring "Set of mappings for Tex filetype" \
+str fzf_tag_tex "
     <a-p>:  parts
     <a-c>:  chapters
     <a-s>:  sections
@@ -1244,8 +1225,8 @@ str tex "
     <a-l>:  labels
     <a-i>:  includes"
 
-declare-option -docstring "Set of mappings for TTCN filetype" \
-str ttcn "
+declare-option -hidden -docstring "Set of mappings for TTCN filetype" \
+str fzf_tag_ttcn "
     <a-M>:  module definition
     <a-t>:  type definition
     <a-c>:  constant definition
@@ -1262,8 +1243,8 @@ str ttcn "
     <a-m>:  record/set/union member
     <a-e>:  enumeration value"
 
-declare-option -docstring "Set of mappings for Vera filetype" \
-str vera "
+declare-option -hidden -docstring "Set of mappings for Vera filetype" \
+str fzf_tag_vera "
     <a-c>:  classes
     <a-d>:  macro definitions
     <a-e>:  enumerators (values inside an enumeration)
@@ -1281,8 +1262,8 @@ str vera "
     <a-x>:  external variable declarations [off]
     <a-h>:  included header files"
 
-declare-option -docstring "Set of mappings for Verilog filetype" \
-str verilog "
+declare-option -hidden -docstring "Set of mappings for Verilog filetype" \
+str fzf_tag_verilog "
     <a-c>:  constants (define, parameter, specparam)
     <a-e>:  events
     <a-f>:  functions
@@ -1293,8 +1274,8 @@ str verilog "
     <a-t>:  tasks
     <a-b>:  blocks"
 
-declare-option -docstring "Set of mappings for SystemVerilog filetype" \
-str systemverilog "
+declare-option -hidden -docstring "Set of mappings for SystemVerilog filetype" \
+str fzf_tag_systemverilog "
     <a-c>:  constants (define, parameter, specparam, enum values)
     <a-e>:  events
     <a-f>:  functions
@@ -1317,8 +1298,8 @@ str systemverilog "
     <a-S>:  structs and unions
     <a-T>:  type declarations"
 
-declare-option -docstring "Set of mappings for VHDL filetype" \
-str vhdl "
+declare-option -hidden -docstring "Set of mappings for VHDL filetype" \
+str fzf_tag_vhdl "
     <a-c>:  constant declarations
     <a-t>:  type definitions
     <a-T>:  subtype definitions
@@ -1331,8 +1312,8 @@ str vhdl "
     <a-P>:  package definitions
     <a-l>:  local definitions [off]"
 
-declare-option -docstring "Set of mappings for Vim filetype" \
-str vim "
+declare-option -hidden -docstring "Set of mappings for Vim filetype" \
+str fzf_tag_vim "
     <a-a>:  autocommand groups
     <a-c>:  user-defined commands
     <a-f>:  function definitions
@@ -1340,8 +1321,8 @@ str vim "
     <a-v>:  variable definitions
     <a-n>:  vimball filename"
 
-declare-option -docstring "Set of mappings for WindRes filetype" \
-str windres "
+declare-option -hidden -docstring "Set of mappings for WindRes filetype" \
+str fzf_tag_windres "
     <a-d>:  dialogs
     <a-m>:  menus
     <a-i>:  icons
@@ -1351,16 +1332,16 @@ str windres "
     <a-v>:  versions
     <a-a>:  accelerators"
 
-declare-option -docstring "Set of mappings for YACC filetype" \
-str yacc "
+declare-option -hidden -docstring "Set of mappings for YACC filetype" \
+str fzf_tag_yacc "
     <a-l>:  labels"
 
-declare-option -docstring "Set of mappings for YumRepo filetype" \
-str yumrepo "
+declare-option -hidden -docstring "Set of mappings for YumRepo filetype" \
+str fzf_tag_yumrepo "
     <a-r>:  repository id"
 
-declare-option -docstring "Set of mappings for Zephir filetype" \
-str zephir "
+declare-option -hidden -docstring "Set of mappings for Zephir filetype" \
+str fzf_tag_zephir "
     <a-c>:  classes
     <a-d>:  constant definitions
     <a-f>:  functions
@@ -1371,158 +1352,177 @@ str zephir "
     <a-v>:  variables
     <a-a>:  aliases"
 
-declare-option -docstring "Set of mappings for DBusIntrospect filetype" \
-str dbusintrospect "
+declare-option -hidden -docstring "Set of mappings for DBusIntrospect filetype" \
+str fzf_tag_dbusintrospect "
     <a-i>:  interfaces
     <a-m>:  methods
     <a-s>:  signals
     <a-p>:  properties"
 
-declare-option -docstring "Set of mappings for Glade filetype" \
-str glade "
+declare-option -hidden -docstring "Set of mappings for Glade filetype" \
+str fzf_tag_glade "
     <a-i>:  identifiers
     <a-c>:  classes
     <a-h>:  handlers"
 
-declare-option -docstring "Set of mappings for Maven2 filetype" \
-str maven2 "
+declare-option -hidden -docstring "Set of mappings for Maven2 filetype" \
+str fzf_tag_maven2 "
     <a-g>:  group identifiers
     <a-a>:  artifact identifiers
     <a-p>:  properties
     <a-r>:  repository identifiers"
 
-declare-option -docstring "Set of mappings for PlistXML filetype" \
-str plistxml "
+declare-option -hidden -docstring "Set of mappings for PlistXML filetype" \
+str fzf_tag_plistxml "
     <a-k>:  keys"
 
-declare-option -docstring "Set of mappings for RelaxNG filetype" \
-str relaxng "
+declare-option -hidden -docstring "Set of mappings for RelaxNG filetype" \
+str fzf_tag_relaxng "
     <a-e>:  elements
     <a-a>:  attributes
     <a-n>:  named patterns"
 
-declare-option -docstring "Set of mappings for SVG filetype" \
-str svg "
+declare-option -hidden -docstring "Set of mappings for SVG filetype" \
+str fzf_tag_svg "
     <a-i>:  id attributes"
 
-declare-option -docstring "Set of mappings for XSLT filetype" \
-str xslt "
+declare-option -hidden -docstring "Set of mappings for XSLT filetype" \
+str fzf_tag_xslt "
     <a-s>:  stylesheets
     <a-p>:  parameters
     <a-m>:  matched template
     <a-n>:  matched template
     <a-v>:  variables"
 
-declare-option -docstring "Set of mappings for Yaml filetype" \
-str yaml "
+declare-option -hidden -docstring "Set of mappings for Yaml filetype" \
+str fzf_tag_yaml "
     <a-a>:  anchors"
 
-declare-option -docstring "Set of mappings for AnsiblePlaybook filetype" \
-str ansibleplaybook "
+declare-option -hidden -docstring "Set of mappings for AnsiblePlaybook filetype" \
+str fzf_tag_ansibleplaybook "
     <a-p>:  plays"
 
+define-command -hidden fzf-tag-kind -params 1 %{ evaluate-commands %sh{
+    case $1 in
+    readtags*)
+        cmd=$1 ;;
+    *)
+        cmd="readtags -Q \\\"(eq? \\\$kind \\\"$1\\\")\\\" -l | cut -f1" ;;
+    esac
+    echo "echo -debug %{$cmd}"
+    title="fzf tag kind $1"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+<c-s>: open tag in horizontal split
+<c-v>: open tag in vertical split"
+    message="Jump to a symbol''s definition.<ret>: open tag in new buffer.
+<c-w>: open tag in new window $additional_keybindings"
+    if [ "$kak_opt_filetype" = "ada" ]; then additional_keybindings="--expect alt-P --expect alt-p --expect alt-T --expect alt-t --expect alt-U --expect alt-u --expect alt-c --expect alt-l --expect alt-V --expect alt-v --expect alt-f --expect alt-n --expect alt-x --expect alt-R --expect alt-r --expect alt-K --expect alt-k --expect alt-O --expect alt-o --expect alt-E --expect alt-e --expect alt-b --expect alt-i --expect alt-a --expect alt-y --expect alt-S"; additional_message=$kak_opt_fzf_tag_ada ; fi
+    if [ "$kak_opt_filetype" = "ant" ]; then additional_keybindings="--expect alt-p --expect alt-t --expect alt-P --expect alt-i"; additional_message=$kak_opt_fzf_tag_ant ; fi
+    if [ "$kak_opt_filetype" = "asciidoc" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-S --expect alt-t --expect alt-T --expect alt-u --expect alt-a"; additional_message=$kak_opt_fzf_tag_asciidoc ; fi
+    if [ "$kak_opt_filetype" = "asm" ]; then additional_keybindings="--expect alt-d --expect alt-l --expect alt-m --expect alt-t --expect alt-s"; additional_message=$kak_opt_fzf_tag_asm ; fi
+    if [ "$kak_opt_filetype" = "asp" ]; then additional_keybindings="--expect alt-d --expect alt-c --expect alt-f --expect alt-s --expect alt-v"; additional_message=$kak_opt_fzf_tag_asp ; fi
+    if [ "$kak_opt_filetype" = "autoconf" ]; then additional_keybindings="--expect alt-p --expect alt-t --expect alt-m --expect alt-w --expect alt-e --expect alt-s --expect alt-c --expect alt-d"; additional_message=$kak_opt_fzf_tag_autoconf ; fi
+    if [ "$kak_opt_filetype" = "autoit" ]; then additional_keybindings="--expect alt-f --expect alt-r --expect alt-g --expect alt-l --expect alt-S"; additional_message=$kak_opt_fzf_tag_autoit ; fi
+    if [ "$kak_opt_filetype" = "automake" ]; then additional_keybindings="--expect alt-d --expect alt-P --expect alt-M --expect alt-T --expect alt-L --expect alt-S --expect alt-D --expect alt-c"; additional_message=$kak_opt_fzf_tag_automake ; fi
+    if [ "$kak_opt_filetype" = "awk" ]; then additional_keybindings="--expect alt-f"; additional_message=$kak_opt_fzf_tag_awk ; fi
+    if [ "$kak_opt_filetype" = "basic" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-l --expect alt-t --expect alt-v --expect alt-g"; additional_message=$kak_opt_fzf_tag_basic ; fi
+    if [ "$kak_opt_filetype" = "beta" ]; then additional_keybindings="--expect alt-f --expect alt-p --expect alt-s --expect alt-v"; additional_message=$kak_opt_fzf_tag_beta ; fi
+    if [ "$kak_opt_filetype" = "clojure" ]; then additional_keybindings="--expect alt-f --expect alt-n"; additional_message=$kak_opt_fzf_tag_clojure ; fi
+    if [ "$kak_opt_filetype" = "cmake" ]; then additional_keybindings="--expect alt-f --expect alt-m --expect alt-t --expect alt-v --expect alt-D --expect alt-p --expect alt-r"; additional_message=$kak_opt_fzf_tag_cmake ; fi
+    if [ "$kak_opt_filetype" = "c" ]; then additional_keybindings="--expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-z --expect alt-L"; additional_message=$kak_opt_fzf_tag_c ; fi
+    if [ "$kak_opt_filetype" = "cpp" ]; then additional_keybindings="--expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-z --expect alt-L --expect alt-c --expect alt-n --expect alt-A --expect alt-N --expect alt-U"; additional_message=$kak_opt_fzf_tag_cpp ; fi
+    if [ "$kak_opt_filetype" = "cpreprocessor" ]; then additional_keybindings="--expect alt-d --expect alt-h"; additional_message=$kak_opt_fzf_tag_cpreprocessor ; fi
+    if [ "$kak_opt_filetype" = "css" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-i"; additional_message=$kak_opt_fzf_tag_css ; fi
+    if [ "$kak_opt_filetype" = "csharp" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-e --expect alt-E --expect alt-f --expect alt-g --expect alt-i --expect alt-l --expect alt-m --expect alt-n --expect alt-p --expect alt-s --expect alt-t"; additional_message=$kak_opt_fzf_tag_csharp ; fi
+    if [ "$kak_opt_filetype" = "ctags" ]; then additional_keybindings="--expect alt-l --expect alt-k"; additional_message=$kak_opt_fzf_tag_ctags ; fi
+    if [ "$kak_opt_filetype" = "cobol" ]; then additional_keybindings="--expect alt-p --expect alt-d --expect alt-S --expect alt-f --expect alt-g --expect alt-P --expect alt-s --expect alt-D"; additional_message=$kak_opt_fzf_tag_cobol ; fi
+    if [ "$kak_opt_filetype" = "cuda" ]; then additional_keybindings="--expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-z --expect alt-L"; additional_message=$kak_opt_fzf_tag_cuda ; fi
+    if [ "$kak_opt_filetype" = "d" ]; then additional_keybindings="--expect alt-a --expect alt-c --expect alt-g --expect alt-e --expect alt-x --expect alt-f --expect alt-i --expect alt-l --expect alt-m --expect alt-X --expect alt-M --expect alt-n --expect alt-p --expect alt-s --expect alt-T --expect alt-u --expect alt-v --expect alt-V"; additional_message=$kak_opt_fzf_tag_d ; fi
+    if [ "$kak_opt_filetype" = "diff" ]; then additional_keybindings="--expect alt-m --expect alt-n --expect alt-d --expect alt-h"; additional_message=$kak_opt_fzf_tag_diff ; fi
+    if [ "$kak_opt_filetype" = "dtd" ]; then additional_keybindings="--expect alt-E --expect alt-p --expect alt-e --expect alt-a --expect alt-n"; additional_message=$kak_opt_fzf_tag_dtd ; fi
+    if [ "$kak_opt_filetype" = "dts" ]; then additional_keybindings="--expect alt-p --expect alt-l --expect alt-r"; additional_message=$kak_opt_fzf_tag_dts ; fi
+    if [ "$kak_opt_filetype" = "dosbatch" ]; then additional_keybindings="--expect alt-l --expect alt-v"; additional_message=$kak_opt_fzf_tag_dosbatch ; fi
+    if [ "$kak_opt_filetype" = "eiffel" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-l"; additional_message=$kak_opt_fzf_tag_eiffel ; fi
+    if [ "$kak_opt_filetype" = "elm" ]; then additional_keybindings="--expect alt-m --expect alt-n --expect alt-p --expect alt-t --expect alt-c --expect alt-a --expect alt-f"; additional_message=$kak_opt_fzf_tag_elm ; fi
+    if [ "$kak_opt_filetype" = "erlang" ]; then additional_keybindings="--expect alt-d --expect alt-f --expect alt-m --expect alt-r --expect alt-t"; additional_message=$kak_opt_fzf_tag_erlang ; fi
+    if [ "$kak_opt_filetype" = "falcon" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-m --expect alt-v --expect alt-i"; additional_message=$kak_opt_fzf_tag_falcon ; fi
+    if [ "$kak_opt_filetype" = "flex" ]; then additional_keybindings="--expect alt-f --expect alt-c --expect alt-m --expect alt-p --expect alt-v --expect alt-x"; additional_message=$kak_opt_fzf_tag_flex ; fi
+    if [ "$kak_opt_filetype" = "fortran" ]; then additional_keybindings="--expect alt-b --expect alt-c --expect alt-e --expect alt-E --expect alt-f --expect alt-i --expect alt-k --expect alt-l --expect alt-L --expect alt-m --expect alt-M --expect alt-n --expect alt-N --expect alt-p --expect alt-P --expect alt-s --expect alt-t --expect alt-v --expect alt-S"; additional_message=$kak_opt_fzf_tag_fortran ; fi
+    if [ "$kak_opt_filetype" = "fypp" ]; then additional_keybindings="--expect alt-m"; additional_message=$kak_opt_fzf_tag_fypp ; fi
+    if [ "$kak_opt_filetype" = "gdbinit" ]; then additional_keybindings="--expect alt-d --expect alt-D --expect alt-t --expect alt-l"; additional_message=$kak_opt_fzf_tag_gdbinit ; fi
+    if [ "$kak_opt_filetype" = "go" ]; then additional_keybindings="--expect alt-p --expect alt-f --expect alt-c --expect alt-t --expect alt-v --expect alt-s --expect alt-i --expect alt-m --expect alt-M --expect alt-u --expect alt-P"; additional_message=$kak_opt_fzf_tag_go ; fi
+    if [ "$kak_opt_filetype" = "html" ]; then additional_keybindings="--expect alt-a --expect alt-h --expect alt-i --expect alt-j"; additional_message=$kak_opt_fzf_tag_html ; fi
+    if [ "$kak_opt_filetype" = "iniconf" ]; then additional_keybindings="--expect alt-s --expect alt-k"; additional_message=$kak_opt_fzf_tag_iniconf ; fi
+    if [ "$kak_opt_filetype" = "itcl" ]; then additional_keybindings="--expect alt-c --expect alt-m --expect alt-v --expect alt-C --expect alt-p"; additional_message=$kak_opt_fzf_tag_itcl ; fi
+    if [ "$kak_opt_filetype" = "java" ]; then additional_keybindings="--expect alt-a --expect alt-c --expect alt-e --expect alt-f --expect alt-g --expect alt-i --expect alt-l --expect alt-m --expect alt-p"; additional_message=$kak_opt_fzf_tag_java ; fi
+    if [ "$kak_opt_filetype" = "javaproperties" ]; then additional_keybindings="--expect alt-k"; additional_message=$kak_opt_fzf_tag_javaproperties ; fi
+    if [ "$kak_opt_filetype" = "javascript" ]; then additional_keybindings="--expect alt-f --expect alt-c --expect alt-m --expect alt-p --expect alt-C --expect alt-v --expect alt-g"; additional_message=$kak_opt_fzf_tag_javascript ; fi
+    if [ "$kak_opt_filetype" = "json" ]; then additional_keybindings="--expect alt-o --expect alt-a --expect alt-n --expect alt-s --expect alt-b --expect alt-z"; additional_message=$kak_opt_fzf_tag_json ; fi
+    if [ "$kak_opt_filetype" = "ldscript" ]; then additional_keybindings="--expect alt-S --expect alt-s --expect alt-v --expect alt-i"; additional_message=$kak_opt_fzf_tag_ldscript ; fi
+    if [ "$kak_opt_filetype" = "lisp" ]; then additional_keybindings="--expect alt-f"; additional_message=$kak_opt_fzf_tag_lisp ; fi
+    if [ "$kak_opt_filetype" = "lua" ]; then additional_keybindings="--expect alt-f"; additional_message=$kak_opt_fzf_tag_lua ; fi
+    if [ "$kak_opt_filetype" = "m4" ]; then additional_keybindings="--expect alt-d --expect alt-I"; additional_message=$kak_opt_fzf_tag_m4 ; fi
+    if [ "$kak_opt_filetype" = "man" ]; then additional_keybindings="--expect alt-t --expect alt-s"; additional_message=$kak_opt_fzf_tag_man ; fi
+    if [ "$kak_opt_filetype" = "make" ]; then additional_keybindings="--expect alt-m --expect alt-t --expect alt-I"; additional_message=$kak_opt_fzf_tag_make ; fi
+    if [ "$kak_opt_filetype" = "markdown" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-S --expect alt-t --expect alt-T --expect alt-u --expect alt-r"; additional_message=$kak_opt_fzf_tag_markdown ; fi
+    if [ "$kak_opt_filetype" = "matlab" ]; then additional_keybindings="--expect alt-f --expect alt-v --expect alt-c"; additional_message=$kak_opt_fzf_tag_matlab ; fi
+    if [ "$kak_opt_filetype" = "myrddin" ]; then additional_keybindings="--expect alt-f --expect alt-c --expect alt-v --expect alt-t --expect alt-r --expect alt-p"; additional_message=$kak_opt_fzf_tag_myrddin ; fi
+    if [ "$kak_opt_filetype" = "objectivec" ]; then additional_keybindings="--expect alt-i --expect alt-I --expect alt-P --expect alt-m --expect alt-c --expect alt-v --expect alt-E --expect alt-f --expect alt-p --expect alt-t --expect alt-s --expect alt-e --expect alt-M"; additional_message=$kak_opt_fzf_tag_objectivec ; fi
+    if [ "$kak_opt_filetype" = "oldc++ [disabled]" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-n --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-L"; additional_message=$kak_opt_fzf_tag_oldc++ [disabled] ; fi
+    if [ "$kak_opt_filetype" = "oldc [disabled]" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-n --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-L"; additional_message=$kak_opt_fzf_tag_oldc [disabled] ; fi
+    if [ "$kak_opt_filetype" = "ocaml" ]; then additional_keybindings="--expect alt-c --expect alt-m --expect alt-M --expect alt-v --expect alt-p --expect alt-t --expect alt-f --expect alt-C --expect alt-r --expect alt-e"; additional_message=$kak_opt_fzf_tag_ocaml ; fi
+    if [ "$kak_opt_filetype" = "passwd" ]; then additional_keybindings="--expect alt-u"; additional_message=$kak_opt_fzf_tag_passwd ; fi
+    if [ "$kak_opt_filetype" = "pascal" ]; then additional_keybindings="--expect alt-f --expect alt-p"; additional_message=$kak_opt_fzf_tag_pascal ; fi
+    if [ "$kak_opt_filetype" = "perl" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-l --expect alt-p --expect alt-s --expect alt-d"; additional_message=$kak_opt_fzf_tag_perl ; fi
+    if [ "$kak_opt_filetype" = "perl6" ]; then additional_keybindings="--expect alt-c --expect alt-g --expect alt-m --expect alt-o --expect alt-p --expect alt-r --expect alt-u --expect alt-b --expect alt-s --expect alt-t"; additional_message=$kak_opt_fzf_tag_perl6 ; fi
+    if [ "$kak_opt_filetype" = "php" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-f --expect alt-i --expect alt-l --expect alt-n --expect alt-t --expect alt-v --expect alt-a"; additional_message=$kak_opt_fzf_tag_php ; fi
+    if [ "$kak_opt_filetype" = "pod" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-S --expect alt-t"; additional_message=$kak_opt_fzf_tag_pod ; fi
+    if [ "$kak_opt_filetype" = "protobuf" ]; then additional_keybindings="--expect alt-p --expect alt-m --expect alt-f --expect alt-e --expect alt-g --expect alt-s --expect alt-r"; additional_message=$kak_opt_fzf_tag_protobuf ; fi
+    if [ "$kak_opt_filetype" = "puppetmanifest" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-n --expect alt-r --expect alt-v"; additional_message=$kak_opt_fzf_tag_puppetmanifest ; fi
+    if [ "$kak_opt_filetype" = "python" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-m --expect alt-v --expect alt-I --expect alt-i --expect alt-x --expect alt-z --expect alt-l"; additional_message=$kak_opt_fzf_tag_python ; fi
+    if [ "$kak_opt_filetype" = "pythonloggingconfig" ]; then additional_keybindings="--expect alt-L --expect alt-q"; additional_message=$kak_opt_fzf_tag_pythonloggingconfig ; fi
+    if [ "$kak_opt_filetype" = "qemuhx" ]; then additional_keybindings="--expect alt-q --expect alt-i"; additional_message=$kak_opt_fzf_tag_qemuhx ; fi
+    if [ "$kak_opt_filetype" = "qtmoc" ]; then additional_keybindings="--expect alt-s --expect alt-S --expect alt-p"; additional_message=$kak_opt_fzf_tag_qtmoc ; fi
+    if [ "$kak_opt_filetype" = "r" ]; then additional_keybindings="--expect alt-f --expect alt-l --expect alt-s --expect alt-g --expect alt-v"; additional_message=$kak_opt_fzf_tag_r ; fi
+    if [ "$kak_opt_filetype" = "rspec" ]; then additional_keybindings="--expect alt-d --expect alt-c"; additional_message=$kak_opt_fzf_tag_rspec ; fi
+    if [ "$kak_opt_filetype" = "rexx" ]; then additional_keybindings="--expect alt-s"; additional_message=$kak_opt_fzf_tag_rexx ; fi
+    if [ "$kak_opt_filetype" = "robot" ]; then additional_keybindings="--expect alt-t --expect alt-k --expect alt-v"; additional_message=$kak_opt_fzf_tag_robot ; fi
+    if [ "$kak_opt_filetype" = "rpmspec" ]; then additional_keybindings="--expect alt-t --expect alt-m --expect alt-p --expect alt-g"; additional_message=$kak_opt_fzf_tag_rpmspec ; fi
+    if [ "$kak_opt_filetype" = "restructuredtext" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-S --expect alt-t --expect alt-T"; additional_message=$kak_opt_fzf_tag_restructuredtext ; fi
+    if [ "$kak_opt_filetype" = "ruby" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-m --expect alt-S"; additional_message=$kak_opt_fzf_tag_ruby ; fi
+    if [ "$kak_opt_filetype" = "rust" ]; then additional_keybindings="--expect alt-n --expect alt-s --expect alt-i --expect alt-c --expect alt-f --expect alt-g --expect alt-t --expect alt-v --expect alt-M --expect alt-m --expect alt-e --expect alt-P"; additional_message=$kak_opt_fzf_tag_rust ; fi
+    if [ "$kak_opt_filetype" = "scheme" ]; then additional_keybindings="--expect alt-f --expect alt-s"; additional_message=$kak_opt_fzf_tag_scheme ; fi
+    if [ "$kak_opt_filetype" = "sh" ]; then additional_keybindings="--expect alt-a --expect alt-f --expect alt-s --expect alt-h"; additional_message=$kak_opt_fzf_tag_sh ; fi
+    if [ "$kak_opt_filetype" = "slang" ]; then additional_keybindings="--expect alt-f --expect alt-n"; additional_message=$kak_opt_fzf_tag_slang ; fi
+    if [ "$kak_opt_filetype" = "sml" ]; then additional_keybindings="--expect alt-e --expect alt-f --expect alt-c --expect alt-s --expect alt-r --expect alt-t --expect alt-v"; additional_message=$kak_opt_fzf_tag_sml ; fi
+    if [ "$kak_opt_filetype" = "sql" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-f --expect alt-E --expect alt-l --expect alt-L --expect alt-P --expect alt-p --expect alt-r --expect alt-s --expect alt-t --expect alt-T --expect alt-v --expect alt-i --expect alt-e --expect alt-U --expect alt-R --expect alt-D --expect alt-V --expect alt-n --expect alt-x --expect alt-y --expect alt-z"; additional_message=$kak_opt_fzf_tag_sql ; fi
+    if [ "$kak_opt_filetype" = "systemdunit" ]; then additional_keybindings="--expect alt-u"; additional_message=$kak_opt_fzf_tag_systemdunit ; fi
+    if [ "$kak_opt_filetype" = "tcl" ]; then additional_keybindings="--expect alt-p --expect alt-n"; additional_message=$kak_opt_fzf_tag_tcl ; fi
+    if [ "$kak_opt_filetype" = "tcloo" ]; then additional_keybindings="--expect alt-c --expect alt-m"; additional_message=$kak_opt_fzf_tag_tcloo ; fi
+    if [ "$kak_opt_filetype" = "tex" ]; then additional_keybindings="--expect alt-p --expect alt-c --expect alt-s --expect alt-u --expect alt-b --expect alt-P --expect alt-G --expect alt-l --expect alt-i"; additional_message=$kak_opt_fzf_tag_tex ; fi
+    if [ "$kak_opt_filetype" = "ttcn" ]; then additional_keybindings="--expect alt-M --expect alt-t --expect alt-c --expect alt-d --expect alt-f --expect alt-s --expect alt-C --expect alt-a --expect alt-G --expect alt-P --expect alt-v --expect alt-T --expect alt-p --expect alt-m --expect alt-e"; additional_message=$kak_opt_fzf_tag_ttcn ; fi
+    if [ "$kak_opt_filetype" = "vera" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-i --expect alt-l --expect alt-m --expect alt-p --expect alt-P --expect alt-s --expect alt-t --expect alt-T --expect alt-v --expect alt-x --expect alt-h"; additional_message=$kak_opt_fzf_tag_vera ; fi
+    if [ "$kak_opt_filetype" = "verilog" ]; then additional_keybindings="--expect alt-c --expect alt-e --expect alt-f --expect alt-m --expect alt-n --expect alt-p --expect alt-r --expect alt-t --expect alt-b"; additional_message=$kak_opt_fzf_tag_verilog ; fi
+    if [ "$kak_opt_filetype" = "systemverilog" ]; then additional_keybindings="--expect alt-c --expect alt-e --expect alt-f --expect alt-m --expect alt-n --expect alt-p --expect alt-r --expect alt-t --expect alt-b --expect alt-A --expect alt-C --expect alt-V --expect alt-E --expect alt-I --expect alt-M --expect alt-K --expect alt-P --expect alt-Q --expect alt-R --expect alt-S --expect alt-T"; additional_message=$kak_opt_fzf_tag_systemverilog ; fi
+    if [ "$kak_opt_filetype" = "vhdl" ]; then additional_keybindings="--expect alt-c --expect alt-t --expect alt-T --expect alt-r --expect alt-e --expect alt-C --expect alt-d --expect alt-f --expect alt-p --expect alt-P --expect alt-l"; additional_message=$kak_opt_fzf_tag_vhdl ; fi
+    if [ "$kak_opt_filetype" = "vim" ]; then additional_keybindings="--expect alt-a --expect alt-c --expect alt-f --expect alt-m --expect alt-v --expect alt-n"; additional_message=$kak_opt_fzf_tag_vim ; fi
+    if [ "$kak_opt_filetype" = "windres" ]; then additional_keybindings="--expect alt-d --expect alt-m --expect alt-i --expect alt-b --expect alt-c --expect alt-f --expect alt-v --expect alt-a"; additional_message=$kak_opt_fzf_tag_windres ; fi
+    if [ "$kak_opt_filetype" = "yacc" ]; then additional_keybindings="--expect alt-l"; additional_message=$kak_opt_fzf_tag_yacc ; fi
+    if [ "$kak_opt_filetype" = "yumrepo" ]; then additional_keybindings="--expect alt-r"; additional_message=$kak_opt_fzf_tag_yumrepo ; fi
+    if [ "$kak_opt_filetype" = "zephir" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-f --expect alt-i --expect alt-l --expect alt-n --expect alt-t --expect alt-v --expect alt-a"; additional_message=$kak_opt_fzf_tag_zephir ; fi
+    if [ "$kak_opt_filetype" = "dbusintrospect" ]; then additional_keybindings="--expect alt-i --expect alt-m --expect alt-s --expect alt-p"; additional_message=$kak_opt_fzf_tag_dbusintrospect ; fi
+    if [ "$kak_opt_filetype" = "glade" ]; then additional_keybindings="--expect alt-i --expect alt-c --expect alt-h"; additional_message=$kak_opt_fzf_tag_glade ; fi
+    if [ "$kak_opt_filetype" = "maven2" ]; then additional_keybindings="--expect alt-g --expect alt-a --expect alt-p --expect alt-r"; additional_message=$kak_opt_fzf_tag_maven2 ; fi
+    if [ "$kak_opt_filetype" = "plistxml" ]; then additional_keybindings="--expect alt-k"; additional_message=$kak_opt_fzf_tag_plistxml ; fi
+    if [ "$kak_opt_filetype" = "relaxng" ]; then additional_keybindings="--expect alt-e --expect alt-a --expect alt-n"; additional_message=$kak_opt_fzf_tag_relaxng ; fi
+    if [ "$kak_opt_filetype" = "svg" ]; then additional_keybindings="--expect alt-i"; additional_message=$kak_opt_fzf_tag_svg ; fi
+    if [ "$kak_opt_filetype" = "xslt" ]; then additional_keybindings="--expect alt-s --expect alt-p --expect alt-m --expect alt-n --expect alt-v"; additional_message=$kak_opt_fzf_tag_xslt ; fi
+    if [ "$kak_opt_filetype" = "yaml" ]; then additional_keybindings="--expect alt-a"; additional_message=$kak_opt_fzf_tag_yaml ; fi
+    if [ "$kak_opt_filetype" = "ansibleplaybook" ]; then additional_keybindings="--expect alt-p"; additional_message=$kak_opt_fzf_tag_ansibleplaybook ; fi
+    echo "info -title '$title' '$message'"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags\"'
+}}
+
 nop %sh{
-    if [ "$kak_opt_filetype" = "ada" ]; then additional_keybindings="--expect alt-P --expect alt-p --expect alt-T --expect alt-t --expect alt-U --expect alt-u --expect alt-c --expect alt-l --expect alt-V --expect alt-v --expect alt-f --expect alt-n --expect alt-x --expect alt-R --expect alt-r --expect alt-K --expect alt-k --expect alt-O --expect alt-o --expect alt-E --expect alt-e --expect alt-b --expect alt-i --expect alt-a --expect alt-y --expect alt-S"
-    if [ "$kak_opt_filetype" = "ant" ]; then additional_keybindings="--expect alt-p --expect alt-t --expect alt-P --expect alt-i"
-    if [ "$kak_opt_filetype" = "asciidoc" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-S --expect alt-t --expect alt-T --expect alt-u --expect alt-a"
-    if [ "$kak_opt_filetype" = "asm" ]; then additional_keybindings="--expect alt-d --expect alt-l --expect alt-m --expect alt-t --expect alt-s"
-    if [ "$kak_opt_filetype" = "asp" ]; then additional_keybindings="--expect alt-d --expect alt-c --expect alt-f --expect alt-s --expect alt-v"
-    if [ "$kak_opt_filetype" = "autoconf" ]; then additional_keybindings="--expect alt-p --expect alt-t --expect alt-m --expect alt-w --expect alt-e --expect alt-s --expect alt-c --expect alt-d"
-    if [ "$kak_opt_filetype" = "autoit" ]; then additional_keybindings="--expect alt-f --expect alt-r --expect alt-g --expect alt-l --expect alt-S"
-    if [ "$kak_opt_filetype" = "automake" ]; then additional_keybindings="--expect alt-d --expect alt-P --expect alt-M --expect alt-T --expect alt-L --expect alt-S --expect alt-D --expect alt-c"
-    if [ "$kak_opt_filetype" = "awk" ]; then additional_keybindings="--expect alt-f"
-    if [ "$kak_opt_filetype" = "basic" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-l --expect alt-t --expect alt-v --expect alt-g"
-    if [ "$kak_opt_filetype" = "beta" ]; then additional_keybindings="--expect alt-f --expect alt-p --expect alt-s --expect alt-v"
-    if [ "$kak_opt_filetype" = "clojure" ]; then additional_keybindings="--expect alt-f --expect alt-n"
-    if [ "$kak_opt_filetype" = "cmake" ]; then additional_keybindings="--expect alt-f --expect alt-m --expect alt-t --expect alt-v --expect alt-D --expect alt-p --expect alt-r"
-    if [ "$kak_opt_filetype" = "c" ]; then additional_keybindings="--expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-z --expect alt-L"
-    if [ "$kak_opt_filetype" = "cpp" ]; then additional_keybindings="--expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-z --expect alt-L --expect alt-c --expect alt-n --expect alt-A --expect alt-N --expect alt-U"
-    if [ "$kak_opt_filetype" = "cpreprocessor" ]; then additional_keybindings="--expect alt-d --expect alt-h"
-    if [ "$kak_opt_filetype" = "css" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-i"
-    if [ "$kak_opt_filetype" = "c#" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-e --expect alt-E --expect alt-f --expect alt-g --expect alt-i --expect alt-l --expect alt-m --expect alt-n --expect alt-p --expect alt-s --expect alt-t"
-    if [ "$kak_opt_filetype" = "ctags" ]; then additional_keybindings="--expect alt-l --expect alt-k"
-    if [ "$kak_opt_filetype" = "cobol" ]; then additional_keybindings="--expect alt-p --expect alt-d --expect alt-S --expect alt-f --expect alt-g --expect alt-P --expect alt-s --expect alt-D"
-    if [ "$kak_opt_filetype" = "cuda" ]; then additional_keybindings="--expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-z --expect alt-L"
-    if [ "$kak_opt_filetype" = "d" ]; then additional_keybindings="--expect alt-a --expect alt-c --expect alt-g --expect alt-e --expect alt-x --expect alt-f --expect alt-i --expect alt-l --expect alt-m --expect alt-X --expect alt-M --expect alt-n --expect alt-p --expect alt-s --expect alt-T --expect alt-u --expect alt-v --expect alt-V"
-    if [ "$kak_opt_filetype" = "diff" ]; then additional_keybindings="--expect alt-m --expect alt-n --expect alt-d --expect alt-h"
-    if [ "$kak_opt_filetype" = "dtd" ]; then additional_keybindings="--expect alt-E --expect alt-p --expect alt-e --expect alt-a --expect alt-n"
-    if [ "$kak_opt_filetype" = "dts" ]; then additional_keybindings="--expect alt-p --expect alt-l --expect alt-r"
-    if [ "$kak_opt_filetype" = "dosbatch" ]; then additional_keybindings="--expect alt-l --expect alt-v"
-    if [ "$kak_opt_filetype" = "eiffel" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-l"
-    if [ "$kak_opt_filetype" = "elm" ]; then additional_keybindings="--expect alt-m --expect alt-n --expect alt-p --expect alt-t --expect alt-c --expect alt-a --expect alt-f"
-    if [ "$kak_opt_filetype" = "erlang" ]; then additional_keybindings="--expect alt-d --expect alt-f --expect alt-m --expect alt-r --expect alt-t"
-    if [ "$kak_opt_filetype" = "falcon" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-m --expect alt-v --expect alt-i"
-    if [ "$kak_opt_filetype" = "flex" ]; then additional_keybindings="--expect alt-f --expect alt-c --expect alt-m --expect alt-p --expect alt-v --expect alt-x"
-    if [ "$kak_opt_filetype" = "fortran" ]; then additional_keybindings="--expect alt-b --expect alt-c --expect alt-e --expect alt-E --expect alt-f --expect alt-i --expect alt-k --expect alt-l --expect alt-L --expect alt-m --expect alt-M --expect alt-n --expect alt-N --expect alt-p --expect alt-P --expect alt-s --expect alt-t --expect alt-v --expect alt-S"
-    if [ "$kak_opt_filetype" = "fypp" ]; then additional_keybindings="--expect alt-m"
-    if [ "$kak_opt_filetype" = "gdbinit" ]; then additional_keybindings="--expect alt-d --expect alt-D --expect alt-t --expect alt-l"
-    if [ "$kak_opt_filetype" = "go" ]; then additional_keybindings="--expect alt-p --expect alt-f --expect alt-c --expect alt-t --expect alt-v --expect alt-s --expect alt-i --expect alt-m --expect alt-M --expect alt-u --expect alt-P"
-    if [ "$kak_opt_filetype" = "html" ]; then additional_keybindings="--expect alt-a --expect alt-h --expect alt-i --expect alt-j"
-    if [ "$kak_opt_filetype" = "iniconf" ]; then additional_keybindings="--expect alt-s --expect alt-k"
-    if [ "$kak_opt_filetype" = "itcl" ]; then additional_keybindings="--expect alt-c --expect alt-m --expect alt-v --expect alt-C --expect alt-p"
-    if [ "$kak_opt_filetype" = "java" ]; then additional_keybindings="--expect alt-a --expect alt-c --expect alt-e --expect alt-f --expect alt-g --expect alt-i --expect alt-l --expect alt-m --expect alt-p"
-    if [ "$kak_opt_filetype" = "javaproperties" ]; then additional_keybindings="--expect alt-k"
-    if [ "$kak_opt_filetype" = "javascript" ]; then additional_keybindings="--expect alt-f --expect alt-c --expect alt-m --expect alt-p --expect alt-C --expect alt-v --expect alt-g"
-    if [ "$kak_opt_filetype" = "json" ]; then additional_keybindings="--expect alt-o --expect alt-a --expect alt-n --expect alt-s --expect alt-b --expect alt-z"
-    if [ "$kak_opt_filetype" = "ldscript" ]; then additional_keybindings="--expect alt-S --expect alt-s --expect alt-v --expect alt-i"
-    if [ "$kak_opt_filetype" = "lisp" ]; then additional_keybindings="--expect alt-f"
-    if [ "$kak_opt_filetype" = "lua" ]; then additional_keybindings="--expect alt-f"
-    if [ "$kak_opt_filetype" = "m4" ]; then additional_keybindings="--expect alt-d --expect alt-I"
-    if [ "$kak_opt_filetype" = "man" ]; then additional_keybindings="--expect alt-t --expect alt-s"
-    if [ "$kak_opt_filetype" = "make" ]; then additional_keybindings="--expect alt-m --expect alt-t --expect alt-I"
-    if [ "$kak_opt_filetype" = "markdown" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-S --expect alt-t --expect alt-T --expect alt-u --expect alt-r"
-    if [ "$kak_opt_filetype" = "matlab" ]; then additional_keybindings="--expect alt-f --expect alt-v --expect alt-c"
-    if [ "$kak_opt_filetype" = "myrddin" ]; then additional_keybindings="--expect alt-f --expect alt-c --expect alt-v --expect alt-t --expect alt-r --expect alt-p"
-    if [ "$kak_opt_filetype" = "objectivec" ]; then additional_keybindings="--expect alt-i --expect alt-I --expect alt-P --expect alt-m --expect alt-c --expect alt-v --expect alt-E --expect alt-f --expect alt-p --expect alt-t --expect alt-s --expect alt-e --expect alt-M"
-    if [ "$kak_opt_filetype" = "oldc++ [disabled]" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-n --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-L"
-    if [ "$kak_opt_filetype" = "oldc [disabled]" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-h --expect alt-l --expect alt-m --expect alt-n --expect alt-p --expect alt-s --expect alt-t --expect alt-u --expect alt-v --expect alt-x --expect alt-L"
-    if [ "$kak_opt_filetype" = "ocaml" ]; then additional_keybindings="--expect alt-c --expect alt-m --expect alt-M --expect alt-v --expect alt-p --expect alt-t --expect alt-f --expect alt-C --expect alt-r --expect alt-e"
-    if [ "$kak_opt_filetype" = "passwd" ]; then additional_keybindings="--expect alt-u"
-    if [ "$kak_opt_filetype" = "pascal" ]; then additional_keybindings="--expect alt-f --expect alt-p"
-    if [ "$kak_opt_filetype" = "perl" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-l --expect alt-p --expect alt-s --expect alt-d"
-    if [ "$kak_opt_filetype" = "perl6" ]; then additional_keybindings="--expect alt-c --expect alt-g --expect alt-m --expect alt-o --expect alt-p --expect alt-r --expect alt-u --expect alt-b --expect alt-s --expect alt-t"
-    if [ "$kak_opt_filetype" = "php" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-f --expect alt-i --expect alt-l --expect alt-n --expect alt-t --expect alt-v --expect alt-a"
-    if [ "$kak_opt_filetype" = "pod" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-S --expect alt-t"
-    if [ "$kak_opt_filetype" = "protobuf" ]; then additional_keybindings="--expect alt-p --expect alt-m --expect alt-f --expect alt-e --expect alt-g --expect alt-s --expect alt-r"
-    if [ "$kak_opt_filetype" = "puppetmanifest" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-n --expect alt-r --expect alt-v"
-    if [ "$kak_opt_filetype" = "python" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-m --expect alt-v --expect alt-I --expect alt-i --expect alt-x --expect alt-z --expect alt-l"
-    if [ "$kak_opt_filetype" = "pythonloggingconfig" ]; then additional_keybindings="--expect alt-L --expect alt-q"
-    if [ "$kak_opt_filetype" = "qemuhx" ]; then additional_keybindings="--expect alt-q --expect alt-i"
-    if [ "$kak_opt_filetype" = "qtmoc" ]; then additional_keybindings="--expect alt-s --expect alt-S --expect alt-p"
-    if [ "$kak_opt_filetype" = "r" ]; then additional_keybindings="--expect alt-f --expect alt-l --expect alt-s --expect alt-g --expect alt-v"
-    if [ "$kak_opt_filetype" = "rspec" ]; then additional_keybindings="--expect alt-d --expect alt-c"
-    if [ "$kak_opt_filetype" = "rexx" ]; then additional_keybindings="--expect alt-s"
-    if [ "$kak_opt_filetype" = "robot" ]; then additional_keybindings="--expect alt-t --expect alt-k --expect alt-v"
-    if [ "$kak_opt_filetype" = "rpmspec" ]; then additional_keybindings="--expect alt-t --expect alt-m --expect alt-p --expect alt-g"
-    if [ "$kak_opt_filetype" = "restructuredtext" ]; then additional_keybindings="--expect alt-c --expect alt-s --expect alt-S --expect alt-t --expect alt-T"
-    if [ "$kak_opt_filetype" = "ruby" ]; then additional_keybindings="--expect alt-c --expect alt-f --expect alt-m --expect alt-S"
-    if [ "$kak_opt_filetype" = "rust" ]; then additional_keybindings="--expect alt-n --expect alt-s --expect alt-i --expect alt-c --expect alt-f --expect alt-g --expect alt-t --expect alt-v --expect alt-M --expect alt-m --expect alt-e --expect alt-P"
-    if [ "$kak_opt_filetype" = "scheme" ]; then additional_keybindings="--expect alt-f --expect alt-s"
-    if [ "$kak_opt_filetype" = "sh" ]; then additional_keybindings="--expect alt-a --expect alt-f --expect alt-s --expect alt-h"
-    if [ "$kak_opt_filetype" = "slang" ]; then additional_keybindings="--expect alt-f --expect alt-n"
-    if [ "$kak_opt_filetype" = "sml" ]; then additional_keybindings="--expect alt-e --expect alt-f --expect alt-c --expect alt-s --expect alt-r --expect alt-t --expect alt-v"
-    if [ "$kak_opt_filetype" = "sql" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-f --expect alt-E --expect alt-l --expect alt-L --expect alt-P --expect alt-p --expect alt-r --expect alt-s --expect alt-t --expect alt-T --expect alt-v --expect alt-i --expect alt-e --expect alt-U --expect alt-R --expect alt-D --expect alt-V --expect alt-n --expect alt-x --expect alt-y --expect alt-z"
-    if [ "$kak_opt_filetype" = "systemdunit" ]; then additional_keybindings="--expect alt-u"
-    if [ "$kak_opt_filetype" = "tcl" ]; then additional_keybindings="--expect alt-p --expect alt-n"
-    if [ "$kak_opt_filetype" = "tcloo" ]; then additional_keybindings="--expect alt-c --expect alt-m"
-    if [ "$kak_opt_filetype" = "tex" ]; then additional_keybindings="--expect alt-p --expect alt-c --expect alt-s --expect alt-u --expect alt-b --expect alt-P --expect alt-G --expect alt-l --expect alt-i"
-    if [ "$kak_opt_filetype" = "ttcn" ]; then additional_keybindings="--expect alt-M --expect alt-t --expect alt-c --expect alt-d --expect alt-f --expect alt-s --expect alt-C --expect alt-a --expect alt-G --expect alt-P --expect alt-v --expect alt-T --expect alt-p --expect alt-m --expect alt-e"
-    if [ "$kak_opt_filetype" = "vera" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-e --expect alt-f --expect alt-g --expect alt-i --expect alt-l --expect alt-m --expect alt-p --expect alt-P --expect alt-s --expect alt-t --expect alt-T --expect alt-v --expect alt-x --expect alt-h"
-    if [ "$kak_opt_filetype" = "verilog" ]; then additional_keybindings="--expect alt-c --expect alt-e --expect alt-f --expect alt-m --expect alt-n --expect alt-p --expect alt-r --expect alt-t --expect alt-b"
-    if [ "$kak_opt_filetype" = "systemverilog" ]; then additional_keybindings="--expect alt-c --expect alt-e --expect alt-f --expect alt-m --expect alt-n --expect alt-p --expect alt-r --expect alt-t --expect alt-b --expect alt-A --expect alt-C --expect alt-V --expect alt-E --expect alt-I --expect alt-M --expect alt-K --expect alt-P --expect alt-Q --expect alt-R --expect alt-S --expect alt-T"
-    if [ "$kak_opt_filetype" = "vhdl" ]; then additional_keybindings="--expect alt-c --expect alt-t --expect alt-T --expect alt-r --expect alt-e --expect alt-C --expect alt-d --expect alt-f --expect alt-p --expect alt-P --expect alt-l"
-    if [ "$kak_opt_filetype" = "vim" ]; then additional_keybindings="--expect alt-a --expect alt-c --expect alt-f --expect alt-m --expect alt-v --expect alt-n"
-    if [ "$kak_opt_filetype" = "windres" ]; then additional_keybindings="--expect alt-d --expect alt-m --expect alt-i --expect alt-b --expect alt-c --expect alt-f --expect alt-v --expect alt-a"
-    if [ "$kak_opt_filetype" = "yacc" ]; then additional_keybindings="--expect alt-l"
-    if [ "$kak_opt_filetype" = "yumrepo" ]; then additional_keybindings="--expect alt-r"
-    if [ "$kak_opt_filetype" = "zephir" ]; then additional_keybindings="--expect alt-c --expect alt-d --expect alt-f --expect alt-i --expect alt-l --expect alt-n --expect alt-t --expect alt-v --expect alt-a"
-    if [ "$kak_opt_filetype" = "dbusintrospect" ]; then additional_keybindings="--expect alt-i --expect alt-m --expect alt-s --expect alt-p"
-    if [ "$kak_opt_filetype" = "glade" ]; then additional_keybindings="--expect alt-i --expect alt-c --expect alt-h"
-    if [ "$kak_opt_filetype" = "maven2" ]; then additional_keybindings="--expect alt-g --expect alt-a --expect alt-p --expect alt-r"
-    if [ "$kak_opt_filetype" = "plistxml" ]; then additional_keybindings="--expect alt-k"
-    if [ "$kak_opt_filetype" = "relaxng" ]; then additional_keybindings="--expect alt-e --expect alt-a --expect alt-n"
-    if [ "$kak_opt_filetype" = "svg" ]; then additional_keybindings="--expect alt-i"
-    if [ "$kak_opt_filetype" = "xslt" ]; then additional_keybindings="--expect alt-s --expect alt-p --expect alt-m --expect alt-n --expect alt-v"
-    if [ "$kak_opt_filetype" = "yaml" ]; then additional_keybindings="--expect alt-a"
-    if [ "$kak_opt_filetype" = "ansibleplaybook" ]; then additional_keybindings="--expect alt-p"
 }

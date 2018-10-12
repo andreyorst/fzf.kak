@@ -324,7 +324,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         if [ ! -z "${kak_client_env_TMUX}" ]; then
             preview_pos='pos=right:50%;'
         else
-            preview_pos='sleep 0.1; if [ $(tput cols) -gt $(expr $(tput lines) * 2) ]; then pos=right:50%; else pos=top:60%; fi;'
+            preview_pos='sleep 0.1; if [ $(tput cols) -gt $(expr $(tput lines) \* 2) ]; then pos=right:50%; else pos=top:60%; fi;'
         fi
         additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos $additional_flags"
     fi

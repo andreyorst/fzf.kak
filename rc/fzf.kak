@@ -1267,7 +1267,7 @@ str fzf_tag_ansibleplaybook "
 <a-p>: plays"
 
 define-command -hidden fzf-tag-kind -params ..1 %{ evaluate-commands %sh{
-	case $kak_opt_filetype in
+    case $kak_opt_filetype in
         ada)
             additional_keybindings="--expect alt-P --expect alt-p --expect alt-T --expect alt-t --expect alt-U --expect alt-u --expect alt-c --expect alt-l --expect alt-V --expect alt-v --expect alt-f --expect alt-n --expect alt-x --expect alt-R --expect alt-r --expect alt-K --expect alt-k --expect alt-O --expect alt-o --expect alt-E --expect alt-e --expect alt-b --expect alt-i --expect alt-a --expect alt-y --expect alt-S"
             additional_message=$kak_opt_fzf_tag_ada ;;
@@ -1569,27 +1569,29 @@ define-command -hidden fzf-tag-kind -params ..1 %{ evaluate-commands %sh{
     esac
 
     if [ ! -z "$1" ]; then
+        mode=$(echo "$additional_message" | grep "<a-$1>:" | awk '{$1=""; print}' | sed "s/\(.*\)/:\1/")
         cmd="readtags -Q '(eq? \$kind $1)' -l | cut -f1"
     else
         cmd="readtags -l | cut -f1"
     fi
 
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
+    [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
 <c-s>: open tag in horizontal split
 <c-v>: open tag in vertical split"
 
-    message="Jump to a symbol''s definition.<ret>: open tag in new buffer.
+    message="Jump to a symbol''s definition
+<ret>: open tag in new buffer
 <c-w>: open tag in new window"
 
-    [ ! -z "$additional_message" ] && message="$message
+    [ ! -z "$additional_message" ] && message="$message $tmux_keybindings
 
 Additional filters for $kak_opt_filetype: $additional_message"
 
-    echo "info -title 'fzf tag' '$message'"
+    echo "info -title 'fzf tag$mode' '$message'"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
 
-    eval echo 'fzf-tag \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_keybindings $additional_flags\"'
+    eval echo 'fzf-tag \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags $additional_keybindings\"'
 }}
 
 define-command -hidden fzf-tag -params 2..3 %{ evaluate-commands %sh{
@@ -1607,6 +1609,11 @@ define-command -hidden fzf-tag -params 2..3 %{ evaluate-commands %sh{
     exec=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-exec.XXXXXX))
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
+        case $items_command in
+            *Q*)
+            items_command=$(echo $items_command | sed 's:$kind \(\w\):\$kind \"\1\":')
+            ;;
+        esac
         cmd="$items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)

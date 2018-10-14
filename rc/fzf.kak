@@ -113,7 +113,7 @@ map global fzf -docstring "open file"                    'f' '<esc>: fzf-file<re
 map global fzf -docstring "edit file from vcs repo"      'v' '<esc>: fzf-vcs<ret>'
 map global fzf -docstring "svitch to vcs selection mode" 'V' '<esc>: fzf-vcs-mode<ret>'
 map global fzf -docstring "search in buffer"             's' '<esc>: fzf-buffer-search<ret>'
-map global fzf -docstring "find tag"                     't' '<esc>: fzf-tag-kind<ret>'
+map global fzf -docstring "find tag"                     't' '<esc>: fzf-tag<ret>'
 
 map global fzf-vcs -docstring "edit file from Git tree"        'g' '<esc>: fzf-git<ret>'
 map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-svn<ret>'
@@ -1266,7 +1266,7 @@ declare-option -hidden -docstring "Set of mappings for AnsiblePlaybook filetype"
 str fzf_tag_ansibleplaybook "
 <a-p>: plays"
 
-define-command -hidden fzf-tag-kind -params ..1 %{ evaluate-commands %sh{
+define-command -hidden fzf-tag -params ..1 %{ evaluate-commands %sh{
     case $kak_opt_filetype in
         ada)
             additional_keybindings="--expect alt-P --expect alt-p --expect alt-T --expect alt-t --expect alt-U --expect alt-u --expect alt-c --expect alt-l --expect alt-V --expect alt-v --expect alt-f --expect alt-n --expect alt-x --expect alt-R --expect alt-r --expect alt-K --expect alt-k --expect alt-O --expect alt-o --expect alt-E --expect alt-e --expect alt-b --expect alt-i --expect alt-a --expect alt-y --expect alt-S"
@@ -1585,16 +1585,16 @@ define-command -hidden fzf-tag-kind -params ..1 %{ evaluate-commands %sh{
 
     [ ! -z "$additional_message" ] && message="$message $tmux_keybindings
 
-Additional filters for $kak_opt_filetype: $additional_message"
+Additional filters for $kak_opt_filetype filetype: $additional_message"
 
     echo "info -title 'fzf tag$mode' '$message'"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
 
-    eval echo 'fzf-tag \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags $additional_keybindings\"'
+    eval echo 'fzf-tag-generic \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags $additional_keybindings\"'
 }}
 
-define-command -hidden fzf-tag -params 2..3 %{ evaluate-commands %sh{
+define-command -hidden fzf-tag-generic -params 2..3 %{ evaluate-commands %sh{
     callback=$1
     items_command=$2
     additional_flags=$3
@@ -1609,19 +1609,11 @@ define-command -hidden fzf-tag -params 2..3 %{ evaluate-commands %sh{
     exec=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-exec.XXXXXX))
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        case $items_command in
-            *Q*)
-            items_command=$(echo $items_command | sed 's:$kind \(\w\):\$kind \"\1\":')
-            ;;
-        esac
+        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\$kind \"\1\":')
         cmd="$items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
-        case $items_command in
-            *Q*)
-            items_command=$(echo $items_command | sed 's:$kind \(\w\):\\\$kind \\\\\\"\1\\\\\\":')
-            ;;
-        esac
+        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\\\\\\$kind \\\\\\\"\1\\\\\\\":')
         cmd="$kak_opt_termcmd \"sh -c \\\"cd $path && $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
     else
         echo "fail termcmd option is not set"
@@ -1634,30 +1626,23 @@ define-command -hidden fzf-tag -params 2..3 %{ evaluate-commands %sh{
             (
                 read action
                 case $action in
-                    "ctrl-w")
+                    ctrl-w)
                         wincmd="x11-new "
                         [ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window "
-                        callback="$wincmd$callback"
-                        echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
-                        ;;
+                        callback="$wincmd$callback" ;;
                     ctrl-s)
                         wincmd="tmux-new-vertical "
-                        callback="$wincmd$callback"
-                        echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
-                        ;;
+                        callback="$wincmd$callback" ;;
                     ctrl-v)
                         wincmd="tmux-new-horizontal "
-                        callback="$wincmd$callback"
-                        echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
-                        ;;
+                        callback="$wincmd$callback" ;;
                     alt-*)
                         kind="${action##*-}"
-                        echo "echo evaluate-commands -client $kak_client \"fzf-tag-kind $kind\" | kak -p $kak_session" > $exec
-                        ;;
+                        echo "echo evaluate-commands -client $kak_client \"fzf-tag $kind\" | kak -p $kak_session" > $exec ;;
                     *)
-                        echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
                         ;;
                 esac
+                [ -z "$kind" ] && echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
                 chmod 755 $exec
                 while read file; do
                     $exec "\'$file'"

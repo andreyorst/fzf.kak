@@ -106,6 +106,10 @@ declare-option -docstring "height of fzf tmux split in screen lines or percents
 Default value: 25%%" \
 str fzf_tmux_height '25%'
 
+declare-option -docstring "height of fzf tmux split for file preview in screen lines or percents
+Default value: 70%%" \
+str fzf_tmux_height_file_preview '70%'
+
 declare-option -docstring "command to provide list of directories to fzf.
 Default value:
     find: (echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)
@@ -176,7 +180,7 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
     eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
 }}
 
-define-command -docstring "Wrapper command for fzf vcs to automatically decect
+define-command -hidden -docstring "Wrapper command for fzf vcs to automatically decect
 used version control system.
 
 Supported vcs:
@@ -185,7 +189,7 @@ Supported vcs:
     Mercurial SCM: ""hg""
     GNU Bazaar:    ""bzr""
 " \
--hidden fzf-vcs %{ evaluate-commands %sh{
+fzf-vcs %{ evaluate-commands %sh{
     commands="git rev-parse --is-inside-work-tree
 svn info
 hg --cwd . root
@@ -267,25 +271,25 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
             cmd=$kak_opt_fzf_cd_command ;;
         esac
         eval echo 'fzf \"change-directory \$1\" \"$cmd\"'
-    }
-}
+}}
 
 define-command -hidden fzf-buffer-search %{ evaluate-commands %sh{
-        title="fzf buffer search"
-        message="Search buffer with fzf, and jump to result location"
-        echo "info -title '$title' '$message'"
-        line=$kak_cursor_line
-        char=$(expr $kak_cursor_char_column - 1)
-        buffer_content=$(mktemp ${TMPDIR:-/tmp}/kak-curr-buff.XXXXXX)
-        echo "execute-keys %{%<a-|>cat<space>><space>$buffer_content<ret>;}"
-        echo "execute-keys $line g $char l"
-        echo "fzf \"execute-keys \$1 gx\" \"(nl -b a -n ln $buffer_content\" \"--reverse | cut -f 1; rm $buffer_content)\""
-    } }
+    title="fzf buffer search"
+    message="Search buffer with fzf, and jump to result location"
+    echo "info -title '$title' '$message'"
+    line=$kak_cursor_line
+    char=$(expr $kak_cursor_char_column - 1)
+    buffer_content=$(mktemp ${TMPDIR:-/tmp}/kak-curr-buff.XXXXXX)
+    echo "execute-keys %{%<a-|>cat<space>><space>$buffer_content<ret>;}"
+    echo "execute-keys $line g $char l"
+    echo "fzf \"execute-keys \$1 gx\" \"(nl -b a -n ln $buffer_content\" \"--reverse | cut -f 1; rm $buffer_content)\""
+}}
 
 define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     callback=$1
     items_command=$2
     additional_flags=$3
+    tmux_height=$kak_opt_fzf_tmux_height
 
     items_executable=$(echo $items_command | awk '{print $1}' | tr '(' ' ' | cut -d " " -f 2)
     if [ -z $(command -v $items_executable) ]; then
@@ -313,6 +317,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         esac
         if [ ! -z "${kak_client_env_TMUX}" ]; then
             preview_pos='pos=right:50%;'
+            tmux_height=$kak_opt_fzf_tmux_height_file_preview
         else
             preview_pos='sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ]; then pos=right:50%; else pos=top:60%; fi;'
         fi
@@ -321,7 +326,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
         [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\$kind \"\1\":')
-        cmd="$preview_pos $items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-q $additional_flags > $tmp"
+        cmd="$preview_pos $items_command | fzf-tmux -d $tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
         additional_flags=$(echo $additional_flags | sed 's:\$pos:\\\\\\\$pos:')
@@ -379,7 +384,7 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
         [ ! -z $buffer ] && [ $buffer != ' ' ] && echo $buffer >> $buffers
     done
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="cat $buffers | fzf-tmux -d 15 --expect ctrl-d > $tmp"
+        cmd="cat $buffers | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-d > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         cmd="$kak_opt_termcmd \"sh -c 'cat $buffers | fzf --expect ctrl-d > $tmp'\""
     else
@@ -1595,9 +1600,9 @@ define-command -hidden fzf-tag -params ..1 %{ evaluate-commands %sh{
 
     if [ ! -z "$1" ]; then
         mode=$(echo "$additional_message" | grep "<a-$1>:" | awk '{$1=""; print}' | sed "s/\(.*\)/:\1/")
-        cmd="readtags -Q '(eq? \$kind $1)' -l | cut -f1"
+        cmd="readtags -Q '(eq? \$kind $1)' -l | cut -f1 | uniq"
     else
-        cmd="readtags -l | cut -f1"
+        cmd="readtags -l | cut -f1 | uniq"
     fi
 
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="

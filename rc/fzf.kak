@@ -99,13 +99,18 @@ Default arguments:
     coderay:   ""coderay {}""
     highlight: ""highlight --failsafe -O ansi -l {}""
     rouge:     ""rougify {}""
-"\
+" \
 str fzf_highlighter "highlight"
 
 declare-option -docstring "height of fzf tmux split in screen lines or percents
 Default value: 25%%" \
 str fzf_tmux_height '25%'
 
+declare-option -docstring "command to provide list of directories to fzf.
+Default value:
+(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)
+" \
+str fzf_cd_command "find"
 # default mappings
 map global fzf -docstring "open buffer"                  'b' '<esc>: fzf-buffer<ret>'
 map global fzf -docstring "change directory"             'c' '<esc>: fzf-cd<ret>'
@@ -250,13 +255,18 @@ define-command -hidden fzf-bzr %{ evaluate-commands %sh{
     eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
 }}
 
-define-command -hidden fzf-cd %{
-    evaluate-commands %sh{
+define-command -hidden fzf-cd %{ evaluate-commands %sh{
         title="fzf change directory"
         message="Change the server''s working directory"
         echo "info -title '$title' '$message'"
+        case $kak_opt_fzf_cd_command in
+        find)
+            cmd="(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)" ;;
+        *)
+            cmd=$kak_opt_fzf_cd_command ;;
+        esac
+        eval echo 'fzf \"change-directory \$1\" \"$cmd\"'
     }
-    fzf "change-directory $1" "(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)"
 }
 
 define-command -hidden fzf-buffer-search %{ evaluate-commands %sh{

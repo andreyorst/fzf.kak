@@ -42,6 +42,9 @@ In this mode new mappings are available:
 - <kbd>V</kbd> - Explicitly select which vcs command to run
 - <kbd>s</kbd> - Search over buffer contents and jump to result line
 - <kbd>t</kbd> - Browse ctags tags
+  fzf.kak supports filtering tags on per language basis. For each filetype
+  press <kbd>alt</kbd>+<kbd>filter key</kbd> specified in the info box to
+  reload fzf buffer with the desired filter.
 
 You can set your own mapping to invoke `fzf-mode`:
 

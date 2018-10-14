@@ -91,11 +91,13 @@ int fzf_preview_lines 100
 declare-option -docstring "highlighter to use in preview window
 Supported tools:
     <package>: <value>:
+    Bat:       ""bat""
     Coderay:   ""coderay""
     Highlight: ""highlight""
     Rouge:     ""rouge""
 
 Default arguments:
+    bat:       ""bat --color=always --style=header,grid,numbers {}""
     coderay:   ""coderay {}""
     highlight: ""highlight --failsafe -O ansi {}""
     rouge:     ""rougify {}""
@@ -302,13 +304,15 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 
     if [ "$(echo $callback | awk '{print $1}')" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
         case $kak_opt_fzf_highlighter in
+        bat)
+            highlighter="bat --color=always --style=header,grid,numbers {}" ;;
         coderay)
             highlighter="coderay {}" ;;
         highlight)
             highlighter="highlight --failsafe -O ansi {}" ;;
         rouge)
             highlighter="rougify {}" ;;
-        coderay*|highlight*|rougify*)
+        bat*|coderay*|highlight*|rougify*)
             highlighter=$kak_opt_fzf_highlighter ;;
         *)
             executable=$(echo $kak_opt_fzf_highlighter | awk '{print $1}'| tr '(' ' ' | cut -d " " -f 2)

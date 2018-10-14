@@ -106,9 +106,10 @@ set-option global fzf_preview true
 You also can specify which highlighter to use within the preview window with `fzf_highlighter` option. 
 Supported tools are:
 
-* Rouge
-* Highlight
+* Bat
 * Coderay
+* Highlight
+* Rouge
 
 ## Some demonstration gifs:
 ### Opening files:

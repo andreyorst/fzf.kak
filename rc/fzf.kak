@@ -1591,10 +1591,10 @@ Additional filters for $kak_opt_filetype filetype: $additional_message"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
 
-    eval echo 'fzf-tag-generic \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags $additional_keybindings\"'
+    eval echo 'fzf-tag-command \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags $additional_keybindings\"'
 }}
 
-define-command -hidden fzf-tag-generic -params 2..3 %{ evaluate-commands %sh{
+define-command -hidden fzf-tag-command -params 2..3 %{ evaluate-commands %sh{
     callback=$1
     items_command=$2
     additional_flags=$3

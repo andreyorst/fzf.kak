@@ -309,10 +309,12 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     fi
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
+        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\$kind \"\1\":')
         cmd="$preview_pos $items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
         additional_flags=$(echo $additional_flags | sed "s:\$pos:\\\\\$pos:")
+        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\\\\\\$kind \\\\\\\"\1\\\\\\\":')
         cmd="$kak_opt_termcmd \"sh -c \\\"cd $path && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
     else
         echo "fail termcmd option is not set"
@@ -326,13 +328,16 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
                 read action
                 if [ "${callback% *}" != "change-directory" ]; then
                     case $action in
-                        "ctrl-w")
+                        ctrl-w)
                             wincmd="x11-new "
                             [ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window " ;;
-                        "ctrl-s")
+                        ctrl-s)
                             wincmd="tmux-new-vertical " ;;
-                        "ctrl-v")
+                        ctrl-v)
                             wincmd="tmux-new-horizontal " ;;
+                        alt-*)
+                            kind="${action##*-}"
+                            callback="fzf-tag $kind" ;;
                         *)
                             wincmd= ;;
                     esac
@@ -1591,65 +1596,6 @@ Additional filters for $kak_opt_filetype filetype: $additional_message"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
 
-    eval echo 'fzf-tag-command \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags $additional_keybindings\"'
+    eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags $additional_keybindings\"'
 }}
 
-define-command -hidden fzf-tag-command -params 2..3 %{ evaluate-commands %sh{
-    callback=$1
-    items_command=$2
-    additional_flags=$3
-
-    items_executable=$(echo $items_command | awk '{print $1}' | tr '(' ' ' | cut -d " " -f 2)
-    if [ -z $(command -v $items_executable) ]; then
-        echo "fail \'$items_executable' executable not found"
-        exit
-    fi
-
-    tmp=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-fzf.XXXXXX))
-    exec=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-exec.XXXXXX))
-
-    if [ ! -z "${kak_client_env_TMUX}" ]; then
-        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\$kind \"\1\":')
-        cmd="$items_command | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-q $additional_flags > $tmp"
-    elif [ ! -z "${kak_opt_termcmd}" ]; then
-        path=$(pwd)
-        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\\\\\\$kind \\\\\\\"\1\\\\\\\":')
-        cmd="$kak_opt_termcmd \"sh -c \\\"cd $path && $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
-    else
-        echo "fail termcmd option is not set"
-        exit
-    fi
-
-    (
-        eval "$cmd"
-        if [ -s $tmp ]; then
-            (
-                read action
-                case $action in
-                    ctrl-w)
-                        wincmd="x11-new "
-                        [ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window "
-                        callback="$wincmd$callback" ;;
-                    ctrl-s)
-                        wincmd="tmux-new-vertical "
-                        callback="$wincmd$callback" ;;
-                    ctrl-v)
-                        wincmd="tmux-new-horizontal "
-                        callback="$wincmd$callback" ;;
-                    alt-*)
-                        kind="${action##*-}"
-                        echo "echo evaluate-commands -client $kak_client \"fzf-tag $kind\" | kak -p $kak_session" > $exec ;;
-                    *)
-                        ;;
-                esac
-                [ -z "$kind" ] && echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
-                chmod 755 $exec
-                while read file; do
-                    $exec "\'$file'"
-                done
-            ) < $tmp
-        fi
-        rm $tmp
-        rm $exec
-    ) > /dev/null 2>&1 < /dev/null &
-}}

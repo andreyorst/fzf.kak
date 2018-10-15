@@ -112,6 +112,14 @@ declare-option -docstring "height of fzf tmux split for file preview in screen l
 Default value: 70%%" \
 str fzf_tmux_height_file_preview '70%'
 
+declare-option -docstring "width of preview window
+Default value: 50%%" \
+str fzf_preview_width '50%'
+
+declare-option -docstring "height of preview window
+Default value: 60%%" \
+str fzf_preview_height '60%'
+
 declare-option -docstring "command to provide list of directories to fzf.
 Default value:
     find: (echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)
@@ -320,10 +328,10 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
             highlighter=$kak_opt_fzf_highlighter ;;
         esac
         if [ ! -z "${kak_client_env_TMUX}" ]; then
-            preview_pos='pos=right:50%;'
+            preview_pos="pos=right:$kak_opt_fzf_preview_width;"
             tmux_height=$kak_opt_fzf_tmux_height_file_preview
         else
-            preview_pos='sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ]; then pos=right:50%; else pos=top:60%; fi;'
+            preview_pos='sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ]; then pos=right:'$kak_opt_fzf_preview_width'; else pos=top:'$kak_opt_fzf_preview_height'; fi;'
         fi
         additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos $additional_flags"
     fi

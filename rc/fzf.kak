@@ -74,7 +74,7 @@ Supported tools:
     universal-ctags: ""readtags""
 
 Default arguments:
-    ""readtags -l | cut -f1 ""
+    ""readtags -l | cut -f1 | awk '!a[\$0]++'""
 " \
 str fzf_tag_command "readtags"
 
@@ -1612,9 +1612,9 @@ define-command -hidden fzf-tag -params ..1 %{ evaluate-commands %sh{
 
     if [ ! -z "$1" ]; then
         mode=$(echo "$additional_message" | grep "<a-$1>:" | awk '{$1=""; print}' | sed "s/\(.*\)/:\1/")
-        cmd="readtags -Q '(eq? \$kind $1)' -l | cut -f1 | uniq"
+        cmd="readtags -Q '(eq? \$kind $1)' -l | cut -f1 | awk '!a[\$0]++'"
     else
-        cmd="readtags -l | cut -f1 | uniq"
+        cmd="readtags -l | cut -f1 | awk '!a[\$0]++'"
     fi
 
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="

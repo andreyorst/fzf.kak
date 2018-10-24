@@ -11,11 +11,12 @@
 ![showcase](https://user-images.githubusercontent.com/19470159/46813471-6ee76800-cd7f-11e8-89aa-123b3a5f9f1b.gif)
 
 ### Dependencies
-|Tool      |Information                                                                                        |
-|:--------:|:--------------------------------------------------------------------------------------------------|
-|tmux      |This plugin depends on [fzf-tmux](https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux) script.|
-|X11       |Script works with X11 via `termcmd` option.                                                        |
-|GNU Screen|GNU Screen is not yet supported.                                                                   |
+|Tool      |Information                                                                            |
+|:--------:|:--------------------------------------------------------------------------------------|
+|tmux      |Depends on [fzf-tmux](https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux) script.|
+|X11       |X11 supported via `termcmd` option.                                                    |
+|GNU Screen|GNU Screen is not yet supported.                                                       |
+|ctags     |[univresal-ctags](https://github.com/universal-ctags/ctags) package.                   |
 
 ## Installation
 Recommended way to install is to use [plug.kak](https://github.com/andreyorst/plug.kak)  plugin
@@ -30,11 +31,14 @@ Then reload Kakoune config or restart Kakoune and run `:plug-install`.
 Or install this plugin any other preferred way.
 
 ## Usage
-**fzf.kak** doesn't provide any mapping by default. Instead there's now a `fzf-mode` command
-which intentionally was made to simplify user mappings. 
-Each fzf command has mnemonic mapping, like `f` for opening files, `t` for tags and so on.
-
-In this mode new mappings are available:
+There's no default key binking to invoke fzf, but **fzf.kak** provides a `fzf-mode` command that can be mapped to preferred key.
+You can set your own mapping to invoke `fzf-mode`:
+```
+map global normal <c-p> ': fzf-mode<ret>'
+# note that the space after colon is intentional to suppess fzf-mode to show in command history
+```
+Each fzf subcommand has mnemonic mapping, like `f` for opening files, `t` for tags and so on.
+Available mappings:
 - <kbd>b</kbd> - Select buffer
 - <kbd>c</kbd> - Switch servers working directory
 - <kbd>f</kbd> - Search for file and open it
@@ -46,17 +50,16 @@ In this mode new mappings are available:
   press <kbd>alt</kbd>+<kbd>filter key</kbd> specified in the info box to
   reload fzf buffer with the desired filter.
 
-You can set your own mapping to invoke `fzf-mode`:
-
-```
-map global normal <c-p> ': fzf-mode<ret>'
-# note that the space after colon is intentional to suppess fzf-mode to show in command history
-```
-
 So for example pressing  <kbd>Ctrl+p</kbd><kbd>f</kbd>  will  open  fzf  at  the
 bottom of the Kakoune buffer, showing you all possible files.
 
 ### Settings
+**fzf.kak** features a lot of settings via options that can be altered to change how **fzf.kak** behaves.
+
+#### Tmux
+When using inside tmux, fzf will use bottom split. Height of this split can be changed with `fzf_tmux_height` option.
+`fzf_tmux_height_file_preview` option is used to control height of the split when you do file searching.
+
 #### Files
 You can configure what command to use to search for files, and it's arguments.
 Supported tools are [GNU Find](https://www.gnu.org/software/findutils/), [The Silver Searcher](https://github.com/ggreer/the_silver_searcher), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd). GNU find is used by default, but you can switch to another one. There are some default values for those, so you can go:
@@ -96,12 +99,25 @@ It is also possible to add parameters to ctags search executable. like `sort -u`
 set-option global fzf_tag_command 'readtags -l | cut -f1 | sort -u | ... ' 
 ```
 
-#### Preview
-You can turn on the preview window in fzf window by setting `fzf_preview` option to `true`:
+Though it is not recommended, since `sort` may slowdown `fzf-tag` on huge projects.
 
-```kak
-set-option global fzf_preview true
-```
+##### Filtering tags
+Since ctags supports showing particular kind of tag for many languages,
+`fzf-tag` dinamicly defines mappings for those languages with <kbd>Alt</kbd> key based on current filetype.
+For example to show only functions while `fzf-tag` is active press <kbd>Alt</kbd>+<kbd>f</kbd>.
+It will reload fzf window and only function tags will be listed.
+
+#### Preview
+When using X11 **fzf.kak** automatically tries to detect where to show preview window, depending
+on aspect ratio of new termial window. By default if the height is bigger than the width, preview occupies
+upper 60% of space. If height is smaller than the width, preview is shown at the right side.
+
+You can configure the amount of space for preview window with these options: `fzf_preview_height` and `fzf_preview_width`.
+
+When **fzf.kak** is used in tmux, it will show preview on the right side. Heigth of preview split can be adjusted with
+`fzf_tmux_height_file_preview`
+
+Amount of lines in preview window can be changed with `fzf_preview_lines` option.
 
 You also can specify which highlighter to use within the preview window with `fzf_highlighter` option. 
 Supported tools are:
@@ -110,6 +126,12 @@ Supported tools are:
 * Coderay
 * Highlight
 * Rouge
+
+You can disable the preview window in fzf window by setting `fzf_preview` option to `false`:
+
+```kak
+set-option global fzf_preview false
+```
 
 ## Some demonstration gifs:
 ### Opening files:

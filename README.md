@@ -16,7 +16,7 @@
 |tmux      |Depends on [fzf-tmux](https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux) script.|
 |X11       |X11 supported via `termcmd` option.                                                    |
 |GNU Screen|GNU Screen is not yet supported.                                                       |
-|ctags     |[univresal-ctags](https://github.com/universal-ctags/ctags) package.                   |
+|ctags     |[universal-ctags](https://github.com/universal-ctags/ctags) package.                   |
 
 ## Installation
 Recommended way to install is to use [plug.kak](https://github.com/andreyorst/plug.kak)  plugin
@@ -122,10 +122,10 @@ Amount of lines in preview window can be changed with `fzf_preview_lines` option
 You also can specify which highlighter to use within the preview window with `fzf_highlighter` option. 
 Supported tools are:
 
-* Bat
-* Coderay
-* Highlight
-* Rouge
+* [Bat](https://github.com/sharkdp/bat)
+* [Coderay](https://github.com/rubychan/coderay)
+* [Highlight](https://gitlab.com/saalen/highlight)
+* [Rouge](https://github.com/jneen/rouge)
 
 You can disable the preview window in fzf window by setting `fzf_preview` option to `false`:
 

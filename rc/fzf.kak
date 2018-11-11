@@ -187,7 +187,7 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
 <c-w>: open file in new window $additional_keybindings"
     echo "info -title '$title' '$message'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+    echo "fzf %{edit \$1} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 
 define-command -hidden -docstring "Wrapper command for fzf vcs to automatically decect
@@ -234,7 +234,7 @@ define-command -hidden fzf-git %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_git_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+    echo "fzf %{edit \$1} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 
 define-command -hidden fzf-hg %{ evaluate-commands %sh{
@@ -245,7 +245,7 @@ define-command -hidden fzf-hg %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_hg_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+    echo "fzf %{edit \$1} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 
 define-command -hidden fzf-svn %{ evaluate-commands %sh{
@@ -256,7 +256,7 @@ define-command -hidden fzf-svn %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_svn_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+    echo "fzf %{edit \$1} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 
 define-command -hidden fzf-bzr %{ evaluate-commands %sh{
@@ -267,7 +267,7 @@ define-command -hidden fzf-bzr %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_bzr_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    eval echo 'fzf \"edit \$1\" \"$cmd\" \"-m --expect ctrl-w $additional_flags\"'
+    echo "fzf %{edit \$1} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 
 define-command -hidden fzf-cd %{ evaluate-commands %sh{
@@ -280,7 +280,7 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
         *)
             cmd=$kak_opt_fzf_cd_command ;;
         esac
-        eval echo 'fzf \"change-directory \$1\" \"$cmd\"'
+        echo "fzf %{change-directory \$1} %{$cmd}"
 }}
 
 define-command -hidden fzf-buffer-search %{ evaluate-commands %sh{
@@ -292,7 +292,7 @@ define-command -hidden fzf-buffer-search %{ evaluate-commands %sh{
     buffer_content=$(mktemp ${TMPDIR:-/tmp}/kak-curr-buff.XXXXXX)
     echo "execute-keys %{%<a-|>cat<space>><space>$buffer_content<ret>;}"
     echo "execute-keys $line g $char l"
-    echo "fzf \"execute-keys \$1 gx\" \"(nl -b a -n ln $buffer_content\" \"--reverse | cut -f 1; rm $buffer_content)\""
+    echo "fzf %{execute-keys \$1 gx} %{(nl -b a -n ln $buffer_content} %{--reverse | cut -f 1; rm $buffer_content)}"
 }}
 
 define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
@@ -303,7 +303,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
 
     items_executable=$(echo $items_command | awk '{print $1}' | tr '(' ' ' | cut -d " " -f 2)
     if [ -z $(command -v $items_executable) ]; then
-        echo "fail \'$items_executable' executable not found"
+        echo "fail %{'$items_executable' executable not found}"
         exit
     fi
 
@@ -324,7 +324,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
             highlighter=$kak_opt_fzf_highlighter ;;
         *)
             executable=$(echo $kak_opt_fzf_highlighter | awk '{print $1}'| tr '(' ' ' | cut -d " " -f 2)
-            echo "echo -markup '{Information}''$executable'' highlighter is not supported by the script. fzf.kak may not work as you expect.'"
+            echo "echo -markup %{{Information}'$executable' highlighter is not supported by the script. fzf.kak may not work as you expect.}"
             highlighter=$kak_opt_fzf_highlighter ;;
         esac
         if [ ! -z "${kak_client_env_TMUX}" ]; then
@@ -1635,6 +1635,6 @@ Additional filters for $kak_opt_filetype filetype: $additional_message"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
 
-    eval echo 'fzf \"ctags-search \$1\" \"$cmd\" \"--expect ctrl-w $additional_flags $additional_keybindings\"'
+    echo "fzf %{ctags-search \$1} %{$cmd} %{--expect ctrl-w $additional_flags $additional_keybindings}"
 }}
 

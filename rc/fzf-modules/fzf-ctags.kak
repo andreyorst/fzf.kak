@@ -1218,7 +1218,6 @@ define-command -hidden fzf-tag -params ..1 %{ evaluate-commands %sh{
     else
         cmd="cd $path; readtags -l | cut -f1"
     fi
-
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
 <c-s>: open tag in horizontal split
 <c-v>: open tag in vertical split"
@@ -1234,6 +1233,6 @@ Additional filters for $kak_opt_filetype filetype: $additional_message"
     echo "info -title 'fzf tag$mode' '$message'"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-
+    echo "set-option window ctagsfiles %{$path/${kak_opt_tagfile:-tags}}"
     echo "fzf %{ctags-search \$1} %{$cmd} %{--expect ctrl-w $additional_flags $additional_keybindings}"
 }}

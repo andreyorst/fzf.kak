@@ -1196,11 +1196,27 @@ define-command -hidden fzf-tag -params ..1 %{ evaluate-commands %sh{
             ;;
     esac
 
+    path=$PWD
+    while [ "$path" != "$HOME" ]; do
+        if [ -e "./${kak_opt_tagfile:-tags}" ]; then
+            break
+        else
+            cd ..
+            path=$PWD
+        fi
+    done
+    if [ "$path" = "$HOME" ] && [ ! -e "./${kak_opt_tagfile:-tags}" ]; then
+        echo "echo -markup %{{Information}No '${kak_opt_tagfile:-tags}' found}"
+        exit
+    elif [ "$path" = "$HOME" ] && [ -e "./${kak_opt_tagfile:-tags}" ]; then
+        echo "echo -markup %{{Information}'${kak_opt_tagfile:-tags}' found at $HOME. Check if it is right tag file}"
+    fi
+
     if [ ! -z "$1" ]; then
         mode=$(echo "$additional_message" | grep "<a-$1>:" | awk '{$1=""; print}' | sed "s/\(.*\)/:\1/")
-        cmd="readtags -Q '(eq? \$kind $1)' -l | cut -f1"
+        cmd="cd $path; readtags -Q '(eq? \$kind $1)' -l | cut -f1"
     else
-        cmd="readtags -l | cut -f1"
+        cmd="cd $path; readtags -l | cut -f1"
     fi
 
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="

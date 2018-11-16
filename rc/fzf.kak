@@ -337,13 +337,13 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     fi
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\$kind \"\1\":')
+        [ -z "${items_command##*readtags*-Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\$kind \"\1\":')
          [ "$(echo $callback | awk '{print $1}')" = "ctags-search" ] && items_command="$items_command | awk '!a[\$0]++'"
         cmd="$preview_pos $items_command | fzf-tmux -d $tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         path=$(pwd)
         additional_flags=$(echo $additional_flags | sed 's:\$pos:\\\\\\\$pos:')
-        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\\\\\\$kind \\\\\\\"\1\\\\\\\":')
+        [ -z "${items_command##*readtags*-Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\\\\\\$kind \\\\\\\"\1\\\\\\\":')
         [ "$(echo $callback | awk '{print $1}')" = "ctags-search" ] && items_command="$items_command | awk '!a[\\\\\\\$0]++'"
         cmd="$kak_opt_termcmd \"sh -c \\\"sh=$(command -v sh); SHELL=\\\$sh; export SHELL; cd $path && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
     else
@@ -1612,11 +1612,27 @@ define-command -hidden fzf-tag -params ..1 %{ evaluate-commands %sh{
             ;;
     esac
 
+    path=$PWD
+    while [ "$path" != "$HOME" ]; do
+        if [ -e "./${kak_opt_tagfile:-tags}" ]; then
+            break
+        else
+            cd ..
+            path=$PWD
+        fi
+    done
+    if [ "$path" = "$HOME" ] && [ ! -e "./${kak_opt_tagfile:-tags}" ]; then
+        echo "echo -markup %{{Information}No '${kak_opt_tagfile:-tags}' found}"
+        exit
+    elif [ "$path" = "$HOME" ] && [ -e "./${kak_opt_tagfile:-tags}" ]; then
+        echo "echo -markup %{{Information}'${kak_opt_tagfile:-tags}' found at $HOME. Check if it is right tag file}"
+    fi
+
     if [ ! -z "$1" ]; then
         mode=$(echo "$additional_message" | grep "<a-$1>:" | awk '{$1=""; print}' | sed "s/\(.*\)/:\1/")
-        cmd="readtags -Q '(eq? \$kind $1)' -l | cut -f1"
+        cmd="cd $path; readtags -Q '(eq? \$kind $1)' -l | cut -f1"
     else
-        cmd="readtags -l | cut -f1"
+        cmd="cd $path; readtags -l | cut -f1"
     fi
 
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="

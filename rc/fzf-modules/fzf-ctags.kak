@@ -1214,7 +1214,7 @@ define-command -hidden fzf-tag -params ..1 %{ evaluate-commands %sh{
 
     if [ ! -z "$1" ]; then
         mode=$(echo "$additional_message" | grep "<a-$1>:" | awk '{$1=""; print}' | sed "s/\(.*\)/:\1/")
-        cmd="cd $path; readtags -Q '(eq? \$kind $1)' -l | cut -f1"
+        cmd="cd $path; readtags -Q '(eq? \$kind \"$1\")' -l | cut -f1"
     else
         cmd="cd $path; readtags -l | cut -f1"
     fi

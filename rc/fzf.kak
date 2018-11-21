@@ -11,45 +11,47 @@
 try %{ declare-user-mode fzf } catch %{echo -markup "{Error}Can't declare mode 'fzf' - already exists"}
 
 # Options
-declare-option -docstring "allow showing preview window
+declare-option -docstring 'allow showing preview window
 Default value:
     true
-" \
+' \
 bool fzf_preview true
 
-declare-option -docstring "amount of lines to pass to preview window
-Default value: 100" \
+declare-option -docstring 'amount of lines to pass to preview window
+Default value: 100' \
 int fzf_preview_lines 100
 
-declare-option -docstring "highlighter to use in preview window
+declare-option -docstring 'Highlighter to use in preview window. You can provide
+only the name of the tool that you want to use, or specify a command.
 Supported tools:
     <package>: <value>:
-    Bat:       ""bat""
-    Coderay:   ""coderay""
-    Highlight: ""highlight""
-    Rouge:     ""rouge""
+    Bat:       "bat"
+    Coderay:   "coderay"
+    Highlight: "highlight"
+    Rouge:     "rouge"
 
-Default arguments:
-    bat:       ""bat --color=always --style=header,grid,numbers {}""
-    coderay:   ""coderay {}""
-    highlight: ""highlight --failsafe -O ansi {}""
-    rouge:     ""rougify {}""
-" \
+These are default arguments for the tools above:
+    <tool>:    <value>:
+    bat:       "bat --color=always --style=header,grid,numbers {}"
+    coderay:   "coderay {}"
+    highlight: "highlight --failsafe -O ansi {}"
+    rouge:     "rougify {}"
+' \
 str fzf_highlighter "highlight"
 
-declare-option -docstring "height of fzf tmux split in screen lines or percents
+declare-option -docstring "height of fzf tmux split in screen lines or percents.
 Default value: 25%%" \
 str fzf_tmux_height '25%'
 
-declare-option -docstring "height of fzf tmux split for file preview in screen lines or percents
+declare-option -docstring "height of fzf tmux split for file preview in screen lines or percents.
 Default value: 70%%" \
 str fzf_tmux_height_file_preview '70%'
 
-declare-option -docstring "width of preview window
+declare-option -docstring "width of preview window.
 Default value: 50%%" \
 str fzf_preview_width '50%'
 
-declare-option -docstring "height of preview window
+declare-option -docstring "height of preview window.
 Default value: 60%%" \
 str fzf_preview_height '60%'
 
@@ -98,21 +100,18 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
             preview_pos="pos=right:$kak_opt_fzf_preview_width;"
             tmux_height=$kak_opt_fzf_tmux_height_file_preview
         else
-            preview_pos='sleep 0.1; if [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ]; then pos=right:'$kak_opt_fzf_preview_width'; else pos=top:'$kak_opt_fzf_preview_height'; fi;'
+            preview_pos='sleep 0.1; if [ $(tput cols) -gt $(expr $(tput lines) \* 2) ]; then pos=right:'$kak_opt_fzf_preview_width'; else pos=top:'$kak_opt_fzf_preview_height'; fi;'
         fi
         additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos $additional_flags"
     fi
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\$kind \"\1\":')
-         [ "$(echo $callback | awk '{print $1}')" = "ctags-search" ] && items_command="$items_command | awk '!a[\$0]++'"
         cmd="$preview_pos $items_command | fzf-tmux -d $tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
-        path=$(pwd)
-        additional_flags=$(echo $additional_flags | sed 's:\$pos:\\\\\\\$pos:')
-        [ -z "${items_command##*Q*}" ] && items_command=$(echo $items_command | sed 's:$kind \(\w\):\\\\\\$kind \\\\\\\"\1\\\\\\\":')
-        [ "$(echo $callback | awk '{print $1}')" = "ctags-search" ] && items_command="$items_command | awk '!a[\\\\\\\$0]++'"
-        cmd="$kak_opt_termcmd \"sh -c \\\"sh=$(command -v sh); SHELL=\\\$sh; export SHELL; cd $path && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp\\\"\""
+        tmp2=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-tmp2.XXXXXX))
+        chmod 755 $tmp2
+        echo "cd $PWD && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags" > $tmp2
+        cmd="$kak_opt_termcmd \"sh -c $tmp2\" > $tmp"
     else
         echo "fail termcmd option is not set"
         exit

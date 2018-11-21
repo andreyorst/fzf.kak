@@ -70,7 +70,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     additional_flags=$3
     tmux_height=$kak_opt_fzf_tmux_height
 
-    items_executable=$(echo $items_command | awk '{print $1}' | tr '(' ' ' | cut -d " " -f 2)
+    items_executable=$(echo $items_command | grep -o -E "[[:alpha:]]+" | head -1)
     if [ -z $(command -v $items_executable) ]; then
         echo "fail %{'$items_executable' executable not found}"
         exit
@@ -79,7 +79,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     tmp=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-fzf.XXXXXX))
     exec=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-exec.XXXXXX))
 
-    if [ "$(echo $callback | awk '{print $1}')" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
+    if [ "$(echo $callback | grep -o -E '[[:alpha:]]+' | head -1)" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
         case $kak_opt_fzf_highlighter in
         bat)
             highlighter="bat --color=always --style=header,grid,numbers {}" ;;
@@ -92,7 +92,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         bat*|coderay*|highlight*|rougify*)
             highlighter=$kak_opt_fzf_highlighter ;;
         *)
-            executable=$(echo $kak_opt_fzf_highlighter | awk '{print $1}'| tr '(' ' ' | cut -d " " -f 2)
+            executable=$(echo $kak_opt_fzf_highlighter | grep -o -E '[[:alpha:]]+' | head -1)
             echo "echo -markup %{{Information}'$executable' highlighter is not supported by the script. fzf.kak may not work as you expect.}"
             highlighter=$kak_opt_fzf_highlighter ;;
         esac
@@ -108,10 +108,10 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     if [ ! -z "${kak_client_env_TMUX}" ]; then
         cmd="$preview_pos $items_command | fzf-tmux -d $tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
-        tmp2=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-tmp2.XXXXXX))
-        chmod 755 $tmp2
-        echo "cd $PWD && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags" > $tmp2
-        cmd="$kak_opt_termcmd \"sh -c $tmp2\" > $tmp"
+        fzfcmd=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX))
+        chmod 755 $fzfcmd
+        echo "cd $PWD && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp" > $fzfcmd
+        cmd="$kak_opt_termcmd 'sh -c $fzfcmd'"
     else
         echo "fail termcmd option is not set"
         exit
@@ -151,6 +151,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         fi
         rm $tmp
         rm $exec
+        [ -z "$fzfcmd" ] && rm $fzfcmd
     ) > /dev/null 2>&1 < /dev/null &
 }}
 

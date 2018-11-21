@@ -1234,5 +1234,5 @@ Additional filters for $kak_opt_filetype filetype: $additional_message"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
     echo "set-option window ctagsfiles %{$path/${kak_opt_tagfile:-tags}}"
-    echo "fzf %{ctags-search \$1} %{$cmd} %{--expect ctrl-w $additional_flags $additional_keybindings}"
+    echo "fzf %{ctags-search \$1} %{$cmd | awk '!a[\$0]++'} %{--expect ctrl-w $additional_flags $additional_keybindings}"
 }}

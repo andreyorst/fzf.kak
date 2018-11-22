@@ -1206,14 +1206,14 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
         fi
     done
     if [ "$path" = "$HOME" ] && [ ! -e "./${kak_opt_tagfile:-tags}" ]; then
-        echo "echo -markup %{{Information}No '${kak_opt_tagfile:-tags}' found}"
+        printf "%s\n" "echo -markup %{{Information}No '${kak_opt_tagfile:-tags}' found}"
         exit
     elif [ "$path" = "$HOME" ] && [ -e "./${kak_opt_tagfile:-tags}" ]; then
-        echo "echo -markup %{{Information}'${kak_opt_tagfile:-tags}' found at $HOME. Check if it is right tag file}"
+        printf "%s\n" "echo -markup %{{Information}'${kak_opt_tagfile:-tags}' found at $HOME. Check if it is right tag file}"
     fi
 
     if [ ! -z "$1" ]; then
-        mode=$(echo "$additional_message" | grep "<a-$1>:" | awk '{$1=""; print}' | sed "s/\(.*\)/:\1/")
+        mode=$(printf "%s\n" "$additional_message" | grep "<a-$1>:" | awk '{$1=""; print}' | sed "s/\(.*\)/:\1/")
         cmd="cd $path; readtags -Q '(eq? \$kind \"$1\")' -l | cut -f1"
     else
         cmd="cd $path; readtags -l | cut -f1"
@@ -1230,9 +1230,9 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
 
 Additional filters for $kak_opt_filetype filetype: $additional_message"
 
-    echo "info -title 'fzf tag$mode' '$message'"
+    printf "%s\n" "info -title 'fzf tag$mode' '$message'"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    echo "set-option window ctagsfiles %{$path/${kak_opt_tagfile:-tags}}"
-    echo "fzf %{ctags-search} %{$cmd | awk '!a[\$0]++'} %{--expect ctrl-w $additional_flags $additional_keybindings}"
+    printf "%s\n" "set-option window ctagsfiles %{$path/${kak_opt_tagfile:-tags}}"
+    printf "%s\n" "fzf %{ctags-search} %{$cmd | awk '!a[\$0]++'} %{--expect ctrl-w $additional_flags $additional_keybindings}"
 }}

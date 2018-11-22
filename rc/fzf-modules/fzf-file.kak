@@ -28,7 +28,7 @@ map global fzf -docstring "open file" 'f' '<esc>: fzf-file<ret>'
 
 define-command -hidden fzf-file %{ evaluate-commands %sh{
     if [ -z "$(command -v $kak_opt_fzf_file_command)" ]; then
-        echo "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
+        printf "%s\n" "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
         kak_opt_fzf_file_command="find"
     fi
     case $kak_opt_fzf_file_command in
@@ -43,8 +43,8 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
     find*|ag*|rg*|fd*)
         cmd=$kak_opt_fzf_file_command ;;
     *)
-        executable=$(echo $kak_opt_fzf_file_command | awk '{print $1'}| tr '(' ' ' | cut -d " " -f 2)
-        echo "echo -markup '{Information}''$executable'' is not supported by the script. fzf.kak may not work as you expect.'"
+        items_executable=$(printf "%s\n" "$kak_opt_fzf_file_command" | grep -o -E "[[:alpha:]]+" | head -1)
+        printf "%s\n" "echo -markup '{Information}''$executable'' is not supported by the script. fzf.kak may not work as you expect.'"
         cmd=$kak_opt_fzf_file_command ;;
     esac
     title="fzf file"
@@ -54,8 +54,8 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
     message="Open single or multiple files.
 <ret>: open file in new buffer.
 <c-w>: open file in new window $additional_keybindings"
-    echo "info -title '$title' '$message'"
+    printf "%s\n" "info -title '$title' '$message'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    echo "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 

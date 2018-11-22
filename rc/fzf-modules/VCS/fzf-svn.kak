@@ -2,7 +2,7 @@
 # │ Author:     ║ File:                   │
 # │ Andrey Orst ║ fzf-svn.kak             │
 # ╞═════════════╩═════════════════════════╡
-# │ Submodule for SVN support for fzf.kak │
+# │ Submodule for Svn support for fzf.kak │
 # ╞═══════════════════════════════════════╡
 # │ GitHub.com/andreyorst/fzf.kak         │
 # ╰───────────────────────────────────────╯
@@ -27,6 +27,6 @@ define-command -hidden fzf-svn %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_svn_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    echo "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 

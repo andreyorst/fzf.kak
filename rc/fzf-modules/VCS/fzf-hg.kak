@@ -27,6 +27,6 @@ define-command -hidden fzf-hg %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_hg_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    echo "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 

@@ -38,7 +38,7 @@ bzr status"
         eval $cmd >/dev/null 2>&1
         res=$?
         if [ "$res"  = "0" ]; then
-            vcs=$(echo $cmd | awk '{print $1}')
+            vcs=$(printf "%s\n" "$cmd" | awk '{print $1}')
             title="fzf $vcs"
             [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
 <c-s>: open file in horizontal split
@@ -46,11 +46,11 @@ bzr status"
             message="Open single or multiple files from git tree.
 <ret>: open file in new buffer.
 <c-w>: open file in new window $additional_keybindings"
-            echo "info -title '$title' '$message'"
-            echo "fzf-$vcs"
+            printf "%s\n" "info -title %{$title} %{$message}"
+            printf "%s\n" "fzf-$vcs"
             exit
         fi
     done
-    echo "echo -markup '{Information}No VCS found in current folder'"
+    printf "%s\n" "echo -markup '{Information}No VCS found in current folder'"
 }}
 

@@ -11,22 +11,22 @@
 
 try %{ declare-user-mode fzf-vcs } catch %{echo -markup "{Error}Can't declare mode 'fzf-vcs' - already exists"}
 
-map global fzf -docstring "edit file from vcs repo"      'v' '<esc>: fzf-vcs<ret>'
-map global fzf -docstring "svitch to vcs selection mode" 'V' '<esc>: fzf-vcs-mode<ret>'
+map global fzf -docstring "edit file from vcs repo"      'v'     '<esc>: fzf-vcs<ret>'
+map global fzf -docstring "svitch to vcs selection mode" '<a-v>' '<esc>: fzf-vcs-mode<ret>'
 
 define-command -docstring "Enter fzf-vcs-mode.
 This mode allows selecting specific vcs command." \
 fzf-vcs-mode %{ try %{ evaluate-commands 'enter-user-mode fzf-vcs' } }
 
-define-command -hidden -docstring "Wrapper command for fzf vcs to automatically decect
+define-command -hidden -docstring 'Wrapper command for fzf vcs to automatically decect
 used version control system.
 
 Supported vcs:
-    Git:           ""git""
-    Subversion:    ""svn""
-    Mercurial SCM: ""hg""
-    GNU Bazaar:    ""bzr""
-" \
+    Git:           "git"
+    Subversion:    "svn"
+    Mercurial SCM: "hg"
+    GNU Bazaar:    "bzr"
+' \
 fzf-vcs %{ evaluate-commands %sh{
     commands="git rev-parse --is-inside-work-tree
 svn info

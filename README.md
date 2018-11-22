@@ -43,7 +43,7 @@ Available mappings:
 - <kbd>c</kbd> - Switch servers working directory
 - <kbd>f</kbd> - Search for file and open it
 - <kbd>v</kbd> - Edit file in version control system tree
-- <kbd>V</kbd> - Explicitly select which vcs command to run
+- <kbd><a-v></kbd> - Explicitly select which vcs command to run
 - <kbd>s</kbd> - Search over buffer contents and jump to result line
 - <kbd>t</kbd> - Browse ctags tags
   fzf.kak supports filtering tags on per language basis. For each filetype

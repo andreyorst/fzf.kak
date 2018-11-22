@@ -67,17 +67,17 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     callback=$1
     items_command=$2
     additional_flags=$3
-    tmux_height=$kak_opt_fzf_tmux_height
 
-    items_executable=$(echo $items_command | grep -o -E "[[:alpha:]]+" | head -1)
+    items_executable=$(printf "%s\n" "$items_command" | grep -o -E "[[:alpha:]]+" | head -1)
     if [ -z $(command -v $items_executable) ]; then
-        echo "fail %{'$items_executable' executable not found}"
+        printf "%s\n" "fail %{'$items_executable' executable not found}"
         exit
     fi
 
-    tmp=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-fzf.XXXXXX))
+    tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf.XXXXXX)
 
-    if [ "$(echo $callback | grep -o -E '[[:alpha:]]+' | head -1)" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
+    tmux_height=$kak_opt_fzf_tmux_height
+    if [ "$callback" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
         case $kak_opt_fzf_highlighter in
         bat)
             highlighter="bat --color=always --style=header,grid,numbers {}" ;;
@@ -90,15 +90,15 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         bat*|coderay*|highlight*|rougify*)
             highlighter=$kak_opt_fzf_highlighter ;;
         *)
-            executable=$(echo $kak_opt_fzf_highlighter | grep -o -E '[[:alpha:]]+' | head -1)
-            echo "echo -markup %{{Information}'$executable' highlighter is not supported by the script. fzf.kak may not work as you expect.}"
+            executable=$(printf "%s\n" "$kak_opt_fzf_highlighter" | grep -o -E '[[:alpha:]]+' | head -1)
+            printf "%s\n" "echo -markup %{{Information}'$executable' highlighter is not supported by the script. fzf.kak may not work as you expect.}"
             highlighter=$kak_opt_fzf_highlighter ;;
         esac
         if [ ! -z "${kak_client_env_TMUX}" ]; then
             preview_pos="pos=right:$kak_opt_fzf_preview_width;"
             tmux_height=$kak_opt_fzf_tmux_height_file_preview
         else
-            preview_pos='sleep 0.1; if [ $(tput cols) -gt $(expr $(tput lines) \* 2) ]; then pos=right:'$kak_opt_fzf_preview_width'; else pos=top:'$kak_opt_fzf_preview_height'; fi;'
+            preview_pos="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:$kak_opt_fzf_preview_width || pos=top:$kak_opt_fzf_preview_height;"
         fi
         additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos $additional_flags"
     fi
@@ -106,12 +106,12 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     if [ ! -z "${kak_client_env_TMUX}" ]; then
         cmd="$preview_pos $items_command | fzf-tmux -d $tmux_height --expect ctrl-q $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
-        fzfcmd=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX))
+        fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
         chmod 755 $fzfcmd
-        echo "cd $PWD && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp" > $fzfcmd
+        printf "%s\n" "cd $PWD && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp" > $fzfcmd
         cmd="$kak_opt_termcmd 'sh -c $fzfcmd'"
     else
-        echo "fail termcmd option is not set"
+        printf "%s\n" "fail termcmd option is not set"
         exit
     fi
 
@@ -120,38 +120,29 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         if [ -s $tmp ]; then
             (
                 read action
-                if [ "${callback% *}" != "change-directory" ]; then
-                    case $action in
-                        ctrl-w)
-                            wincmd="x11-new "
-                            [ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window " ;;
-                        ctrl-s)
-                            wincmd="tmux-new-vertical " ;;
-                        ctrl-v)
-                            wincmd="tmux-new-horizontal " ;;
-                        alt-*)
-                            kind="${action##*-}"
-                            callback="fzf-tag $kind" ;;
-                        *)
-                            wincmd= ;;
-                    esac
-                    callback="$wincmd$callback"
-                    kakoune_command () {
-                        echo "evaluate-commands -client $kak_client '$callback' '$1'"
-                    }
-                else
-                    kakoune_command() {
-                        echo "evaluate-commands -client $kak_client '$callback' '$1'"
-                        echo "evaluate-commands -client $kak_client fzf-cd"
-                    }
-                fi
+                case $action in
+                    ctrl-w)
+                        [ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window" || wincmd="x11-new" ;;
+                    ctrl-s)
+                        wincmd="tmux-new-vertical" ;;
+                    ctrl-v)
+                        wincmd="tmux-new-horizontal" ;;
+                    alt-*)
+                        kind="${action##*-}"
+                        callback="fzf-tag $kind" ;;
+                    *)
+                        wincmd= ;;
+                esac
+                callback="$wincmd $callback"
+                kakoune_command () {
+                    printf "%s\n" "evaluate-commands -client $kak_client '$callback' '$1'"
+                }
                 while read item; do
                     kakoune_command "$item" | kak -p $kak_session
                 done
             ) < $tmp
         fi
         rm $tmp
-        rm $kakoune_command
         [ -z "$fzfcmd" ] && rm $fzfcmd
     ) > /dev/null 2>&1 < /dev/null &
 }}

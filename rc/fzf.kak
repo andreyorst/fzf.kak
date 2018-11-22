@@ -104,11 +104,11 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     fi
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$preview_pos $items_command | fzf-tmux -d $tmux_height --expect ctrl-q $additional_flags > $tmp"
+        cmd="$preview_pos $items_command | fzf-tmux -d $tmux_height $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
         chmod 755 $fzfcmd
-        printf "%s\n" "cd $PWD && $preview_pos $items_command | fzf --expect ctrl-q $additional_flags > $tmp" > $fzfcmd
+        printf "%s\n" "cd $PWD && $preview_pos $items_command | fzf $additional_flags > $tmp" > $fzfcmd
         cmd="$kak_opt_termcmd 'sh -c $fzfcmd'"
     else
         printf "%s\n" "fail termcmd option is not set"
@@ -131,10 +131,10 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
                         kind="${action##*-}"
                         callback="fzf-tag $kind" ;;
                     *)
-                        wincmd= ;;
+                        printf "%s\n" "evaluate-commands -client $kak_client '$callback' '$action'" | kak -p $kak_session ;;
                 esac
                 callback="$wincmd $callback"
-                kakoune_command () {
+                kakoune_command() {
                     printf "%s\n" "evaluate-commands -client $kak_client '$callback' '$1'"
                 }
                 while read item; do

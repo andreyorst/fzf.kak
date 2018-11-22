@@ -55,7 +55,6 @@ declare-option -docstring "height of preview window.
 Default value: 60%%" \
 str fzf_preview_height '60%'
 
-# Commands
 define-command -docstring "Enter fzf-mode.
 fzf-mode contains mnemonic key bindings for every fzf.kak command
 
@@ -77,7 +76,6 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     fi
 
     tmp=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-fzf.XXXXXX))
-    exec=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-exec.XXXXXX))
 
     if [ "$(echo $callback | grep -o -E '[[:alpha:]]+' | head -1)" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
         case $kak_opt_fzf_highlighter in
@@ -138,19 +136,22 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
                             wincmd= ;;
                     esac
                     callback="$wincmd$callback"
-                    echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
+                    kakoune_command () {
+                        echo "evaluate-commands -client $kak_client '$callback' '$1'"
+                    }
                 else
-                    echo "echo evaluate-commands -client $kak_client \"$callback\" | kak -p $kak_session" > $exec
-                    echo "echo evaluate-commands -client $kak_client \"fzf-cd\"    | kak -p $kak_session" >> $exec
+                    kakoune_command() {
+                        echo "evaluate-commands -client $kak_client '$callback' '$1'"
+                        echo "evaluate-commands -client $kak_client fzf-cd"
+                    }
                 fi
-                chmod 755 $exec
-                while read file; do
-                    $exec "\'$file'"
+                while read item; do
+                    kakoune_command "$item" | kak -p $kak_session
                 done
             ) < $tmp
         fi
         rm $tmp
-        rm $exec
+        rm $kakoune_command
         [ -z "$fzfcmd" ] && rm $fzfcmd
     ) > /dev/null 2>&1 < /dev/null &
 }}

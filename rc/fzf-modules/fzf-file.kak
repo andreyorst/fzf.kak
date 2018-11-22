@@ -27,7 +27,7 @@ str fzf_file_command "find"
 map global fzf -docstring "open file" 'f' '<esc>: fzf-file<ret>'
 
 define-command -hidden fzf-file %{ evaluate-commands %sh{
-    if [ -z $(command -v $kak_opt_fzf_file_command) ]; then
+    if [ -z "$(command -v $kak_opt_fzf_file_command)" ]; then
         echo "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
         kak_opt_fzf_file_command="find"
     fi
@@ -56,6 +56,6 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
 <c-w>: open file in new window $additional_keybindings"
     echo "info -title '$title' '$message'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    echo "fzf %{edit \$1} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    echo "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 

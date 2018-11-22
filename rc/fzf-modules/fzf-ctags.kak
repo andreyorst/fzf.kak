@@ -885,7 +885,7 @@ declare-option -hidden -docstring "A set of mappings for AnsiblePlaybook filetyp
 str fzf_tag_ansibleplaybook "
 <a-p>: plays"
 
-define-command -hidden fzf-tag -params ..1 %{ evaluate-commands %sh{
+define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
     case $kak_opt_filetype in
         ada)
             additional_keybindings="--expect ctrl-alt-p --expect alt-p --expect ctrl-alt-t --expect alt-t --expect ctrl-alt-u --expect alt-u --expect alt-c --expect alt-l --expect ctrl-alt-v --expect alt-v --expect alt-f --expect alt-n --expect alt-x --expect ctrl-alt-r --expect alt-r --expect ctrl-alt-k --expect alt-k --expect ctrl-alt-o --expect alt-o --expect ctrl-alt-e --expect alt-e --expect alt-b --expect alt-i --expect alt-a --expect alt-y --expect ctrl-alt-s"
@@ -1234,5 +1234,5 @@ Additional filters for $kak_opt_filetype filetype: $additional_message"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
     echo "set-option window ctagsfiles %{$path/${kak_opt_tagfile:-tags}}"
-    echo "fzf %{ctags-search \$1} %{$cmd | awk '!a[\$0]++'} %{--expect ctrl-w $additional_flags $additional_keybindings}"
+    echo "fzf %{ctags-search} %{$cmd | awk '!a[\$0]++'} %{--expect ctrl-w $additional_flags $additional_keybindings}"
 }}

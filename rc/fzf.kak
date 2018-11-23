@@ -104,11 +104,11 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     fi
 
     if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$preview_pos $items_command | fzf-tmux -d $tmux_height $additional_flags > $tmp"
+        cmd="shell=$(command -v sh); SHELL=$shell; export SHELL; $preview_pos $items_command | fzf-tmux -d $tmux_height $additional_flags > $tmp"
     elif [ ! -z "${kak_opt_termcmd}" ]; then
         fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
         chmod 755 $fzfcmd
-        printf "%s\n" "cd $PWD && $preview_pos $items_command | fzf $additional_flags > $tmp" > $fzfcmd
+        printf "%s\n" "shell=$(command -v sh); SHELL=$shell; export SHELL; cd $PWD && $preview_pos $items_command | fzf $additional_flags > $tmp" > $fzfcmd
         cmd="$kak_opt_termcmd 'sh -c $fzfcmd'"
     else
         printf "%s\n" "fail termcmd option is not set"

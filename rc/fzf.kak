@@ -67,16 +67,14 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
     callback=$1
     items_command=$2
     additional_flags=$3
+    tmux_height=$kak_opt_fzf_tmux_height
 
     items_executable=$(printf "%s\n" "$items_command" | grep -o -E "[[:alpha:]]+" | head -1)
-    if [ -z $(command -v $items_executable) ]; then
+    if [ -z "$(command -v $items_executable)" ]; then
         printf "%s\n" "fail %{'$items_executable' executable not found}"
         exit
     fi
 
-    tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf.XXXXXX)
-
-    tmux_height=$kak_opt_fzf_tmux_height
     if [ "$callback" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
         case $kak_opt_fzf_highlighter in
         bat)
@@ -105,6 +103,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos $additional_flags"
     fi
 
+    tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf.XXXXXX)
     shell=$(command -v sh)
     if [ ! -z "${kak_client_env_TMUX}" ]; then
         cmd="export SHELL=$shell; $preview_pos $items_command | fzf-tmux -d $tmux_height $additional_flags > $tmp"
@@ -131,10 +130,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
                     ctrl-v)
                         wincmd="tmux-new-horizontal" ;;
                     *)
-                        if [ -n "$action" ]; then
-                            printf "%s\n" "evaluate-commands -client $kak_client '$callback' '$action'" | kak -p $kak_session
-                        fi
-                        ;;
+                        [ -n "$action" ] && printf "%s\n" "evaluate-commands -client $kak_client '$callback' '$action'" | kak -p $kak_session ;;
                 esac
                 kakoune_command() {
                     printf "%s\n" "evaluate-commands -client $kak_client '$wincmd $callback' '$1'"
@@ -145,7 +141,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
             ) < $tmp
         fi
         rm $tmp
-        [ -z "$fzfcmd" ] && rm $fzfcmd
+        [ -n "$fzfcmd" ] && rm $fzfcmd
     ) > /dev/null 2>&1 < /dev/null &
 }}
 

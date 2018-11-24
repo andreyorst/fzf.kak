@@ -124,3 +124,23 @@ You can disable the preview window in fzf window by setting `fzf_preview` option
 ```kak
 set-option global fzf_preview false
 ```
+
+## Contributing
+
+If you want to contribute to **fzf.kak** by adding a module, you can submit one by providing a pull request,
+or just open a feature request and we'll see what can be done.
+
+### Writing a module
+
+You can write a module for **fzf.kak**. To create one, simply define a function in separate file, located
+in `rc/fzf-modules/`, and named after the function. **fzf.kak** provides a general purpose command, that can be called with some
+Kakoune command as first parameter, and command that provides list of items for fzf as a second parameter. Third optional parameter is 
+for defining extra arguments for fzf itself, like additional keybindings.
+
+Overall module structure is:
+* Define a `fzf-command` command
+* Prepare list of items for fzf, or define an item command
+* call `fzf` command and pass needed arguments to it.
+
+Of course modules can and will be more complex, since a good module checks if command for providing item list is available on user's machine,
+and supports various settings inside it. Feel free to look how existing modules are made.

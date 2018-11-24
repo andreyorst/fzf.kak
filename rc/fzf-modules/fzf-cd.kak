@@ -26,6 +26,6 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
         *)
             items_command=$kak_opt_fzf_cd_command ;;
     esac
-    printf "%s\n" "fzf %{change-directory} %{$items_command} %{&& printf '%s\n' '; evaluate-commands fzf-cd'}"
+    printf "%s\n" "fzf %{change-directory} %{$items_command} %{} %{fzf-cd}"
 }}
 

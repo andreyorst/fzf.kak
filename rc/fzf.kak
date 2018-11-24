@@ -63,10 +63,11 @@ Best used with mapping like:
 " \
 fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
 
-define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
+define-command -hidden fzf -params 2..4 %{ evaluate-commands %sh{
     callback=$1
     items_command=$2
     additional_flags=$3
+    extra_action=$4
     tmux_height=$kak_opt_fzf_tmux_height
 
     items_executable=$(printf "%s\n" "$items_command" | grep -o -E "[[:alpha:]]+" | head -1)
@@ -139,14 +140,16 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
                         [ -n "$action" ] && printf "%s\n" "evaluate-commands -client $kak_client '$callback' '$action'" | kak -p $kak_session ;;
                 esac
                 kakoune_command() {
-                    printf "%s\n" "evaluate-commands -client $kak_client '$wincmd $callback' '$1'"
+                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd $callback %{$1}"
                 }
                 while read item; do
                     kakoune_command "$item" | kak -p $kak_session
                 done
+                [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action" | kak -p $kak_session
             ) < $tmp
         fi
         rm $tmp
-    ) > /dev/null 2>&1 < /dev/null &
+    ) &
+    # > /dev/null 2>&1 < /dev/null &
 }}
 

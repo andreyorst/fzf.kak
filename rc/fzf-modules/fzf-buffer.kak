@@ -11,49 +11,48 @@
 map global fzf -docstring "open buffer" 'b' '<esc>: fzf-buffer<ret>'
 
 define-command -hidden fzf-buffer %{ evaluate-commands %sh{
-    tmp=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-fzf.XXXXXX))
-    setbuf=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-setbuf.XXXXXX))
-    delbuf=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-delbuf.XXXXXX))
-    buffers=$(mktemp $(eval echo ${TMPDIR:-/tmp}/kak-buffers.XXXXXX))
-    IFS="'"
-    for buffer in $kak_buflist; do
-        [ ! -z $buffer ] && [ $buffer != ' ' ] && echo $buffer >> $buffers
-    done
-    if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="cat $buffers | fzf-tmux -d $kak_opt_fzf_tmux_height --expect ctrl-d > $tmp"
-    elif [ ! -z "${kak_opt_termcmd}" ]; then
-        cmd="$kak_opt_termcmd \"sh -c 'cat $buffers | fzf --expect ctrl-d > $tmp'\""
-    else
-        echo "fail termcmd option is not set"
-    fi
-
     echo "info -title 'fzf buffer' 'Set buffer to edit in current client
 <c-d>: delete selected buffer'"
 
-    echo "echo evaluate-commands -client $kak_client \"buffer        \'\$1'\" | kak -p $kak_session" > $setbuf
-    echo "echo evaluate-commands -client $kak_client \"delete-buffer \'\$1'\" | kak -p $kak_session" > $delbuf
-    echo "echo evaluate-commands -client $kak_client \"fzf-buffer       \" | kak -p $kak_session" >> $delbuf
-    chmod 755 $setbuf
-    chmod 755 $delbuf
+    tmux_height=$kak_opt_fzf_tmux_height
+    buffers=$(printf "%s\n" "$kak_buflist" | sed "s/^'//;s/'$//;s/' '/\n/g")
+
+    tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-tmp.XXXXXX)
+    fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
+    printf "%s\n" "printf '%s\n' '$buffers' | SHELL=$(command -v sh) fzf --expect ctrl-d > $tmp" > $fzfcmd
+    chmod 755 $fzfcmd
+
+    if [ -n "$kak_client_env_TMUX" ]; then
+        [ -n "${tmux_height%%*%}" ] && measure="-p" || measure="-p"
+        cmd="command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd; rm $fzfcmd'"
+    elif [ -n "$kak_opt_termcmd" ]; then
+        cmd="$kak_opt_termcmd 'sh -c $fzfcmd; rm $fzfcmd'"
+    else
+        printf "%s\n" "fail %{termcmd option is not set}"
+        rm $fzfcmd
+        rm $tmp
+        exit
+    fi
+
     (
         eval "$cmd"
+        while [ -e $fzfcmd ]; do
+            sleep 0.1
+        done
         if [ -s $tmp ]; then
             (
                 read action
                 read buf
                 if [ "$action" = "ctrl-d" ]; then
-                    $setbuf $kak_bufname
-                    $delbuf $buf
+                    printf "%s\n" "evaluate-commands -client $kak_client delete-buffer $buf" | kak -p $kak_session
+                    printf "%s\n" "evaluate-commands -client $kak_client fzf-buffer" | kak -p $kak_session
                 else
-                    $setbuf $buf
+                    printf "%s\n" "evaluate-commands -client $kak_client buffer $buf" | kak -p $kak_session
                 fi
             ) < $tmp
         else
-            $setbuf $kak_bufname
+            printf "%s\n" "evaluate-commands -client $kak_client buffer $kak_bufname" | kak -p $kak_session
         fi
         rm $tmp
-        rm $setbuf
-        rm $delbuf
-        rm $buffers
     ) > /dev/null 2>&1 < /dev/null &
 }}

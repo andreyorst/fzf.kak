@@ -149,7 +149,6 @@ define-command -hidden fzf -params 2..4 %{ evaluate-commands %sh{
             ) < $tmp
         fi
         rm $tmp
-    ) &
-    # > /dev/null 2>&1 < /dev/null &
+    ) > /dev/null 2>&1 < /dev/null &
 }}
 

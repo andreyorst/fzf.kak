@@ -5,18 +5,10 @@
 ![Github commits (since latest release)](https://img.shields.io/github/commits-since/andreyorst/fzf.kak/latest.svg)
 ![license](https://img.shields.io/github/license/andreyorst/fzf.kak.svg)
 
-> **fzf.kak** is a plugin for [Kakoune](https://github.com/mawww/kakoune) editor, that brings integration with [fzf](https://github.com/junegunn/fzf)
-> tool. This plugin is being tested against Kakoune 2018.09.04.
+**fzf.kak** is a plugin for [Kakoune](https://github.com/mawww/kakoune) editor, that brings integration with [fzf](https://github.com/junegunn/fzf)
+tool. This plugin is being tested against Kakoune 2018.09.04.
 
 ![showcase](https://user-images.githubusercontent.com/19470159/46813471-6ee76800-cd7f-11e8-89aa-123b3a5f9f1b.gif)
-
-### Dependencies
-|Tool      |Information                                                                            |
-|:--------:|:--------------------------------------------------------------------------------------|
-|tmux      |Depends on [fzf-tmux](https://github.com/junegunn/fzf/blob/master/bin/fzf-tmux) script.|
-|X11       |X11 supported via `termcmd` option.                                                    |
-|GNU Screen|GNU Screen is not yet supported.                                                       |
-|ctags     |[universal-ctags](https://github.com/universal-ctags/ctags) package.                   |
 
 ## Installation
 Recommended way to install is to use [plug.kak](https://github.com/andreyorst/plug.kak)  plugin
@@ -39,16 +31,14 @@ map global normal <c-p> ': fzf-mode<ret>'
 ```
 Each fzf subcommand has mnemonic mapping, like `f` for opening files, `t` for tags and so on.
 Available mappings:
-- <kbd>b</kbd> - Select buffer
-- <kbd>c</kbd> - Switch servers working directory
-- <kbd>f</kbd> - Search for file and open it
-- <kbd>v</kbd> - Edit file in version control system tree
-- <kbd><a-v></kbd> - Explicitly select which vcs command to run
-- <kbd>s</kbd> - Search over buffer contents and jump to result line
-- <kbd>t</kbd> - Browse ctags tags
-  fzf.kak supports filtering tags on per language basis. For each filetype
-  press <kbd>alt</kbd>+<kbd>filter key</kbd> specified in the info box to
-  reload fzf buffer with the desired filter.
+- <kbd>b</kbd>     - Select buffer
+- <kbd>c</kbd>     - Switch servers working directory
+- <kbd>f</kbd>     - Search for file and open it
+- <kbd>v</kbd>     - Edit file in version control system tree
+- <kbd>Alt+v</kbd> - Explicitly select which vcs command to run
+- <kbd>s</kbd>     - Search over buffer contents and jump to result line
+- <kbd>t</kbd>     - Browse ctags tags
+- <kbd>Alt+t<kbd>  - Select tag kind filter on per language basis 
 
 So for example pressing  <kbd>Ctrl+p</kbd><kbd>f</kbd>  will  open  fzf  at  the
 bottom of the Kakoune buffer, showing you all possible files.

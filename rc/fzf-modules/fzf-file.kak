@@ -44,17 +44,18 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_file_command ;;
     *)
         items_executable=$(printf "%s\n" "$kak_opt_fzf_file_command" | grep -o -E "[[:alpha:]]+" | head -1)
-        printf "%s\n" "echo -markup '{Information}''$executable'' is not supported by the script. fzf.kak may not work as you expect.'"
+        printf "%s\n" "echo -markup '{Information}'Warning: '$executable'' is not supported by fzf.kak.'"
         cmd=$kak_opt_fzf_file_command ;;
     esac
-    title="fzf file"
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
-<c-s>: open file in horizontal split
-<c-v>: open file in vertical split"
+
     message="Open single or multiple files.
 <ret>: open file in new buffer.
-<c-w>: open file in new window $additional_keybindings"
-    printf "%s\n" "info -title '$title' '$message'"
+<c-w>: open file in new window"
+    [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
+<c-s>: open file in horizontal split
+<c-v>: open file in vertical split"
+
+    printf "%s\n" "info -title 'fzf file' '$message$tmux_keybindings'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
     printf "%s\n" "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}

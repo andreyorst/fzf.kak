@@ -11,7 +11,7 @@
 map global fzf -docstring "open buffer" 'b' '<esc>: fzf-buffer<ret>'
 
 define-command -hidden fzf-buffer %{ evaluate-commands %sh{
-    echo "info -title 'fzf buffer' 'Set buffer to edit in current client
+    echo "info -title 'fzf buffer' 'Set buffer to edit in current client.
 <c-d>: delete selected buffer'"
 
     tmux_height=$kak_opt_fzf_tmux_height

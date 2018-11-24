@@ -93,7 +93,7 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
             highlighter=$kak_opt_fzf_highlighter ;;
         esac
 
-        if [ ! -z "${kak_client_env_TMUX}" ]; then
+        if [ -n "$kak_client_env_TMUX" ]; then
             preview_pos="pos=right:$kak_opt_fzf_preview_width;"
             tmux_height=$kak_opt_fzf_tmux_height_file_preview
         else
@@ -103,28 +103,34 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
         additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos $additional_flags"
     fi
 
-    tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf.XXXXXX)
-    shell=$(command -v sh)
-    if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$preview_pos $items_command | fzf-tmux -d $tmux_height $additional_flags > $tmp"
-    elif [ ! -z "${kak_opt_termcmd}" ]; then
-        fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
-        chmod 755 $fzfcmd
-        printf "%s\n" "cd $PWD && $preview_pos $items_command | SHELL=$shell fzf $additional_flags > $tmp" > $fzfcmd
-        cmd="$kak_opt_termcmd 'sh -c $fzfcmd'"
+    tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-tmp.XXXXXX)
+    fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
+    printf "%s\n" "cd $PWD && $preview_pos $items_command | SHELL=$(command -v sh) fzf $additional_flags > $tmp" > $fzfcmd
+    chmod 755 $fzfcmd
+
+    if [ -n "$kak_client_env_TMUX" ]; then
+        [ -n "${tmux_height%%*%}" ] && measure="-p" || measure="-p"
+        cmd="command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd; rm $fzfcmd'"
+    elif [ -n "$kak_opt_termcmd" ]; then
+        cmd="$kak_opt_termcmd 'sh -c $fzfcmd; rm $fzfcmd'"
     else
         printf "%s\n" "fail %{termcmd option is not set}"
+        rm $fzfcmd
+        rm $tmp
         exit
     fi
 
     (
         eval "$cmd"
+        while [ -e $fzfcmd ]; do
+            sleep 0.1
+        done
         if [ -s $tmp ]; then
             (
                 read action
                 case $action in
                     ctrl-w)
-                        [ ! -z "${kak_client_env_TMUX}" ] && wincmd="tmux-new-window" || wincmd="x11-new" ;;
+                        [ -n "$kak_client_env_TMUX" ] && wincmd="tmux-new-window" || wincmd="x11-new" ;;
                     ctrl-s)
                         wincmd="tmux-new-vertical" ;;
                     ctrl-v)
@@ -141,7 +147,6 @@ define-command -hidden fzf -params 2..3 %{ evaluate-commands %sh{
             ) < $tmp
         fi
         rm $tmp
-        [ -n "$fzfcmd" ] && rm $fzfcmd
     ) > /dev/null 2>&1 < /dev/null &
 }}
 

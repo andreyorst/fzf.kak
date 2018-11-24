@@ -13,7 +13,7 @@ Supported tools:
     Git :      ""git""
 
 Default arguments:
-    ""git ls-tree --name-only -r HEAD""
+    ""git ls-tree --full-tree --name-only -r HEAD""
 " \
 str fzf_git_command "git"
 
@@ -22,7 +22,7 @@ map global fzf-vcs -docstring "edit file from Git tree" 'g' '<esc>: fzf-git<ret>
 define-command -hidden fzf-git %{ evaluate-commands %sh{
     case $kak_opt_fzf_git_command in
     git)
-        cmd="git ls-tree --name-only -r HEAD" ;;
+        cmd="git ls-tree --full-tree --name-only -r HEAD" ;;
     git*)
         cmd=$kak_opt_fzf_git_command ;;
     esac

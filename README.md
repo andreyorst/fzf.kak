@@ -38,7 +38,7 @@ Available mappings:
 - <kbd>Alt+v</kbd> - Explicitly select which vcs command to run
 - <kbd>s</kbd>     - Search over buffer contents and jump to result line
 - <kbd>t</kbd>     - Browse ctags tags
-- <kbd>Alt+t<kbd>  - Select tag kind filter on per language basis 
+- <kbd>Alt+t</kbd> - Select tag kind filter on per language basis 
 
 So for example pressing  <kbd>Ctrl+p</kbd><kbd>f</kbd>  will  open  fzf  at  the
 bottom of the Kakoune buffer, showing you all possible files.

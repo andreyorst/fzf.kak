@@ -15,7 +15,7 @@ Recommended way to install is to use [plug.kak](https://github.com/andreyorst/pl
 manager. You can install **fzf.kak** by adding this to your `kakrc`:
 
 ```kak
-plug andreyorst/fzf.kak
+plug "andreyorst/fzf.kak"
 ```
 
 Then reload Kakoune config or restart Kakoune and run `:plug-install`. 
@@ -23,16 +23,18 @@ Then reload Kakoune config or restart Kakoune and run `:plug-install`.
 Or install this plugin any other preferred way.
 
 ## Usage
-There's no default key binking to invoke fzf, but **fzf.kak** provides a `fzf-mode` command that can be mapped to preferred key.
+There's no default key binding to invoke fzf, but **fzf.kak** provides a `fzf-mode` command that can be mapped to preferred key.
 You can set your own mapping to invoke `fzf-mode`:
-```
+
+```kak
 map global normal <c-p> ': fzf-mode<ret>'
 # note that the space after colon is intentional to suppess fzf-mode to show in command history
 ```
-Each fzf subcommand has mnemonic mapping, like `f` for opening files, `t` for tags and so on.
+
+Each fzf sub-command has mnemonic mapping, like `f` for opening files, `t` for tags and so on.
 Available mappings:
 - <kbd>b</kbd>     - Select buffer
-- <kbd>c</kbd>     - Switch servers working directory
+- <kbd>c</kbd>     - Switch server's working directory
 - <kbd>f</kbd>     - Search for file and open it
 - <kbd>v</kbd>     - Edit file in version control system tree
 - <kbd>Alt+v</kbd> - Explicitly select which vcs command to run
@@ -48,9 +50,9 @@ bottom of the Kakoune buffer, showing you all possible files.
 
 #### Tmux
 When using inside tmux, fzf will use bottom split. Height of this split can be changed with `fzf_tmux_height` option.
-`fzf_tmux_height_file_preview` option is used to control height of the split when you do file searching.
+`fzf_tmux_height_file_preview` option is used to control height of the split when you do file searching with file-preview turned on.
 
-#### Files
+#### File with file-preview turned on.
 You can configure what command to use to search for files, and it's arguments.
 Supported tools are [GNU Find](https://www.gnu.org/software/findutils/), [The Silver Searcher](https://github.com/ggreer/the_silver_searcher), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd). GNU find is used by default, but you can switch to another one. There are some default values for those, so you can go:
 
@@ -80,7 +82,7 @@ You also able to set parameters to vcs command to use to provide project files. 
 * `fzf_hg_command`
 
 Other VCS are not supported officially. Open a feature request if you want some unsupported VCS to be included.
-You also can change one of options to contain your vcs command, and use this command explicitly from vcs submode.
+You also can change one of options to contain your VCS command, and use this command explicitly from VCS sub-mode.
 
 #### ctags
 It is also possible to add parameters to ctags search executable. like `sort -u` and others:
@@ -122,20 +124,3 @@ You can disable the preview window in fzf window by setting `fzf_preview` option
 ```kak
 set-option global fzf_preview false
 ```
-
-## Some demonstration gifs:
-### Opening files:
-![files](https://user-images.githubusercontent.com/19470159/45917778-3988e200-be85-11e8-890d-b180d013b99e.gif)
-
-### Searching tags with universal-ctags
-![ctags](https://user-images.githubusercontent.com/19470159/45917775-3988e200-be85-11e8-8959-d7ddf17961b7.gif)
-
-### Browsing Git tree files
-![git](https://user-images.githubusercontent.com/19470159/45917779-3988e200-be85-11e8-9136-c0c830e838bc.gif)
-
-### Switching buffers
-![buffers](https://user-images.githubusercontent.com/19470159/45917774-38f04b80-be85-11e8-963b-5721bd6364b3.gif)
-
-### Changing directories
-![dirs](https://user-images.githubusercontent.com/19470159/45917776-3988e200-be85-11e8-89bf-7c1453806c83.gif)
-

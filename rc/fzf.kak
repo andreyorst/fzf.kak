@@ -8,7 +8,7 @@
 # │ different fzf commands.         │
 # ╰─────────────────────────────────╯
 
-try %{ declare-user-mode fzf } catch %{echo -markup "{Error}Can't declare mode 'fzf' - already exists"}
+try %{ declare-user-mode fzf } catch %{ echo -markup "{Error}Can't declare mode 'fzf' - already exists" }
 
 # Options
 declare-option -docstring 'allow showing preview window
@@ -63,8 +63,36 @@ Best used with mapping like:
 " \
 fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
 
-define-command -hidden fzf -params 2..4 %{ evaluate-commands %sh{
-    callback=$1
+define-command -hidden -docstring \
+"fzf <command> <items command> [<fzf args> <extra commands>]: generic fzf command.
+This command can be used to create new fzf wrappers for various Kakoune or external
+features. More about arguments:
+
+<command>:
+The <command> is a Kakoune command that should be used after fzf returns some result.
+For example to open file chooser we can call fzf with `edit` as a command:
+'fzf %{edit} %{<items command>}'
+After choosing one or more files in fzf, <command> will be used with each of them.
+
+<items command>
+This is the shell command that is used to provide list of values to fzf. It can be
+any command that provides newline separated list of items, which is then piped to fzf.
+
+<fzf args>
+These are additional flags for fzf program, that are passed to it. You can check them
+in fzf manual.
+
+<extra commands>
+This is extra commands that are preformed after fzf finishis and main command was
+executed. This can be used to invoke fzf back, like in fzf-cd command, or to execute
+any other Kakoune command that is meaningfull in current situation. This is more is
+a workaround of problem with executing composite commands, where fzf result should
+be in the middle of the command and may be changed or removed it further versions.
+
+If you want to develop a module with fzf command, feel free to check for existing
+module implementations in 'rc/fzf-modules' directory." \
+fzf -params 2..4 %{ evaluate-commands %sh{
+    command=$1
     items_command=$2
     additional_flags=$3
     extra_action=$4
@@ -76,7 +104,7 @@ define-command -hidden fzf -params 2..4 %{ evaluate-commands %sh{
         exit
     fi
 
-    if [ "$callback" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
+    if [ "$command" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
         case $kak_opt_fzf_highlighter in
         bat)
             highlighter="bat --color=always --style=plain {}" ;;
@@ -137,10 +165,10 @@ define-command -hidden fzf -params 2..4 %{ evaluate-commands %sh{
                     ctrl-v)
                         wincmd="tmux-new-horizontal" ;;
                     *)
-                        [ -n "$action" ] && printf "%s\n" "evaluate-commands -client $kak_client '$callback' '$action'" | kak -p $kak_session ;;
+                        [ -n "$action" ] && printf "%s\n" "evaluate-commands -client $kak_client '$command' '$action'" | kak -p $kak_session ;;
                 esac
                 kakoune_command() {
-                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd $callback %{$1}"
+                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd $command %{$1}"
                 }
                 while read item; do
                     kakoune_command "$item" | kak -p $kak_session

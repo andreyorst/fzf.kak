@@ -26,38 +26,6 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
         *)
             items_command=$kak_opt_fzf_cd_command ;;
     esac
-
-    tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-tmp.XXXXXX)
-    fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
-    printf "%s\n" "cd $PWD && $items_command | SHELL=$(command -v sh) fzf > $tmp" > $fzfcmd
-    chmod 755 $fzfcmd
-
-    if [ -n "$kak_client_env_TMUX" ]; then
-        [ -n "${tmux_height%%*%}" ] && measure="-p" || measure="-p"
-        cmd="command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd; rm $fzfcmd'"
-    elif [ -n "$kak_opt_termcmd" ]; then
-        cmd="$kak_opt_termcmd 'sh -c $fzfcmd; rm $fzfcmd'"
-    else
-        printf "%s\n" "fail %{termcmd option is not set}"
-        rm $fzfcmd
-        rm $tmp
-        exit
-    fi
-
-    (
-        eval "$cmd"
-        while [ -e $fzfcmd ]; do
-            sleep 0.1
-        done
-        if [ -s $tmp ]; then
-            (
-                while read item; do
-                    printf "%s\n" "evaluate-commands -client $kak_client change-directory %{$item}" | kak -p $kak_session
-                    printf "%s\n" "evaluate-commands -client $kak_client fzf-cd" | kak -p $kak_session
-                done
-            ) < $tmp
-        fi
-        rm $tmp
-    ) > /dev/null 2>&1 < /dev/null &
+    printf "%s\n" "fzf %{change-directory} %{$items_command} %{&& printf '%s\n' '; evaluate-commands fzf-cd'}"
 }}
 

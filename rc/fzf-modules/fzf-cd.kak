@@ -17,6 +17,7 @@ str fzf_cd_command "find"
 map global fzf -docstring "change directory" 'c' '<esc>: fzf-cd<ret>'
 
 define-command -hidden fzf-cd %{ evaluate-commands %sh{
+    tmux_height=$kak_opt_fzf_tmux_height
     printf '%s\n' "info -title %{fzf change directory} %{Change the server's working directory}"
 
     case $kak_opt_fzf_cd_command in
@@ -26,39 +27,37 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
             items_command=$kak_opt_fzf_cd_command ;;
     esac
 
-    tmux_height=$kak_opt_fzf_tmux_height
+    tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-tmp.XXXXXX)
+    fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
+    printf "%s\n" "cd $PWD && $items_command | SHELL=$(command -v sh) fzf > $tmp" > $fzfcmd
+    chmod 755 $fzfcmd
 
-    items_executable=$(printf "%s\n" "$items_command" | grep -o -E "[[:alpha:]]+" | head -1)
-    if [ -z $(command -v $items_executable) ]; then
-        printf "%s\n" "fail %{'$items_executable' executable not found}"
-        exit
-    fi
-
-    tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf.XXXXXX)
-
-    if [ ! -z "${kak_client_env_TMUX}" ]; then
-        cmd="$items_command | fzf-tmux -d $tmux_height > $tmp"
-    elif [ ! -z "${kak_opt_termcmd}" ]; then
-        fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
-        chmod 755 $fzfcmd
-        printf "%s\n" "cd $PWD && $items_command | fzf > $tmp" > $fzfcmd
-        cmd="$kak_opt_termcmd 'sh -c $fzfcmd'"
+    if [ -n "$kak_client_env_TMUX" ]; then
+        [ -n "${tmux_height%%*%}" ] && measure="-p" || measure="-p"
+        cmd="command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd; rm $fzfcmd'"
+    elif [ -n "$kak_opt_termcmd" ]; then
+        cmd="$kak_opt_termcmd 'sh -c $fzfcmd; rm $fzfcmd'"
     else
-        printf "%s\n" "fail termcmd option is not set"
+        printf "%s\n" "fail %{termcmd option is not set}"
+        rm $fzfcmd
+        rm $tmp
         exit
     fi
 
     (
         eval "$cmd"
+        while [ -e $fzfcmd ]; do
+            sleep 0.1
+        done
         if [ -s $tmp ]; then
             (
                 while read item; do
-                    printf "%s\n" "evaluate-commands -client $kak_client 'change-directory' '$item'" | kak -p $kak_session
+                    printf "%s\n" "evaluate-commands -client $kak_client change-directory %{$item}" | kak -p $kak_session
                     printf "%s\n" "evaluate-commands -client $kak_client fzf-cd" | kak -p $kak_session
                 done
             ) < $tmp
         fi
         rm $tmp
-        [ -z "$fzfcmd" ] && rm $fzfcmd
     ) > /dev/null 2>&1 < /dev/null &
 }}
+

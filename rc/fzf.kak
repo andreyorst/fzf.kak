@@ -165,15 +165,18 @@ fzf -params 2..4 %{ evaluate-commands %sh{
                     ctrl-v)
                         wincmd="tmux-new-horizontal" ;;
                     *)
-                        [ -n "$action" ] && printf "%s\n" "evaluate-commands -client $kak_client '$command' '$action'" | kak -p $kak_session ;;
+                        if [ -n "$action" ]; then
+                            printf "%s\n" "evaluate-commands -client $kak_client '$command' '$action'" | kak -p $kak_session
+                            [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action" | kak -p $kak_session
+                        fi ;;
                 esac
                 kakoune_command() {
                     printf "%s\n" "evaluate-commands -client $kak_client $wincmd $command %{$1}"
+                    [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action"
                 }
                 while read item; do
                     kakoune_command "$item" | kak -p $kak_session
                 done
-                [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action" | kak -p $kak_session
             ) < $tmp
         fi
         rm $tmp

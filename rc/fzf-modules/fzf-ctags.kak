@@ -833,6 +833,6 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
     printf "%s\n" "info -title 'fzf tag' '$message$tmux_keybindings'"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "set-option window ctagsfiles %{$path/$kak_opt_fzf_tag_file}"
+    printf "%s\n" "set-option -add window ctagsfiles %{$path/$kak_opt_fzf_tag_file}"
     printf "%s\n" "fzf %{ctags-search} %{$cmd | awk '!a[\$0]++'} %{--expect ctrl-w $additional_flags}"
 }}

@@ -104,7 +104,7 @@ fzf -params 2..4 %{ evaluate-commands %sh{
         exit
     fi
 
-    if [ "$command" = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
+    if [ $command = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
         case $kak_opt_fzf_highlighter in
         bat)
             highlighter="bat --color=always --style=plain {}" ;;
@@ -122,14 +122,14 @@ fzf -params 2..4 %{ evaluate-commands %sh{
             highlighter=$kak_opt_fzf_highlighter ;;
         esac
 
-        if [ -n "$kak_client_env_TMUX" ]; then
-            preview_pos="pos=right:$kak_opt_fzf_preview_width;"
-            tmux_height=$kak_opt_fzf_tmux_height_file_preview
-        else
-            preview_pos="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:$kak_opt_fzf_preview_width || pos=top:$kak_opt_fzf_preview_height;"
-        fi
-
+        tmux_height=$kak_opt_fzf_tmux_height_file_preview
         additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos $additional_flags"
+    fi
+
+    if [ -n "$kak_client_env_TMUX" ]; then
+        preview_pos="pos=right:$kak_opt_fzf_preview_width;"
+    else
+        preview_pos="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:$kak_opt_fzf_preview_width || pos=top:$kak_opt_fzf_preview_height;"
     fi
 
     tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-tmp.XXXXXX)

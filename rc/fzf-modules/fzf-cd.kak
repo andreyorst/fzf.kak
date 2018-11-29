@@ -14,6 +14,21 @@ Default value:
 " \
 str fzf_cd_command "find"
 
+declare-option -docstring 'allow showing preview window while changing directories
+Default value:
+    false
+' \
+bool fzf_cd_preview false
+
+declare-option -docstring 'command to show list of directories in preview window
+Default value:
+    tree -d
+' \
+str cd_preview_cmd "tree -d {}"
+
+declare-option -docstring 'maximum amount of previewed directories' \
+int fzf_preview_dirs '300'
+
 map global fzf -docstring "change directory" 'c' '<esc>: fzf-cd<ret>'
 
 define-command -hidden fzf-cd %{ evaluate-commands %sh{
@@ -26,6 +41,9 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
         *)
             items_command=$kak_opt_fzf_cd_command ;;
     esac
-    printf "%s\n" "fzf %{change-directory} %{$items_command} %{} %{fzf-cd}"
+    if [ $kak_opt_fzf_cd_preview = "true" ]; then
+        preview="--preview '($kak_opt_cd_preview_cmd) 2>/dev/null | head -n $kak_opt_fzf_preview_dirs'"
+    fi
+    printf "%s\n" "fzf %{change-directory} %{$items_command} %{$preview} %{fzf-cd}"
 }}
 

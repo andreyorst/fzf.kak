@@ -134,14 +134,14 @@ fzf -params 2..4 %{ evaluate-commands %sh{
 
     tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-tmp.XXXXXX)
     fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
-    printf "%s\n" "cd $PWD && $preview_pos $items_command | SHELL=$(command -v sh) fzf $additional_flags > $tmp" > $fzfcmd
+    printf "%s\n" "cd $PWD && $preview_pos $items_command | SHELL=$(command -v sh) fzf $additional_flags > $tmp; rm $fzfcmd" > $fzfcmd
     chmod 755 $fzfcmd
 
     if [ -n "$kak_client_env_TMUX" ]; then
         [ -n "${tmux_height%%*%}" ] && measure="-p" || measure="-p"
-        cmd="command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd; rm $fzfcmd'"
+        cmd="command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd'"
     elif [ -n "$kak_opt_termcmd" ]; then
-        cmd="$kak_opt_termcmd 'sh -c $fzfcmd; rm $fzfcmd'"
+        cmd="$kak_opt_termcmd 'sh -c $fzfcmd'"
     else
         printf "%s\n" "fail %{termcmd option is not set}"
         rm $fzfcmd

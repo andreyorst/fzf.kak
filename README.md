@@ -11,7 +11,7 @@ tool. This plugin is being tested against Kakoune 2018.09.04.
 ![showcase](https://user-images.githubusercontent.com/19470159/46813471-6ee76800-cd7f-11e8-89aa-123b3a5f9f1b.gif)
 
 ## Installation
-### With **[plug.kak](https://github.com/andreyorst/plug.kak)** (recommended)
+### With [plug.kak](https://github.com/andreyorst/plug.kak) (recommended)
 Recommended way to install is to use plug.kak plugin manager.
 You can install **fzf.kak** by adding this to your `kakrc`:
 
@@ -63,6 +63,9 @@ You can see that we load less nested modules first, and then go deeper and deepe
 files within single depth level doesn't matter. This may look complex, but it makes plugin more versatile.
 And plugin managers, like [plug.kak](https://github.com/andreyorst/plug.kak) for example, just does all
 those steps for you.
+
+By the way, this structure makes it easy to extend plugin with new modules,
+and you [can add modules on your own](#writing-a-module)!
 
 ## Usage
 There's no default key binding to invoke fzf, but **fzf.kak** provides a `fzf-mode` command that can be mapped to preferred key.

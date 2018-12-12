@@ -11,8 +11,9 @@ tool. This plugin is being tested against Kakoune 2018.09.04.
 ![showcase](https://user-images.githubusercontent.com/19470159/46813471-6ee76800-cd7f-11e8-89aa-123b3a5f9f1b.gif)
 
 ## Installation
-Recommended way to install is to use [plug.kak](https://github.com/andreyorst/plug.kak)  plugin
-manager. You can install **fzf.kak** by adding this to your `kakrc`:
+### With **[plug.kak](https://github.com/andreyorst/plug.kak)** (recommended)
+Recommended way to install is to use plug.kak plugin manager.
+You can install **fzf.kak** by adding this to your `kakrc`:
 
 ```kak
 plug "andreyorst/fzf.kak"
@@ -20,7 +21,48 @@ plug "andreyorst/fzf.kak"
 
 Then reload Kakoune config or restart Kakoune and run `:plug-install`. 
 
-Or install this plugin any other preferred way.
+### Without plugin manager
+This plugin consists of several parts which are "modules", that provide different functions to plugin.
+There's central module that must be loaded before any other module, named `fzf.kak`, so in order to properly
+load **fzf.kak** plugin, you need to source it in your kakrc.
+
+Assuming that you've cloned **fzf.kak** repository to your Kakoune configuration folder:
+
+```sh
+source "~/.config/kak/fzf.kak/rc/fzf.kak" # loading base fzf module
+```
+
+This will load base fzf module, but It can't do anything on it's own. You can load only needed modules, to
+keep your configuration rather simple, or load every module if you need all plugin abilities:
+
+```sh
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/fzf-file.kak"   # fzf file chooser
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/fzf-buffer.kak" # switching buffers with fzf
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/fzf-search.kak" # search within file contents
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/fzf-cd.kak"     # change server's working directory
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/fzf-ctags.kak"  # search for tag in your project ctags file
+```
+
+The same principle is applied to handling different version control systems. You need a base module for fzf,
+called `fzf-vcs.kak` and its submodules for each VCS. There are plenty of VC systems, so modules come in handy.
+
+```sh
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/fzf-vcs.kak" # VCS base module
+```
+
+So if you never work with, say, GNU Bazaar, or Mercurial you can remove them from your configuration.
+
+```sh
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/VCS/fzf-bzr.kak" # GNU Bazaar support
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/VCS/fzf-git.kak" # Git support module
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/VCS/fzf-hg.kak"  # Mercurial VCS
+source "~/.config/kak/plugins/fzf.kak/rc/fzf-modules/VCS/fzf-svn.kak" # Subversion module
+```
+
+You can see that we load less nested modules first, and then go deeper and deeper. Besides that order of
+files within single depth level doesn't matter. This may look complex, but it makes plugin more versatile.
+And plugin managers, like [plug.kak](https://github.com/andreyorst/plug.kak) for example, just does all
+those steps for you.
 
 ## Usage
 There's no default key binding to invoke fzf, but **fzf.kak** provides a `fzf-mode` command that can be mapped to preferred key.

@@ -159,19 +159,23 @@ fzf -params 2..4 %{ evaluate-commands %sh{
                 read action
                 case $action in
                     ctrl-w)
-                        [ -n "$kak_client_env_TMUX" ] && wincmd="tmux-new-window" || wincmd="x11-new" ;;
+                        [ -n "$kak_client_env_TMUX" ] && wincmd="tmux-terminal-window" || wincmd="x11-terminal" ;;
                     ctrl-s)
-                        wincmd="tmux-new-vertical" ;;
+                        wincmd="tmux-terminal-vertical" ;;
                     ctrl-v)
-                        wincmd="tmux-new-horizontal" ;;
+                        wincmd="tmux-terminal-horizontal" ;;
                     *)
                         if [ -n "$action" ]; then
                             printf "%s\n" "evaluate-commands -client $kak_client '$command' '$action'" | kak -p $kak_session
                             [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action" | kak -p $kak_session
                         fi ;;
                 esac
+                if [ -n "$wincmd" ]; then
+                    wincmd="%{$wincmd kak -c $kak_session -e "
+                    closer="}"
+                fi
                 kakoune_command() {
-                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd $command %{$1}"
+                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd %{$command %{$1}}$closer"
                     [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action"
                 }
                 while read item; do

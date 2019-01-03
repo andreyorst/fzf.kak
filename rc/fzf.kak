@@ -63,6 +63,38 @@ Best used with mapping like:
 " \
 fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
 
+define-command -hidden fzf-vertical -params 2 %{
+    try %{
+        tmux-terminal-vertical kak -c %val{session} -e "%arg{1} %arg{2}"
+    } catch %{
+        tmux-new-vertical "%arg{1} %arg{2}"
+    }
+}
+
+define-command -hidden fzf-horizontal -params 2 %{
+    try %{
+        tmux-terminal-horizontal kak -c %val{session} -e "%arg{1} %arg{2}"
+    } catch %{
+        tmux-new-horizontal "%arg{1} %arg{2}"
+    }
+}
+
+define-command -hidden fzf-window -params 2 %{
+    try %sh{
+        if [ -n "$kak_client_env_TMUX" ]; then
+            printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{1} %arg{2}"'
+        else
+            printf "%s\n" 'x11-terminal kak -c %val{session} -e "%arg{1} %arg{2}"'
+        fi
+    } catch %sh{
+        if [ -n "$kak_client_env_TMUX" ]; then
+            printf "%s\n" 'tmux-new-window "%arg{1} %arg{2}"'
+        else
+            printf "%s\n" 'x11-new "%arg{1} %arg{2}"'
+        fi
+    }
+}
+
 define-command -hidden -docstring \
 "fzf <command> <items command> [<fzf args> <extra commands>]: generic fzf command.
 This command can be used to create new fzf wrappers for various Kakoune or external
@@ -159,11 +191,11 @@ fzf -params 2..4 %{ evaluate-commands %sh{
                 read action
                 case $action in
                     ctrl-w)
-                        [ -n "$kak_client_env_TMUX" ] && wincmd="tmux-new-window" || wincmd="x11-new" ;;
+                        wincmd="fzf-window" ;;
                     ctrl-s)
-                        wincmd="tmux-new-vertical" ;;
+                        wincmd="fzf-vertical" ;;
                     ctrl-v)
-                        wincmd="tmux-new-horizontal" ;;
+                        wincmd="fzf-horizontal" ;;
                     *)
                         if [ -n "$action" ]; then
                             printf "%s\n" "evaluate-commands -client $kak_client '$command' '$action'" | kak -p $kak_session

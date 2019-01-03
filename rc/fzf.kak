@@ -84,7 +84,7 @@ define-command -hidden fzf-window -params 2 %{
         if [ -n "$kak_client_env_TMUX" ]; then
             printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{1} %arg{2}"'
         else
-            printf "%s\n" 'x11-erminal kak -c %val{session} -e "%arg{1} %arg{2}"'
+            printf "%s\n" 'x11-terminal kak -c %val{session} -e "%arg{1} %arg{2}"'
         fi
     } catch %sh{
         if [ -n "$kak_client_env_TMUX" ]; then

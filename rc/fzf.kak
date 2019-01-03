@@ -63,6 +63,38 @@ Best used with mapping like:
 " \
 fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
 
+define-command -hidden fzf-vertical -params 2 %{
+    try %{
+        tmux-terminal-vertical kak -c %val{session} -e "%arg{1} %arg{2}"
+    } catch %{
+        tmux-new-vertical "%arg{1} %arg{2}"
+    }
+}
+
+define-command -hidden fzf-horizontal -params 2 %{
+    try %{
+        tmux-terminal-horizontal kak -c %val{session} -e "%arg{1} %arg{2}"
+    } catch %{
+        tmux-new-horizontal "%arg{1} %arg{2}"
+    }
+}
+
+define-command -hidden fzf-window -params 2 %{
+    try %sh{
+        if [ -n "$kak_client_env_TMUX" ]; then
+            printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{1} %arg{2}"'
+        else
+            printf "%s\n" 'x11-erminal kak -c %val{session} -e "%arg{1} %arg{2}"'
+        fi
+    } catch %sh{
+        if [ -n "$kak_client_env_TMUX" ]; then
+            printf "%s\n" 'tmux-new-window "%arg{1} %arg{2}"'
+        else
+            printf "%s\n" 'x11-new "%arg{1} %arg{2}"'
+        fi
+    }
+}
+
 define-command -hidden -docstring \
 "fzf <command> <items command> [<fzf args> <extra commands>]: generic fzf command.
 This command can be used to create new fzf wrappers for various Kakoune or external
@@ -159,23 +191,19 @@ fzf -params 2..4 %{ evaluate-commands %sh{
                 read action
                 case $action in
                     ctrl-w)
-                        [ -n "$kak_client_env_TMUX" ] && wincmd="tmux-terminal-window" || wincmd="x11-terminal" ;;
+                        wincmd="fzf-window" ;;
                     ctrl-s)
-                        wincmd="tmux-terminal-vertical" ;;
+                        wincmd="fzf-vertical" ;;
                     ctrl-v)
-                        wincmd="tmux-terminal-horizontal" ;;
+                        wincmd="fzf-horizontal" ;;
                     *)
                         if [ -n "$action" ]; then
                             printf "%s\n" "evaluate-commands -client $kak_client '$command' '$action'" | kak -p $kak_session
                             [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action" | kak -p $kak_session
                         fi ;;
                 esac
-                if [ -n "$wincmd" ]; then
-                    wincmd="%{$wincmd kak -c $kak_session -e "
-                    closer="}"
-                fi
                 kakoune_command() {
-                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd %{$command %{$1}}$closer"
+                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd $command %{$1}"
                     [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action"
                 }
                 while read item; do

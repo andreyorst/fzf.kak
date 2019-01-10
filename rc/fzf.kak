@@ -63,34 +63,34 @@ Best used with mapping like:
 " \
 fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
 
-define-command -hidden fzf-vertical -params 2 %{
+define-command -hidden fzf-vertical -params .. %{
     try %{
-        tmux-terminal-vertical kak -c %val{session} -e "%arg{1} %arg{2}"
+        tmux-terminal-vertical kak -c %val{session} -e "%arg{@}"
     } catch %{
-        tmux-new-vertical "%arg{1} %arg{2}"
+        tmux-new-vertical "%arg{@}"
     }
 }
 
-define-command -hidden fzf-horizontal -params 2 %{
+define-command -hidden fzf-horizontal -params .. %{
     try %{
-        tmux-terminal-horizontal kak -c %val{session} -e "%arg{1} %arg{2}"
+        tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
     } catch %{
-        tmux-new-horizontal "%arg{1} %arg{2}"
+        tmux-new-horizontal "%arg{@}"
     }
 }
 
-define-command -hidden fzf-window -params 2 %{
+define-command -hidden fzf-window -params .. %{
     try %sh{
         if [ -n "$kak_client_env_TMUX" ]; then
-            printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{1} %arg{2}"'
+            printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{@}"'
         else
-            printf "%s\n" 'x11-terminal kak -c %val{session} -e "%arg{1} %arg{2}"'
+            printf "%s\n" 'x11-terminal kak -c %val{session} -e "%arg{@}"'
         fi
     } catch %sh{
         if [ -n "$kak_client_env_TMUX" ]; then
-            printf "%s\n" 'tmux-new-window "%arg{1} %arg{2}"'
+            printf "%s\n" 'tmux-new-window "%arg{@}"'
         else
-            printf "%s\n" 'x11-new "%arg{1} %arg{2}"'
+            printf "%s\n" 'x11-new "%arg{@}"'
         fi
     }
 }

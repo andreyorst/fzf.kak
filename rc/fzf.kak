@@ -115,7 +115,7 @@ These are additional flags for fzf program, that are passed to it. You can check
 in fzf manual.
 
 <extra commands>
-This is extra commands that are preformed after fzf finishis and main command was
+This is extra commands that are preformed after fzf finishes and main command was
 executed. This can be used to invoke fzf back, like in fzf-cd command, or to execute
 any other Kakoune command that is meaningfull in current situation. This is more is
 a workaround of problem with executing composite commands, where fzf result should

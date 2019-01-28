@@ -7,20 +7,9 @@
 # ╞════════════════════════════════════════╡
 # │ GitHub.com/andreyorst/fzf.kak          │
 # ╰────────────────────────────────────────╯
-
-declare-option -docstring "command to provide list of ctags to fzf. Arguments are supported
-Supported tools:
-    <package>:       <value>:
-    universal-ctags: ""readtags""
-
-Default arguments:
-    ""readtags -l | cut -f1""
-" \
-str fzf_tag_command "readtags"
-
 declare-option -docstring "file that should be used by fzf-tag to provide tags.
 Default value: tags" \
-str fzf_tag_file "tags"
+str fzf_tag_file_name "tags"
 
 map global fzf -docstring "find tag" 't' '<esc>: fzf-tag<ret>'
 
@@ -801,7 +790,7 @@ try %{
 define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
     path=$PWD
     while [ "$path" != "$HOME" ]; do
-        if [ -e "./$kak_opt_fzf_tag_file" ]; then
+        if [ -e "./$kak_opt_fzf_tag_file_name" ]; then
             break
         else
             cd ..
@@ -809,11 +798,11 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
         fi
     done
 
-    if [ "$path" = "$HOME" ] && [ ! -e "./$kak_opt_fzf_tag_file" ]; then
-        printf "%s\n" "echo -markup %{{Information}No '$kak_opt_fzf_tag_file' file found}"
+    if [ "$path" = "$HOME" ] && [ ! -e "./$kak_opt_fzf_tag_file_name" ]; then
+        printf "%s\n" "echo -markup %{{Information}No '$kak_opt_fzf_tag_file_name' file found}"
         exit
-    elif [ "$path" = "$HOME" ] && [ -e "./$kak_opt_fzf_tag_file" ]; then
-        printf "%s\n" "echo -markup %{{Information}'$kak_opt_fzf_tag_file' file found at $HOME. Check if it is right tag file}"
+    elif [ "$path" = "$HOME" ] && [ -e "./$kak_opt_fzf_tag_file_name" ]; then
+        printf "%s\n" "echo -markup %{{Information}'$kak_opt_fzf_tag_file_name' file found at $HOME. Check if it is right tag file}"
     fi
 
     if [ -n "$1" ]; then
@@ -833,6 +822,6 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
     printf "%s\n" "info -title 'fzf tag' '$message$tmux_keybindings'"
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "set-option -add window ctagsfiles %{$path/$kak_opt_fzf_tag_file}"
+    printf "%s\n" "set-option -add window ctagsfiles %{$path/$kak_opt_fzf_tag_file_name}"
     printf "%s\n" "fzf %{ctags-search} %{$cmd | awk '!a[\$0]++'} %{--expect ctrl-w $additional_flags}"
 }}

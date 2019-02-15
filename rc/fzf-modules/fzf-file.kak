@@ -17,7 +17,7 @@ Supported tools:
     fd:                  ""fd""
 
 Default arguments:
-    find: ""find -type f -follow""
+    find: ""find -L . -type f""
     ag:   ""ag -l -f --hidden --one-device .""
     rg:   ""rg -L --hidden --files""
     fd:   ""fd --type f --follow""
@@ -33,7 +33,7 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
     fi
     case $kak_opt_fzf_file_command in
     find)
-        cmd="find -type f -follow" ;;
+        cmd="find -L . -type f" ;;
     ag)
         cmd="ag -l -f --hidden --one-device . " ;;
     rg)

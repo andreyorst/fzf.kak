@@ -10,7 +10,7 @@
 
 declare-option -docstring "command to provide list of directories to fzf.
 Default value:
-    find: (echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)
+    find: (echo .. && find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)
 " \
 str fzf_cd_command "find"
 
@@ -37,7 +37,7 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
 
     case $kak_opt_fzf_cd_command in
         find)
-            items_command="(echo .. && find \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)" ;;
+            items_command="(echo .. && find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)" ;;
         *)
             items_command=$kak_opt_fzf_cd_command ;;
     esac

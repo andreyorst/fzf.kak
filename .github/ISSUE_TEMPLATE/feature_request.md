@@ -1,8 +1,10 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: I need MORE FEATURES!
+title: "[Feature Request] "
+labels: ''
+assignees: ''
 
 ---
 
-<!-- If you requesting a feature please prepend "[Feature Request]" to issue name -->
-<!-- Describe what do you like to have in fzf.kak. If possible propose a way how it could be implemented -->
+<!-- Describe what do you like to have in fzf.kak. If possible, please propose a way how it could be implemented -->

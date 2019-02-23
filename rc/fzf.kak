@@ -166,7 +166,7 @@ fzf -params 2..4 %{ evaluate-commands %sh{
 
     tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-tmp.XXXXXX)
     fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
-    printf "%s\n" "cd $PWD && $preview_pos $items_command | SHELL=$(command -v sh) fzf $additional_flags > $tmp; rm $fzfcmd" > $fzfcmd
+    printf "%s\n" "cd \"$PWD\" && $preview_pos $items_command | SHELL=$(command -v sh) fzf $additional_flags > $tmp; rm $fzfcmd" > $fzfcmd
     chmod 755 $fzfcmd
 
     if [ -n "$kak_client_env_TMUX" ]; then

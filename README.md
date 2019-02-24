@@ -5,8 +5,7 @@
 ![Github commits (since latest release)](https://img.shields.io/github/commits-since/andreyorst/fzf.kak/latest.svg)
 ![license](https://img.shields.io/github/license/andreyorst/fzf.kak.svg)
 
-**fzf.kak** is a plugin for [Kakoune](https://github.com/mawww/kakoune) editor, that brings integration with [fzf](https://github.com/junegunn/fzf)
-tool. This plugin is being tested against Kakoune 2018.09.04.
+**fzf.kak** is a plugin for [Kakoune](https://github.com/mawww/kakoune) editor, that brings integration with [fzf](https://github.com/junegunn/fzf) tool. This plugin is being tested against Kakoune 2018.09.04. **fzf.kak** also supports [skim](https://github.com/lotabout/skim), which can be used via `fzf_implementation` option.
 
 ![showcase](https://user-images.githubusercontent.com/19470159/46813471-6ee76800-cd7f-11e8-89aa-123b3a5f9f1b.gif)
 

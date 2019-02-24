@@ -11,6 +11,12 @@
 try %{ declare-user-mode fzf } catch %{ echo -markup "{Error}Can't declare mode 'fzf' - already exists" }
 
 # Options
+declare-option -docstring 'implementation of fzf that you want to use.
+Currently supported implementations:
+    fzf:  github.com/junegunn/fzf
+    sk: github.com/lotabout/skim' \
+str fzf_implementation 'fzf'
+
 declare-option -docstring 'allow showing preview window
 Default value:
     true
@@ -166,7 +172,7 @@ fzf -params 2..4 %{ evaluate-commands %sh{
 
     tmp=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-tmp.XXXXXX)
     fzfcmd=$(mktemp ${TMPDIR:-/tmp}/kak-fzfcmd.XXXXXX)
-    printf "%s\n" "cd \"$PWD\" && $preview_pos $items_command | SHELL=$(command -v sh) fzf $additional_flags > $tmp; rm $fzfcmd" > $fzfcmd
+    printf "%s\n" "cd \"$PWD\" && $preview_pos $items_command | SHELL=$(command -v sh) $kak_opt_fzf_implementation $additional_flags > $tmp; rm $fzfcmd" > $fzfcmd
     chmod 755 $fzfcmd
 
     if [ -n "$kak_client_env_TMUX" ]; then

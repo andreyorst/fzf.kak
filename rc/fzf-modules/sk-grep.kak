@@ -8,7 +8,10 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
-declare-option str fzf_sk_grep_command 'grep -r'
+declare-option -docstring "what command to use to provide list of grep search matches.
+
+  Default value: 'grep -r'" \
+str fzf_sk_grep_command 'grep -r'
 
 evaluate-commands %sh{
     if [ -n "$(command -v sk)" ]; then
@@ -22,17 +25,28 @@ define-command -hidden sk-interactive-grep %{ evaluate-commands %sh{
     	exit
 	fi
     title="skim interactive grep"
-    message="Interactively grep pattern from current directory"
-    printf "%s\n" "info -title '$title' '$message'"
+    message="Interactively grep pattern from current directory
+<ret>: open search result in new buffer.
+<c-w>: open search result in new window"
+    [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
+<c-s>: open search result in horizontal split
+<c-v>: open search result in vertical split"
+
+    printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
     impl=$kak_opt_fzf_implementation
-    printf "%s\n" "set-option global fzf_implementation sk
-                   fzf %{fzf-sk-grep-handler} %{echo >/dev/null 2>&1} %{-i -c '$kak_opt_fzf_sk_grep_command {}'}
+    printf "%s\n" "set-option global fzf_implementation \"sk -i -c '$kak_opt_fzf_sk_grep_command {}'\"
+                   fzf %{fzf-sk-grep-handler} %{echo >/dev/null 2>&1} %{--expect ctrl-w $additional_flags}
                    set-option global fzf_implementation $impl"
 }}
 
 define-command fzf-sk-grep-handler -params 1 %{ evaluate-commands %sh{
-    file="${1%%:*}"
-    pattern="${1##:*}"
-    printf "%s\n" "edit -existing %{$file}; execute-keys /\Q$pattern"
+    printf "%s\n" "$1" | awk '{
+             file = $0; sub(/:.*/, "", file); gsub("&", "&&", file);
+             keys = $0; sub(/[^:]+:/, "", keys); gsub(/</, "<lt>", keys); gsub(/\t/, "<c-v><c-i>", keys); gsub("&", "&&", keys); gsub("\\\\/", "/", keys);
+             # print "echo -debug %&" file "&";
+             # print "echo -debug %&" keys "&";
+             print "edit -existing %&" file "&; execute-keys %&/\\Q" keys "<ret>vc&";
+         }'
 }}
 

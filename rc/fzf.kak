@@ -209,7 +209,7 @@ fzf -params 2..4 %{ evaluate-commands %sh{
                         fi ;;
                 esac
                 kakoune_command() {
-                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd $command %{$1}"
+                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd %{$command %{$1}}"
                     [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action"
                 }
                 while read item; do

@@ -9,9 +9,11 @@
 # ╰──────────────────────────────────────╯
 
 declare-option -docstring "what command to use to provide list of grep search matches.
+Grep output must follow the format of 'filename:line-number:text'
 
-  Default value: 'grep -r'" \
-str fzf_sk_grep_command 'grep -r'
+Default value:
+    grep -RHn" \
+str fzf_sk_grep_command 'grep -RHn'
 
 evaluate-commands %sh{
     if [ -n "$(command -v sk)" ]; then
@@ -43,10 +45,8 @@ define-command -hidden sk-interactive-grep %{ evaluate-commands %sh{
 define-command fzf-sk-grep-handler -params 1 %{ evaluate-commands %sh{
     printf "%s\n" "$1" | awk '{
              file = $0; sub(/:.*/, "", file); gsub("&", "&&", file);
-             keys = $0; sub(/[^:]+:/, "", keys); gsub(/</, "<lt>", keys); gsub(/\t/, "<c-v><c-i>", keys); gsub("&", "&&", keys); gsub("\\\\/", "/", keys);
-             # print "echo -debug %&" file "&";
-             # print "echo -debug %&" keys "&";
-             print "edit -existing %&" file "&; execute-keys %&/\\Q" keys "<ret>vc&";
+             line = $0; sub(/[^:]+:/, "", line); sub(/:.*/, "", line)
+             print "edit -existing %&" file "&; execute-keys %&" line "gxvc&";
          }'
 }}
 

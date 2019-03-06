@@ -176,7 +176,7 @@ fzf -params 2..4 %{ evaluate-commands %sh{
     chmod 755 $fzfcmd
 
     if [ -n "$kak_client_env_TMUX" ]; then
-        [ -n "${tmux_height%%*%}" ] && measure="-p" || measure="-p"
+        [ -n "${tmux_height%%*%}" ] && measure="-l" || measure="-p"
         cmd="command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd'"
     elif [ -n "$kak_opt_termcmd" ]; then
         cmd="$kak_opt_termcmd 'sh -c $fzfcmd'"
@@ -209,7 +209,7 @@ fzf -params 2..4 %{ evaluate-commands %sh{
                         fi ;;
                 esac
                 kakoune_command() {
-                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd $command %{$1}"
+                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd %{$command %{$1}}"
                     [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action"
                 }
                 while read item; do

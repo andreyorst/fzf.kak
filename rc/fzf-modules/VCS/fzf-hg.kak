@@ -20,6 +20,8 @@ str fzf_hg_command "hg"
 map global fzf-vcs -docstring "edit file from mercurial tree" 'h' '<esc>: fzf-hg<ret>'
 
 define-command -hidden fzf-hg %{ evaluate-commands %sh{
+    current_path=$(pwd)
+    repo_root=$(hg root)
     case $kak_opt_fzf_hg_command in
     hg)
         cmd="hg locate -f -0 -I .hg locate -f -0 -I ." ;;
@@ -27,6 +29,6 @@ define-command -hidden fzf-hg %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_hg_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf %{cd $repo_root; edit -existing} %{$cmd} %{-m --expect ctrl-w $additional_flags} %{cd $current_path}"
 }}
 

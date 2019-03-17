@@ -142,7 +142,7 @@ fzf -params 2..4 %{ evaluate-commands %sh{
         exit
     fi
 
-    if [ $command = "edit" ] && [ $kak_opt_fzf_preview = "true" ]; then
+    if [ -z "${command##edit*}" ] && [ $kak_opt_fzf_preview = "true" ]; then
         case $kak_opt_fzf_highlighter in
         bat)
             highlighter="bat --color=always --style=plain {}" ;;

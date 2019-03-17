@@ -13,20 +13,22 @@ Supported tools:
     Subversion: ""svn""
 
 Default arguments:
-    ""svn list -R . | grep -v '$/' | tr '\\n' '\\0'""
+    ""svn list -R $(svn info | awk -F': ' '/Working Copy Root Path: .*/ {print $2}') | grep -v '$/'""
 " \
 str fzf_svn_command "svn"
 
 map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-svn<ret>'
 
 define-command -hidden fzf-svn %{ evaluate-commands %sh{
+    current_path=$(pwd)
+    repo_root=$(svn info | awk -F': ' '/Working Copy Root Path: .*/ {print $2}')
     case $kak_opt_fzf_svn_command in
     svn)
-        cmd="svn list -R . | grep -v '$/' | tr '\\n' '\\0'" ;;
+        cmd="svn list -R $repo_root | grep -v '$/'" ;;
     svn*)
         cmd=$kak_opt_fzf_svn_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf %{cd $repo_root; edit -existing} %{$cmd} %{-m --expect ctrl-w $additional_flags} %{cd $current_path}"
 }}
 

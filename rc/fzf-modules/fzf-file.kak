@@ -57,6 +57,6 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
 
     printf "%s\n" "info -title 'fzf file' '$message$tmux_keybindings'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf %{edit -existing} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
 }}
 

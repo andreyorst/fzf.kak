@@ -20,6 +20,8 @@ str fzf_bzr_command "bzr"
 map global fzf-vcs -docstring "edit file from GNU Bazaar tree" 'b' '<esc>: fzf-bzr<ret>'
 
 define-command -hidden fzf-bzr %{ evaluate-commands %sh{
+    current_path=$(pwd)
+    repo_root=$(bzr root)
     case $kak_opt_fzf_bzr_command in
     bzr)
         cmd="bzr ls -R --versioned -0" ;;
@@ -27,6 +29,6 @@ define-command -hidden fzf-bzr %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_bzr_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf %{cd $repo_root; edit -existing} %{$cmd} %{-m --expect ctrl-w $additional_flags} %{cd $current_path}"
 }}
 

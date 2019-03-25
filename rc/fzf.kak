@@ -177,18 +177,13 @@ fzf -params 2..4 %{ evaluate-commands %sh{
 
     if [ -n "$kak_client_env_TMUX" ]; then
         [ -n "${tmux_height%%*%}" ] && measure="-l" || measure="-p"
-        cmd="command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd'"
-    elif [ -n "$kak_opt_termcmd" ]; then
-        cmd="$kak_opt_termcmd 'sh -c $fzfcmd'"
+        # cmd="nop %sh{ command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd' }"
     else
-        printf "%s\n" "fail %{termcmd option is not set}"
-        rm $fzfcmd
-        rm $tmp
-        exit
+        cmd="terminal %{$fzfcmd}"
     fi
 
     (
-        eval "$cmd"
+        printf "%s\n" "${cmd}" | kak -p ${kak_session}
         while [ -e $fzfcmd ]; do
             sleep 0.1
         done

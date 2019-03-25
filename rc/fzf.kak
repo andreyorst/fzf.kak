@@ -216,14 +216,26 @@ fzf -params 2..4 %{ evaluate-commands %sh{
     ) > /dev/null 2>&1 < /dev/null &
 }}
 
-define-command -docstring "" new-fzf -shell-script-candidates %{echo "-kak-cmd\n-fzf-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
+define-command -docstring \
+"fzf <switches> fzf-command: generic fzf command.
+This command can be used to create new fzf wrappers for various Kakoune or external
+features. More about arguments:
+
+Switches:
+-kak-cmd <command>: A Kakoune cmd that is applied to fzf resulting value.
+
+-fzf-cmd <items command>: A command that is used to provide list of values to fzf.
+-fzf-args <args>: Additional flags for fzf program
+-post-action <commands>: Extra commands that are preformed after `-kak-cmd' command." \
+new-fzf -shell-script-candidates %{echo "-kak-cmd\n-fzf-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
     while [ $# -gt 0 ]; do
         case $1 in
-            -kak-cmd)     shift; kak_cmd=$1 ;;
-            -fzf-cmd)     shift; fzf_cmd=$1 ;;
-            -fzf-args)    shift; fzf_args=$1 ;;
-            -post-action) shift; post_action=$1 ;;
-            *)            shift; ignore=$1 ;;
+            -kak-cmd)     shift; kak_cmd="$kak_cmd $1" ;;
+            -fzf-cmd)     shift; fzf_cmd="$fzf_cmd $1" ;;
+            -fzf-args)    shift; fzf_args="$fzf_args $1" ;;
+            -post-action) shift; post_action="$post_action $1" ;;
+            *)            ignore="$ignore $1" ;;
+        esac
         shift
     done
 }}

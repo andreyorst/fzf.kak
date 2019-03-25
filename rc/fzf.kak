@@ -216,3 +216,14 @@ fzf -params 2..4 %{ evaluate-commands %sh{
     ) > /dev/null 2>&1 < /dev/null &
 }}
 
+define-command -docstring "" new-fzf -shell-script-candidates %{echo "-kak-cmd\n-fzf-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
+    while [ $# -gt 0 ]; do
+        case $1 in
+            -kak-cmd)     shift; kak_cmd=$1 ;;
+            -fzf-cmd)     shift; fzf_cmd=$1 ;;
+            -fzf-args)    shift; fzf_args=$1 ;;
+            -post-action) shift; post_action=$1 ;;
+            *)            shift; ignore=$1 ;;
+        shift
+    done
+}}

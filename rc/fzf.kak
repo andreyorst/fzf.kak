@@ -177,7 +177,7 @@ fzf -params 2..4 %{ evaluate-commands %sh{
 
     if [ -n "$kak_client_env_TMUX" ]; then
         [ -n "${tmux_height%%*%}" ] && measure="-l" || measure="-p"
-        # cmd="nop %sh{ command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd' }"
+        cmd="nop %sh{ command tmux split-window $measure ${tmux_height%%%*} 'sh -c $fzfcmd' }"
     else
         cmd="terminal %{$fzfcmd}"
     fi

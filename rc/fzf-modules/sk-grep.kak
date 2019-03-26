@@ -15,6 +15,8 @@ Default value:
     grep -RHn" \
 str fzf_sk_grep_command 'grep -RHn'
 
+try %{ declare-user-mode fzf }
+
 evaluate-commands %sh{
     if [ -n "$(command -v sk)" ]; then
         printf "%s\n" "map global fzf -docstring %{Interactive grep with skim} 'g' '<esc>: fzf-sk-interactive-grep<ret>'"

@@ -8,7 +8,7 @@
 # │ different fzf commands.         │
 # ╰─────────────────────────────────╯
 
-try %{ declare-user-mode fzf } catch %{ echo -markup "{Error}Can't declare mode 'fzf' - already exists" }
+try %{ declare-user-mode fzf }
 
 # Options
 declare-option -docstring 'implementation of fzf that you want to use.

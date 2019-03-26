@@ -8,6 +8,7 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
+try %{ declare-user-mode fzf }
 map global fzf -docstring "search in buffer" 's' '<esc>: fzf-buffer-search<ret>'
 
 define-command -hidden fzf-buffer-search %{ evaluate-commands %sh{

@@ -11,6 +11,7 @@
 
 try %{ declare-user-mode fzf-vcs } catch %{echo -markup "{Error}Can't declare mode 'fzf-vcs' - already exists"}
 
+try %{ declare-user-mode fzf }
 map global fzf -docstring "edit file from vcs repo"      'v'     '<esc>: fzf-vcs<ret>'
 map global fzf -docstring "svitch to vcs selection mode" '<a-v>' '<esc>: fzf-vcs-mode<ret>'
 

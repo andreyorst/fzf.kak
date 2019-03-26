@@ -11,6 +11,7 @@ declare-option -docstring "file that should be used by fzf-tag to provide tags.
 Default value: tags" \
 str fzf_tag_file_name "tags"
 
+try %{ declare-user-mode fzf }
 map global fzf -docstring "find tag" 't' '<esc>: fzf-tag<ret>'
 
 # this huge try block defines filetype aware filter mappings for separate fzf-ctags mode

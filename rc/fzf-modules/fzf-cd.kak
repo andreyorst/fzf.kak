@@ -29,6 +29,7 @@ str cd_preview_cmd "tree -d {}"
 declare-option -docstring 'maximum amount of previewed directories' \
 int fzf_preview_dirs '300'
 
+try %{ declare-user-mode fzf }
 map global fzf -docstring "change directory" 'c' '<esc>: fzf-cd<ret>'
 
 define-command -hidden fzf-cd %{ evaluate-commands %sh{

@@ -24,6 +24,7 @@ Default arguments:
 " \
 str fzf_file_command "find"
 
+try %{ declare-user-mode fzf }
 map global fzf -docstring "open file" 'f' '<esc>: fzf-file<ret>'
 
 define-command -hidden fzf-file %{ evaluate-commands %sh{

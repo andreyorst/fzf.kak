@@ -8,6 +8,7 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
+try %{ declare-user-mode fzf }
 map global fzf -docstring "open buffer" 'b' '<esc>: fzf-buffer<ret>'
 
 define-command -hidden fzf-buffer %{ evaluate-commands %sh{

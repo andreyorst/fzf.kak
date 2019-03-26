@@ -17,6 +17,7 @@ Default arguments:
 " \
 str fzf_bzr_command "bzr"
 
+try %{ declare-user-mode fzf }
 map global fzf-vcs -docstring "edit file from GNU Bazaar tree" 'b' '<esc>: fzf-bzr<ret>'
 
 define-command -hidden fzf-bzr %{ evaluate-commands %sh{

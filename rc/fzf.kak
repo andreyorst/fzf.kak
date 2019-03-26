@@ -226,13 +226,14 @@ Switches:
     -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command.
     -preview: should fzf window include preview" \
 new-fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
+    tmux_height=$kak_opt_fzf_tmux_height
     while [ $# -gt 0 ]; do
         case $1 in
-            -kak-cmd)     shift; kak_cmd="${kak_cmd} $1" ;;
-            -items-cmd)     shift; items_cmd="${items_cmd} $1" ;;
+            -kak-cmd)     shift; kakoune_cmd="${kakoune_cmd} $1" ;;
+            -items-cmd)   shift; items_cmd="${items_cmd} $1" ;;
             -fzf-args)    shift; fzf_args="${fzf_args} $1" ;;
             -post-action) shift; post_action="${post_action} $1" ;;
-            -preview)     preview=true ;;
+            -preview)     preview="true" ;;
             *)            ignored="${ignored} $1" ;;
         esac
         shift
@@ -247,7 +248,7 @@ new-fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-
             *)         highlight_cmd="${kak_opt_fzf_highlight_cmd}" ;;
         esac
         if [ -n "${kak_client_env_TMUX}" ]; then
-            [ -z "${kak_cmd##edit*}" ] && tmux_height=$kak_opt_fzf_file_preview_tmux_height
+            [ -z "${kakoune_cmd##edit*}" ] && tmux_height=$kak_opt_fzf_file_preview_tmux_height
             preview_position="pos=right:${kak_opt_fzf_preview_width};"
         else
             preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
@@ -273,30 +274,27 @@ new-fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-
         while [ -e $fzfcmd ]; do
             sleep 0.1
         done
-        if [ -s $restul ]; then
+        if [ -s $result ]; then
             (
                 read action
                 case $action in
-                    ctrl-w)
-                        wincmd="fzf-window" ;;
-                    ctrl-s)
-                        wincmd="fzf-vertical" ;;
-                    ctrl-v)
-                        wincmd="fzf-horizontal" ;;
+                    ctrl-w) wincmd="fzf-window" ;;
+                    ctrl-s) wincmd="fzf-vertical" ;;
+                    ctrl-v) wincmd="fzf-horizontal" ;;
                     *)
                         if [ -n "$action" ]; then
-                            printf "%s\n" "evaluate-commands -client $kak_client '$command' '$action'" | kak -p $kak_session
-                            [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action" | kak -p $kak_session
+                            printf "%s\n" "evaluate-commands -client $kak_client '$kakoune_cmd' '$action'" | kak -p $kak_session
+                            [ -n "$post_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $post_action" | kak -p $kak_session
                         fi ;;
                 esac
                 kakoune_command() {
-                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd %{$command %{$1}}"
-                    [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action"
+                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd %{$kakoune_cmd %{$1}}"
+                    [ -n "$post_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $post_action"
                 }
                 while read item; do
                     kakoune_command "$item" | kak -p $kak_session
                 done
-            ) < $restul
+            ) < $result
         fi
         rm $fzf_tmp
     ) > /dev/null 2>&1 < /dev/null &

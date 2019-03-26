@@ -105,7 +105,7 @@ Switches:
     -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command.
     -preview-cmd: a preview command
     -preview: should fzf window include preview" \
-fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
+fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
     while [ $# -gt 0 ]; do
         case $1 in
             -kak-cmd)     shift; kakoune_cmd="$1" ;;
@@ -120,12 +120,15 @@ fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
     done
 
     if [ "${preview}" = "true" ]; then
+        # bake position option to define them at runtime
         if [ -n "${kak_client_env_TMUX}" ]; then
+            # tmux is special case, so it needs to check if current -kak-cmd is `edit'
             [ -z "${kakoune_cmd##edit*}" ] && tmux_height="${kak_opt_fzf_file_preview_tmux_height}"
             preview_position="pos=right:${kak_opt_fzf_preview_width};"
         else
             preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
         fi
+        # handle preview if not defined explicitly
         if [ ${kak_opt_fzf_preview} = "true" ] && [ -z "${preview_cmd}" ]; then
             case ${kak_opt_fzf_highlight_cmd} in
                 bat)       highlight_cmd="bat --color=always --style=plain {}" ;;
@@ -141,6 +144,8 @@ fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
     fzf_tmp=$(mktemp -d ${TMPDIR:-/tmp}/fzf.kak.XXXXXX)
     fzfcmd="${fzf_tmp}/fzfcmd"
     result="${fzf_tmp}/result"
+
+    # compose entire fzf command with all args into single file which will be executed later
     printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} | SHELL=$(command -v sh) ${kak_opt_fzf_implementation} ${fzf_args} ${preview_cmd} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
     chmod 755 ${fzfcmd}
 
@@ -164,8 +169,7 @@ fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
                     ctrl-w) wincmd="fzf-window" ;;
                     ctrl-s) wincmd="fzf-vertical" ;;
                     ctrl-v) wincmd="fzf-horizontal" ;;
-                    *)
-                        if [ -n "${action}" ]; then
+                    *)  if [ -n "${action}" ]; then
                             printf "%s\n" "evaluate-commands -client ${kak_client} '${kakoune_cmd}' '${action}'" | kak -p ${kak_session}
                             [ -n "${post_action}" ] && printf "%s\n" "evaluate-commands -client ${kak_client} ${post_action}" | kak -p ${kak_session}
                         fi ;;
@@ -176,6 +180,6 @@ fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
                 done
             ) < ${result}
         fi
-        rm ${fzf_tmp}
+        rm -rf ${fzf_tmp}
     ) > /dev/null 2>&1 < /dev/null &
 }}

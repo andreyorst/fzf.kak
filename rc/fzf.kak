@@ -123,13 +123,6 @@ fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
         shift
     done
 
-    printf "echo -debug %%{kakoune_cmd: %s}\n" "'$kakoune_cmd'"
-    printf "echo -debug %%{items_cmd:   %s}\n" "'$items_cmd'"
-    printf "echo -debug %%{fzf_args:    %s}\n" "'$fzf_args'"
-    printf "echo -debug %%{post_action: %s}\n" "'$post_action'"
-    printf "echo -debug %%{preview:     %s}\n" "'$preview'"
-    printf "echo -debug %%{ignored:     %s}\n" "'$ignored'"
-
     if [ "$preview" = "true" ] && [ ${kak_opt_fzf_preview} = "true" ]; then
         case ${kak_opt_fzf_highlight_cmd} in
             bat)       highlight_cmd="bat --color=always --style=plain {}" ;;

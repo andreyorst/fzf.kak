@@ -823,5 +823,5 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
 
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
     printf "%s\n" "set-option -add window ctagsfiles %{$path/$kak_opt_fzf_tag_file_name}"
-    printf "%s\n" "fzf %{ctags-search} %{$cmd | awk '!a[\$0]++'} %{--expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf -kak-cmd %{ctags-search} -items-cmd %{$cmd | awk '!a[\$0]++'} -fzf-args %{--expect ctrl-w $additional_flags}"
 }}

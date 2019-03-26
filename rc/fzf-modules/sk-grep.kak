@@ -38,7 +38,7 @@ define-command -hidden fzf-sk-interactive-grep %{ evaluate-commands %sh{
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
     impl=$kak_opt_fzf_implementation
     printf "%s\n" "set-option global fzf_implementation \"sk -i -c '$kak_opt_fzf_sk_grep_command {}'\"
-                   fzf %{fzf-sk-grep-handler} %{echo >/dev/null 2>&1} %{--expect ctrl-w $additional_flags}
+                   fzf -kak-cmd %{fzf-sk-grep-handler} -items-cmd %{echo >/dev/null 2>&1} -fzf-args %{--expect ctrl-w $additional_flags}
                    set-option global fzf_implementation $impl"
 }}
 

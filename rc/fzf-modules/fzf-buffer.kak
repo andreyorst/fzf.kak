@@ -27,5 +27,5 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
     printf "%s\n" "info -title 'fzf buffer' '$message$tmux_keybindings'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
 
-    printf "%s\n" "fzf %{buffer} %{(cat $buffers; rm $buffers)} %{--expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf -kak-cmd %{buffer} -items-cmd %{(cat $buffers; rm $buffers)} -fzf-args %{--expect ctrl-w $additional_flags}"
 }}

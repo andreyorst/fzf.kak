@@ -29,6 +29,6 @@ define-command -hidden fzf-bzr %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_bzr_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf %{cd $repo_root; edit -existing} %{$cmd} %{-m --expect ctrl-w $additional_flags} %{cd $current_path}"
+    printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ctrl-w $additional_flags} -post-action %{cd $current_path}"
 }}
 

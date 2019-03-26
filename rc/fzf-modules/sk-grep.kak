@@ -39,12 +39,12 @@ define-command -hidden fzf-sk-interactive-grep %{ evaluate-commands %sh{
     printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
     impl=$kak_opt_fzf_implementation
-    printf "%s\n" "set-option global fzf_implementation \"sk -i -c '$kak_opt_fzf_sk_grep_command {}'\"
+    printf "%s\n" "set-option global fzf_implementation %{sk -i -c '$kak_opt_fzf_sk_grep_command {}'}
                    fzf -kak-cmd %{fzf-sk-grep-handler} -items-cmd %{echo >/dev/null 2>&1} -fzf-args %{--expect ctrl-w $additional_flags}
-                   set-option global fzf_implementation $impl"
+                   set-option global fzf_implementation %{${impl}}"
 }}
 
-define-command fzf-sk-grep-handler -params 1 %{ evaluate-commands %sh{
+define-command -hidden fzf-sk-grep-handler -params 1 %{ evaluate-commands %sh{
     printf "%s\n" "$1" | awk '{
              file = $0; sub(/:.*/, "", file); gsub("&", "&&", file);
              line = $0; sub(/[^:]+:/, "", line); sub(/:.*/, "", line)

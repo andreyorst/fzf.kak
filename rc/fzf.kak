@@ -43,7 +43,7 @@ These are default arguments for the tools above:
     highlight: "highlight --failsafe -O ansi {}"
     rouge:     "rougify {}"
 ' \
-str fzf_highligh_cmd "highlight"
+str fzf_highlight_cmd "highlight"
 
 declare-option -docstring "height of fzf tmux split in screen lines or percents.
 Default value: 25%%" \
@@ -51,7 +51,7 @@ str fzf_tmux_height '25%'
 
 declare-option -docstring "height of fzf tmux split for file preview in screen lines or percents.
 Default value: 70%%" \
-str fzf_tmux_height_file_preview '70%'
+str fzf_file_preview_tmux_height '70%'
 
 declare-option -docstring "width of preview window.
 Default value: 50%%" \
@@ -143,7 +143,7 @@ fzf -params 2..4 %{ evaluate-commands %sh{
     fi
 
     if [ -z "${command##edit*}" ] && [ $kak_opt_fzf_preview = "true" ]; then
-        case $kak_opt_fzf_highligh_cmd in
+        case $kak_opt_fzf_highlight_cmd in
         bat)
             highlighter="bat --color=always --style=plain {}" ;;
         coderay)
@@ -153,14 +153,14 @@ fzf -params 2..4 %{ evaluate-commands %sh{
         rouge)
             highlighter="rougify {}" ;;
         bat*|coderay*|highlight*|rougify*)
-            highlighter=$kak_opt_fzf_highligh_cmd ;;
+            highlighter=$kak_opt_fzf_highlight_cmd ;;
         *)
-            executable=$(printf "%s\n" "$kak_opt_fzf_highligh_cmd" | grep -o -E '[[:alpha:]]+' | head -1)
+            executable=$(printf "%s\n" "$kak_opt_fzf_highlight_cmd" | grep -o -E '[[:alpha:]]+' | head -1)
             printf "%s\n" "echo -markup %{{Information}'$executable' highlighter is not supported by the script. fzf.kak may not work as you expect.}"
-            highlighter=$kak_opt_fzf_highligh_cmd ;;
+            highlighter=$kak_opt_fzf_highlight_cmd ;;
         esac
 
-        tmux_height=$kak_opt_fzf_tmux_height_file_preview
+        tmux_height=$kak_opt_fzf_file_preview_tmux_height
         additional_flags="--preview '($highlighter || cat {}) 2>/dev/null | head -n $kak_opt_fzf_preview_lines' --preview-window=\$pos $additional_flags"
     fi
 
@@ -221,44 +221,44 @@ define-command -docstring \
 
 Switches:
     -kak-cmd <command>: A Kakoune cmd that is applied to fzf resulting value.
-    -fzf-cmd <items command>: A command that is used to provide list of values to fzf.
+    -items-cmd <items command>: A command that is used to provide list of values to fzf.
     -fzf-args <args>: Additional flags for fzf program
     -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command.
     -preview: should fzf window include preview" \
-new-fzf -shell-script-candidates %{echo "-kak-cmd\n-fzf-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
+new-fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
     while [ $# -gt 0 ]; do
         case $1 in
             -kak-cmd)     shift; kak_cmd="${kak_cmd} $1" ;;
-            -fzf-cmd)     shift; fzf_cmd="${fzf_cmd} $1" ;;
+            -items-cmd)     shift; items_cmd="${items_cmd} $1" ;;
             -fzf-args)    shift; fzf_args="${fzf_args} $1" ;;
             -post-action) shift; post_action="${post_action} $1" ;;
-            -preview)     preview=true
+            -preview)     preview=true ;;
             *)            ignored="${ignored} $1" ;;
         esac
         shift
     done
 
     if [ "$preview" = "true" ] && [ ${kak_opt_fzf_preview} = "true" ]; then
-        case ${kak_opt_fzf_highligh_cmd} in
-            bat)       highligh_cmd="bat --color=always --style=plain {}" ;;
-            coderay)   highligh_cmd="coderay {}" ;;
-            highlight) highligh_cmd="highlight --failsafe -O ansi {}" ;;
-            rouge)     highligh_cmd="rougify {}" ;;
-            *)         highligh_cmd="${kak_opt_fzf_highligh_cmd}" ;;
+        case ${kak_opt_fzf_highlight_cmd} in
+            bat)       highlight_cmd="bat --color=always --style=plain {}" ;;
+            coderay)   highlight_cmd="coderay {}" ;;
+            highlight) highlight_cmd="highlight --failsafe -O ansi {}" ;;
+            rouge)     highlight_cmd="rougify {}" ;;
+            *)         highlight_cmd="${kak_opt_fzf_highlight_cmd}" ;;
         esac
         if [ -n "${kak_client_env_TMUX}" ]; then
-            [ -z "${kak_cmd##edit*}" ] && tmux_height=$kak_opt_fzf_tmux_height_file_preview
-            preview_pos="pos=right:${kak_opt_fzf_preview_width};"
+            [ -z "${kak_cmd##edit*}" ] && tmux_height=$kak_opt_fzf_file_preview_tmux_height
+            preview_position="pos=right:${kak_opt_fzf_preview_width};"
         else
-            preview_pos="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
+            preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
         fi
-        fzf_args="${fzf_args} --preview '(${highligh_cmd} || cat {}) 2>/dev/null | head -n ${kak_opt_fzf_preview_lines}' --preview-window=\${pos}"
+        fzf_args="${fzf_args} --preview '(${highlight_cmd} || cat {}) 2>/dev/null | head -n ${kak_opt_fzf_preview_lines}' --preview-window=\${pos}"
     fi
 
     fzf_tmp=$(mktemp -d ${TMPDIR:-/tmp}/fzf.kak.XXXXXX)
     fzfcmd="${fzf_tmp}/fzfcmd"
     result="${fzf_tmp}/result"
-    printf "%s\n" "cd \"${PWD}\" && ${preview_pos} ${fzf_cmd} | SHELL=$(command -v sh) ${kak_opt_fzf_implementation} ${fzf_args} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
+    printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} | SHELL=$(command -v sh) ${kak_opt_fzf_implementation} ${fzf_args} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
     chmod 755 ${fzfcmd}
 
     if [ -n "${kak_client_env_TMUX}" ]; then
@@ -267,4 +267,37 @@ new-fzf -shell-script-candidates %{echo "-kak-cmd\n-fzf-cmd\n-fzf-args\n-post-ac
     else
         cmd="terminal %{${fzfcmd}}"
     fi
+
+    (
+        printf "%s\n" "${cmd}" | kak -p ${kak_session}
+        while [ -e $fzfcmd ]; do
+            sleep 0.1
+        done
+        if [ -s $restul ]; then
+            (
+                read action
+                case $action in
+                    ctrl-w)
+                        wincmd="fzf-window" ;;
+                    ctrl-s)
+                        wincmd="fzf-vertical" ;;
+                    ctrl-v)
+                        wincmd="fzf-horizontal" ;;
+                    *)
+                        if [ -n "$action" ]; then
+                            printf "%s\n" "evaluate-commands -client $kak_client '$command' '$action'" | kak -p $kak_session
+                            [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action" | kak -p $kak_session
+                        fi ;;
+                esac
+                kakoune_command() {
+                    printf "%s\n" "evaluate-commands -client $kak_client $wincmd %{$command %{$1}}"
+                    [ -n "$extra_action" ] && printf "%s\n" "evaluate-commands -client $kak_client $extra_action"
+                }
+                while read item; do
+                    kakoune_command "$item" | kak -p $kak_session
+                done
+            ) < $restul
+        fi
+        rm $fzf_tmp
+    ) > /dev/null 2>&1 < /dev/null &
 }}

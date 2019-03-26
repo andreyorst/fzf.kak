@@ -42,9 +42,10 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
         *)
             items_command=$kak_opt_fzf_cd_command ;;
     esac
-    if [ $kak_opt_fzf_cd_preview = "true" ]; then
+    if [ "$kak_opt_fzf_cd_preview" = "true" ]; then
+        preview_flag="-preview"
         preview="--preview '($kak_opt_cd_preview_cmd) 2>/dev/null | head -n $kak_opt_fzf_preview_dirs'"
     fi
-    printf "%s\n" "fzf -preview -kak-cmd %{change-directory} -items-cmd %{$items_command} -fzf-args %{$preview} -post-action %{fzf-cd}"
+    printf "%s\n" "fzf $preview_flag -kak-cmd %{change-directory} -items-cmd %{$items_command} -preview-cmd %{$preview} -post-action %{fzf-cd}"
 }}
 

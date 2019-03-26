@@ -69,37 +69,31 @@ Best used with mapping like:
 " \
 fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
 
-define-command -hidden fzf-vertical -params .. %{
-    try %{
-        tmux-terminal-vertical kak -c %val{session} -e "%arg{@}"
-    } catch %{
-        tmux-new-vertical "%arg{@}"
-    }
-}
+define-command -hidden fzf-vertical -params .. %{ try %{
+    tmux-terminal-vertical kak -c %val{session} -e "%arg{@}"
+} catch %{
+    tmux-new-vertical "%arg{@}"
+}}
 
-define-command -hidden fzf-horizontal -params .. %{
-    try %{
-        tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
-    } catch %{
-        tmux-new-horizontal "%arg{@}"
-    }
-}
+define-command -hidden fzf-horizontal -params .. %{ try %{
+    tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
+} catch %{
+    tmux-new-horizontal "%arg{@}"
+}}
 
-define-command -hidden fzf-window -params .. %{
-    try %sh{
-        if [ -n "$kak_client_env_TMUX" ]; then
-            printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{@}"'
-        else
-            printf "%s\n" 'x11-terminal kak -c %val{session} -e "%arg{@}"'
-        fi
-    } catch %sh{
-        if [ -n "$kak_client_env_TMUX" ]; then
-            printf "%s\n" 'tmux-new-window "%arg{@}"'
-        else
-            printf "%s\n" 'x11-new "%arg{@}"'
-        fi
-    }
-}
+define-command -hidden fzf-window -params .. %{ try %sh{
+    if [ -n "$kak_client_env_TMUX" ]; then
+        printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{@}"'
+    else
+        printf "%s\n" 'x11-terminal kak -c %val{session} -e "%arg{@}"'
+    fi
+} catch %sh{
+    if [ -n "$kak_client_env_TMUX" ]; then
+        printf "%s\n" 'tmux-new-window "%arg{@}"'
+    else
+        printf "%s\n" 'x11-new "%arg{@}"'
+    fi
+}}
 
 define-command -docstring \
 "fzf <switches>: generic fzf command. This command can be used to create new fzf wrappers for various Kakoune or external features.
@@ -109,41 +103,45 @@ Switches:
     -items-cmd <items command>: A command that is used to provide list of values to fzf.
     -fzf-args <args>: Additional flags for fzf program
     -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command.
+    -preview-cmd: a preview command
     -preview: should fzf window include preview" \
 fzf -shell-script-candidates %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
     while [ $# -gt 0 ]; do
         case $1 in
             -kak-cmd)     shift; kakoune_cmd="$1" ;;
-            -items-cmd)   shift; items_cmd="${items_cmd} $1" ;;
-            -fzf-args)    shift; fzf_args="${fzf_args} $1" ;;
-            -post-action) shift; post_action="${post_action} $1" ;;
+            -items-cmd)   shift; items_cmd="$1" ;;
+            -fzf-args)    shift; fzf_args="$1" ;;
+            -post-action) shift; post_action="$1" ;;
+            -preview-cmd) shift; preview_cmd="$1" ;;
             -preview)     preview="true" ;;
-            *)            ignored="${ignored} $1" ;;
+            *) ;;
         esac
         shift
     done
 
-    if [ "$preview" = "true" ] && [ ${kak_opt_fzf_preview} = "true" ]; then
-        case ${kak_opt_fzf_highlight_cmd} in
-            bat)       highlight_cmd="bat --color=always --style=plain {}" ;;
-            coderay)   highlight_cmd="coderay {}" ;;
-            highlight) highlight_cmd="highlight --failsafe -O ansi {}" ;;
-            rouge)     highlight_cmd="rougify {}" ;;
-            *)         highlight_cmd="${kak_opt_fzf_highlight_cmd}" ;;
-        esac
+    if [ "$preview" = "true" ]; then
         if [ -n "${kak_client_env_TMUX}" ]; then
             [ -z "${kakoune_cmd##edit*}" ] && tmux_height="$kak_opt_fzf_file_preview_tmux_height"
             preview_position="pos=right:${kak_opt_fzf_preview_width};"
         else
             preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
         fi
-        fzf_args="${fzf_args} --preview '(${highlight_cmd} || cat {}) 2>/dev/null | head -n ${kak_opt_fzf_preview_lines}' --preview-window=\${pos}"
+        if [ ${kak_opt_fzf_preview} = "true" ] && [ -z "$preview_cmd" ]; then
+            case ${kak_opt_fzf_highlight_cmd} in
+                bat)       highlight_cmd="bat --color=always --style=plain {}" ;;
+                coderay)   highlight_cmd="coderay {}" ;;
+                highlight) highlight_cmd="highlight --failsafe -O ansi {}" ;;
+                rouge)     highlight_cmd="rougify {}" ;;
+                *)         highlight_cmd="${kak_opt_fzf_highlight_cmd}" ;;
+            esac
+            preview_cmd="--preview '(${highlight_cmd} || cat {}) 2>/dev/null | head -n ${kak_opt_fzf_preview_lines}' --preview-window=\${pos}"
+        fi
     fi
 
     fzf_tmp=$(mktemp -d ${TMPDIR:-/tmp}/fzf.kak.XXXXXX)
     fzfcmd="${fzf_tmp}/fzfcmd"
     result="${fzf_tmp}/result"
-    printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} | SHELL=$(command -v sh) ${kak_opt_fzf_implementation} ${fzf_args} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
+    printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} | SHELL=$(command -v sh) ${kak_opt_fzf_implementation} ${fzf_args} ${preview_cmd} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
     chmod 755 ${fzfcmd}
 
     if [ -n "${kak_client_env_TMUX}" ]; then

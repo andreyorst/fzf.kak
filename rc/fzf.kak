@@ -51,7 +51,7 @@ str fzf_tmux_height '25%'
 
 declare-option -docstring "height of fzf tmux split for file preview in screen lines or percents.
 Default value: 70%%" \
-str fzf_file_preview_tmux_height '70%'
+str fzf_preview_tmux_height '70%'
 
 declare-option -docstring "width of preview window.
 Default value: 50%%" \
@@ -122,9 +122,9 @@ fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
     if [ "${preview}" = "true" ]; then
         # bake position option to define them at runtime
         if [ -n "${kak_client_env_TMUX}" ]; then
-            # tmux is special case, so it needs to check if current -kak-cmd is `edit'
-            [ -z "${kakoune_cmd##edit*}" ] && tmux_height="${kak_opt_fzf_file_preview_tmux_height}"
             preview_position="pos=right:${kak_opt_fzf_preview_width};"
+            # tmux height should be changed when preview is on
+            tmux_height="${kak_opt_fzf_preview_tmux_height}"
         else
             preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
         fi

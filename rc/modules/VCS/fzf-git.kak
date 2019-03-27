@@ -17,7 +17,7 @@ Default arguments:
 " \
 str fzf_git_command "git"
 
-try %{ declare-user-mode fzf }
+try %{ declare-user-mode fzf-vcs }
 map global fzf-vcs -docstring "edit file from Git tree" 'g' '<esc>: fzf-git<ret>'
 
 define-command -override -hidden fzf-git %{ evaluate-commands %sh{

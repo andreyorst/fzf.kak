@@ -17,7 +17,7 @@ Default arguments:
 " \
 str fzf_hg_command "hg"
 
-try %{ declare-user-mode fzf }
+try %{ declare-user-mode fzf-vcs }
 map global fzf-vcs -docstring "edit file from mercurial tree" 'h' '<esc>: fzf-hg<ret>'
 
 define-command -hidden fzf-hg %{ evaluate-commands %sh{

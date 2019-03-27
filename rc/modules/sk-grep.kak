@@ -19,11 +19,11 @@ try %{ declare-user-mode fzf }
 
 evaluate-commands %sh{
     if [ -n "$(command -v sk)" ]; then
-        printf "%s\n" "map global fzf -docstring %{Interactive grep with skim} 'g' '<esc>: fzf-sk-interactive-grep<ret>'"
+        printf "%s\n" "map global fzf -docstring %{Interactive grep with skim} 'g' '<esc>: fzf-sk-grep<ret>'"
     fi
 }
 
-define-command -hidden fzf-sk-interactive-grep %{ evaluate-commands %sh{
+define-command -hidden fzf-sk-grep %{ evaluate-commands %sh{
     if [ -z "$(command -v sk)" ]; then
     	printf "%s\n" "echo -markup %{{Information}skim required to run this command}"
     	exit

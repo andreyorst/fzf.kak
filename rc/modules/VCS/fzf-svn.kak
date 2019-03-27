@@ -17,7 +17,7 @@ Default arguments:
 " \
 str fzf_svn_command "svn"
 
-try %{ declare-user-mode fzf }
+try %{ declare-user-mode fzf-vcs }
 map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-svn<ret>'
 
 define-command -hidden fzf-svn %{ evaluate-commands %sh{

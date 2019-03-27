@@ -51,7 +51,7 @@ need a base module for `fzf`,  called `fzf-vcs.kak` and its sub-modules for each
 VCS. There are plenty of version control systems, so modules come in handy.
 
 ```sh
-source "/path/to/fzf.kak/rc/fzf-modules/fzf-vcs.kak" # VCS base module
+source "/path/to/fzf.kak/rc/modules/fzf-vcs.kak" # VCS base module
 ```
 
 So if  you never work with,  say, GNU Bazaar,  or Mercurial you can  remove them

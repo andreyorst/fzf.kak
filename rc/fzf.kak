@@ -104,11 +104,11 @@ define-command -docstring \
 Switches:
     -kak-cmd <command>: A Kakoune cmd that is applied to fzf resulting value.
     -items-cmd <items command>: A command that is used as a pipe to provide list of values to fzf.
-    -fzf-impl <implementation>: Owerride fzf implementation variable
-    -fzf-args <args>: Additional flags for fzf program
-    -preview-cmd: a preview command
-    -preview: should fzf window include preview
-    -filter <commands>: A pipe which will be applied to result provided by fzf
+    -fzf-impl <implementation>: Owerride fzf implementation variable.
+    -fzf-args <args>: Additional flags for fzf program.
+    -preview-cmd: A preview command.
+    -preview: Should fzf window include preview.
+    -filter <commands>: A pipe which will be applied to result provided by fzf.
     -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command." \
 fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
     while [ $# -gt 0 ]; do
@@ -198,3 +198,4 @@ fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
         rm -rf ${fzf_tmp}
     ) > /dev/null 2>&1 < /dev/null &
 }}
+

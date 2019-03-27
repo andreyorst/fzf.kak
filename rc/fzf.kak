@@ -69,19 +69,22 @@ Best used with mapping like:
 " \
 fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
 
-define-command -hidden fzf-vertical -params .. %{ try %{
+define-command -hidden -docstring "wrapper command to create new vertical split. Should work in both new and old Kakoune" \
+fzf-vertical -params .. %{ try %{
     tmux-terminal-vertical kak -c %val{session} -e "%arg{@}"
 } catch %{
     tmux-new-vertical "%arg{@}"
 }}
 
-define-command -hidden fzf-horizontal -params .. %{ try %{
+define-command -hidden -docstring "wrapper command to create new horizontal split. Should work in both new and old Kakoune" \
+fzf-horizontal -params .. %{ try %{
     tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
 } catch %{
     tmux-new-horizontal "%arg{@}"
 }}
 
-define-command -hidden fzf-window -params .. %{ try %sh{
+define-command -hidden -docstring "wrapper command to create new window. Should work in both new and old Kakoune" \
+fzf-window -params .. %{ try %sh{
     if [ -n "$kak_client_env_TMUX" ]; then
         printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{@}"'
     else
@@ -128,7 +131,7 @@ fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
         else
             preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
         fi
-        # handle preview if not defined explicitly
+        # handle preview if not defined explicitly with `-preview-cmd'
         if [ ${kak_opt_fzf_preview} = "true" ] && [ -z "${preview_cmd}" ]; then
             case ${kak_opt_fzf_highlight_cmd} in
                 bat)       highlight_cmd="bat --color=always --style=plain {}" ;;
@@ -150,8 +153,11 @@ fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
     chmod 755 ${fzfcmd}
 
     if [ -n "${kak_client_env_TMUX}" ]; then
+        # set default height if not set already
         [ -z "${tmux_height}" ] && tmux_height=${kak_opt_fzf_tmux_height}
+        # if height contains `%' then `-p' will be used
         [ -n "${tmux_height%%*%}" ] && measure="-l" || measure="-p"
+        # `terminal' doesn't support any kind of width and height parameters, so tmux panes are created by tmux itself
         cmd="nop %sh{ command tmux split-window ${measure} ${tmux_height%%%*} 'sh -c ${fzfcmd}' }"
     else
         cmd="terminal %{${fzfcmd}}"

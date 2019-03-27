@@ -88,13 +88,13 @@ fzf-window -params .. %{ try %sh{
     if [ -n "$kak_client_env_TMUX" ]; then
         printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{@}"'
     else
-        printf "%s\n" 'x11-terminal kak -c %val{session} -e "%arg{@}"'
+        printf "%s\n" 'terminal kak -c %val{session} -e "%arg{@}"'
     fi
 } catch %sh{
     if [ -n "$kak_client_env_TMUX" ]; then
         printf "%s\n" 'tmux-new-window "%arg{@}"'
     else
-        printf "%s\n" 'x11-new "%arg{@}"'
+        printf "%s\n" 'new "%arg{@}"'
     fi
 }}
 

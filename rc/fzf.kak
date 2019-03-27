@@ -121,6 +121,8 @@ Switches:
 -post-action"
 } \
 fzf -params .. %{ evaluate-commands %sh{
+    fzf_impl="${kak_opt_fzf_implementation}"
+
     while [ $# -gt 0 ]; do
         case $1 in
             -kak-cmd)     shift; kakoune_cmd="$1" ;;
@@ -131,13 +133,8 @@ fzf -params .. %{ evaluate-commands %sh{
             -preview)            preview="true"   ;;
             -filter)      shift; filter="| $1"    ;;
             -post-action) shift; post_action="$1" ;;
-        esac
-        shift
+        esac; shift
     done
-
-    if [ -z "${fzf_impl}" ]; then
-        fzf_impl="${kak_opt_fzf_implementation}"
-    fi
 
     if [ "${preview}" = "true" ]; then
         # bake position option to define them at runtime
@@ -146,6 +143,7 @@ fzf -params .. %{ evaluate-commands %sh{
             # tmux height should be changed when preview is on
             tmux_height="${kak_opt_fzf_preview_tmux_height}"
         else
+            # this code chooses previewposition depending on window width at runtime
             preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
         fi
         # handle preview if not defined explicitly with `-preview-cmd'
@@ -169,6 +167,7 @@ fzf -params .. %{ evaluate-commands %sh{
 
     # compose entire fzf command with all args into single file which will be executed later
     printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} SHELL=${shell_executable} ${fzf_impl} ${fzf_args} ${preview_cmd} ${filter} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
+
     chmod 755 ${fzfcmd}
 
     if [ -n "${kak_client_env_TMUX}" ]; then
@@ -184,9 +183,7 @@ fzf -params .. %{ evaluate-commands %sh{
 
     printf "%s\n" "${cmd}"
 
-    (   while [ -e ${fzfcmd} ]; do
-            sleep 0.1
-        done
+    (   while [ -e ${fzfcmd} ]; do sleep 0.1 done
         if [ -s ${result} ]; then
             (
                 while read line; do

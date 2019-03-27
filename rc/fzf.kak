@@ -183,7 +183,7 @@ fzf -params .. %{ evaluate-commands %sh{
 
     printf "%s\n" "${cmd}"
 
-    (   while [ -e ${fzfcmd} ]; do sleep 0.1 done
+    (   while [ -e ${fzfcmd} ]; do sleep 0.1; done
         if [ -s ${result} ]; then
             (
                 while read line; do

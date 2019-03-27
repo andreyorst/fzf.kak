@@ -157,28 +157,28 @@ fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
         cmd="terminal %{${fzfcmd}}"
     fi
 
-    (
-        printf "%s\n" "${cmd}" | kak -p ${kak_session}
-        while [ -e ${fzfcmd} ]; do
+    printf "%s\n" "${cmd}"
+
+    (   while [ -e ${fzfcmd} ]; do
             sleep 0.1
         done
         if [ -s ${result} ]; then
             (
-                read action
-                case ${action} in
-                    ctrl-w) wincmd="fzf-window" ;;
-                    ctrl-s) wincmd="fzf-vertical" ;;
-                    ctrl-v) wincmd="fzf-horizontal" ;;
-                    *)  if [ -n "${action}" ]; then
-                            printf "%s\n" "evaluate-commands -client ${kak_client} '${kakoune_cmd}' '${action}'" | kak -p ${kak_session}
-                            [ -n "${post_action}" ] && printf "%s\n" "evaluate-commands -client ${kak_client} ${post_action}" | kak -p ${kak_session}
-                        fi ;;
-                esac
-                while read item; do
-                    printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %{${kakoune_cmd} %{${item}}}" | kak -p ${kak_session}
-                    [ -n "${post_action}" ] && printf "%s\n" "evaluate-commands -client ${kak_client} ${post_action}" | kak -p ${kak_session}
+                while read line; do
+                    case ${line} in
+                        ctrl-w) wincmd="fzf-window" ;;
+                        ctrl-s) wincmd="fzf-vertical" ;;
+                        ctrl-v) wincmd="fzf-horizontal" ;;
+                        *)      item=${line} ;;
+                    esac
+                    if [ -n "${item}" ]; then
+                        printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %{${kakoune_cmd} %{${item}}}"
+                    fi
                 done
-            ) < ${result}
+                if [ -n "${post_action}" ]; then
+                    printf "%s\n" "evaluate-commands -client ${kak_client} %{${post_action}}"
+                fi
+            ) < ${result} | kak -p ${kak_session}
         fi
         rm -rf ${fzf_tmp}
     ) > /dev/null 2>&1 < /dev/null &

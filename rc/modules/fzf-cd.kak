@@ -34,7 +34,8 @@ map global fzf -docstring "change directory" 'c' '<esc>: fzf-cd<ret>'
 
 define-command -hidden fzf-cd %{ evaluate-commands %sh{
     tmux_height=$kak_opt_fzf_tmux_height
-    printf '%s\n' "info -title %{fzf change directory} %{Change the server's working directory}"
+    printf '%s\n' "info -title %{fzf change directory} %{Change the server's working directory
+current path: $(pwd)}"
 
     case $kak_opt_fzf_cd_command in
         find)

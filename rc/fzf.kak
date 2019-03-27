@@ -103,7 +103,8 @@ define-command -docstring \
 
 Switches:
     -kak-cmd <command>: A Kakoune cmd that is applied to fzf resulting value.
-    -items-cmd <items command>: A command that is used to provide list of values to fzf.
+    -items-cmd <items command>: A command that is used as a pipe to provide list of values to fzf.
+    -fzf-impl <implementation>: Owerride fzf implementation variable
     -fzf-args <args>: Additional flags for fzf program
     -preview-cmd: a preview command
     -preview: should fzf window include preview
@@ -113,7 +114,8 @@ fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
     while [ $# -gt 0 ]; do
         case $1 in
             -kak-cmd)     shift; kakoune_cmd="$1" ;;
-            -items-cmd)   shift; items_cmd="$1"   ;;
+            -items-cmd)   shift; items_cmd="$1 |" ;;
+            -fzf-impl)    shift; fzf_impl="$1"    ;;
             -fzf-args)    shift; fzf_args="$1"    ;;
             -preview-cmd) shift; preview_cmd="$1" ;;
             -preview)            preview="true"   ;;
@@ -122,6 +124,10 @@ fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
         esac
         shift
     done
+
+    if [ -z "${fzf_impl}" ]; then
+        fzf_impl="${kak_opt_fzf_implementation}"
+    fi
 
     if [ "${preview}" = "true" ]; then
         # bake position option to define them at runtime
@@ -149,8 +155,10 @@ fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-acti
     fzfcmd="${fzf_tmp}/fzfcmd"
     result="${fzf_tmp}/result"
 
+    shell_executable="$(command -v sh)"
+
     # compose entire fzf command with all args into single file which will be executed later
-    printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} | SHELL=$(command -v sh) ${kak_opt_fzf_implementation} ${fzf_args} ${preview_cmd} ${filter} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
+    printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} SHELL=${shell_executable} ${fzf_impl} ${fzf_args} ${preview_cmd} ${filter} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
     chmod 755 ${fzfcmd}
 
     if [ -n "${kak_client_env_TMUX}" ]; then

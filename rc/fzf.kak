@@ -110,7 +110,17 @@ Switches:
     -preview: Should fzf window include preview.
     -filter <commands>: A pipe which will be applied to result provided by fzf.
     -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command." \
-fzf -shell-script-completion %{echo "-kak-cmd\n-items-cmd\n-fzf-args\n-post-action\n"} -params .. %{ evaluate-commands %sh{
+-shell-script-completion %{
+    printf "%s\n" "-kak-cmd
+-items-cmd
+-fzf-impl
+-fzf-args
+-preview-cmd
+-preview
+-filter
+-post-action"
+} \
+fzf -params .. %{ evaluate-commands %sh{
     while [ $# -gt 0 ]; do
         case $1 in
             -kak-cmd)     shift; kakoune_cmd="$1" ;;

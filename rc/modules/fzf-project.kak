@@ -26,14 +26,21 @@ define-command -hidden fzf-project %{ evaluate-commands %sh{
 
 define-command fzf-save-path-as-project %{ prompt "Project's name: " %{ nop %sh{
     mkdir -p "${kak_opt_fzf_projects_file%/*}"
-    printf "%s:  %s\n" "$kak_text" "$(pwd)" >> $kak_opt_fzf_projects_file
+    tmp=$(mktemp "${TMPDIR:-/tmp}/fzf-project.XXXXXXX")
+    project=$(grep "$kak_text:  " $kak_opt_fzf_projects_file)
+    if [ -z "${project}" ]; then
+        printf "%s:  %s\n" "$kak_text" "$(pwd)" >> $kak_opt_fzf_projects_file
+    else
+        perl -pe "s(\Q$kak_text:  \E.*)($kak_text:  $(pwd))" "${kak_opt_fzf_projects_file}" > ${tmp} && cat ${tmp} > "${kak_opt_fzf_projects_file}"
+    fi
+    rm -rf ${tmp}
 }}}
 
-# a command to get poject names if `prompt' will ever support `-shell-script-candidates'
-# %sh{ perl -n -e '/^([^:]+)/ && print "$1\n"' $kak_opt_fzf_projects_file }
 define-command fzf-update-project-path %{
-    prompt "Project to update: " %{ nop %sh{
-       sed -i -E "s/($kak_text: ).*/\1$(pwd)/" "$kak_opt_fzf_projects_file"
+    prompt -shell-script-candidates %{ perl -n -e '/^([^:]+)/ && print "$1\n"' $kak_opt_fzf_projects_file } "Project to update: " %{ nop %sh{
+        tmp=$(mktemp "${TMPDIR:-/tmp}/fzf-project.XXXXXXX")
+        perl -pe "s(\Q$kak_text:  \E.*)($kak_text:  $(pwd))" "${kak_opt_fzf_projects_file}" > ${tmp} && cat ${tmp} > "${kak_opt_fzf_projects_file}"
+        rm -rf ${tmp}
     }}
 }
 

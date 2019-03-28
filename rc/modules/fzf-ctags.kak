@@ -814,7 +814,7 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
 
     message="Jump to a symbol''s definition
 <ret>: open tag in new buffer
-<c-w>: open tag in new window"
+<c-w>: open tag in new terminal"
 
     [ -n "${kak_client_env_TMUX}" ] && tmux_keybindings="
 <c-s>: open tag in horizontal split

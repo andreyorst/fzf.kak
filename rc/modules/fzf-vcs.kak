@@ -46,7 +46,7 @@ bzr status"
 <c-v>: open file in vertical split"
             message="Open single or multiple files from git tree.
 <ret>: open file in new buffer.
-<c-w>: open file in new window $additional_keybindings"
+<c-w>: open file in new terminal $additional_keybindings"
             printf "%s\n" "info -title %{$title} %{$message}"
             printf "%s\n" "fzf-$vcs"
             exit

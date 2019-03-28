@@ -31,7 +31,7 @@ define-command -hidden fzf-sk-grep %{ evaluate-commands %sh{
     title="skim interactive grep"
     message="Interactively grep pattern from current directory
 <ret>: open search result in new buffer.
-<c-w>: open search result in new window"
+<c-w>: open search result in new terminal"
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
 <c-s>: open search result in horizontal split
 <c-v>: open search result in vertical split"

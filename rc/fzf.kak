@@ -69,21 +69,21 @@ Best used with mapping like:
 " \
 fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
 
-define-command -hidden -docstring "wrapper command to create new vertical split. Should work in both new and old Kakoune" \
+define-command -hidden -docstring "wrapper command to create new vertical split" \
 fzf-vertical -params .. %{ try %{
     tmux-terminal-vertical kak -c %val{session} -e "%arg{@}"
 } catch %{
     tmux-new-vertical "%arg{@}"
 }}
 
-define-command -hidden -docstring "wrapper command to create new horizontal split. Should work in both new and old Kakoune" \
+define-command -hidden -docstring "wrapper command to create new horizontal split" \
 fzf-horizontal -params .. %{ try %{
     tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
 } catch %{
     tmux-new-horizontal "%arg{@}"
 }}
 
-define-command -hidden -docstring "wrapper command to create new window. Should work in both new and old Kakoune" \
+define-command -hidden -docstring "wrapper command to create new terminal" \
 fzf-window -params .. %{ try %sh{
     if [ -n "$kak_client_env_TMUX" ]; then
         printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{@}"'
@@ -102,14 +102,14 @@ define-command -docstring \
 "fzf <switches>: generic fzf command. This command can be used to create new fzf wrappers for various Kakoune or external features.
 
 Switches:
-    -kak-cmd <command>: A Kakoune cmd that is applied to fzf resulting value.
-    -items-cmd <items command>: A command that is used as a pipe to provide list of values to fzf.
-    -fzf-impl <implementation>: Owerride fzf implementation variable.
-    -fzf-args <args>: Additional flags for fzf program.
-    -preview-cmd: A preview command.
-    -preview: Should fzf window include preview.
-    -filter <commands>: A pipe which will be applied to result provided by fzf.
-    -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command." \
+    -kak-cmd <command>: A Kakoune cmd that is applied to fzf resulting value
+    -items-cmd <items command>: A command that is used as a pipe to provide list of values to fzf
+    -fzf-impl <implementation>: Owerride fzf implementation variable
+    -fzf-args <args>: Additional flags for fzf program
+    -preview-cmd: A preview command
+    -preview: Should fzf window include preview
+    -filter <commands>: A pipe which will be applied to result provided by fzf
+    -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command" \
 -shell-script-completion %{
     printf "%s\n" "-kak-cmd
 -items-cmd

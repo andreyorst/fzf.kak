@@ -51,7 +51,7 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
 
     message="Open single or multiple files.
 <ret>: open file in new buffer.
-<c-w>: open file in new window"
+<c-w>: open file in new terminal"
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
 <c-s>: open file in horizontal split
 <c-v>: open file in vertical split"

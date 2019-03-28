@@ -20,15 +20,13 @@ plug "andreyorst/fzf.kak"
 ```
 
 Then reload Kakoune config or restart Kakoune and run `:plug-install`.
+Now you can proceed to the [configuration][23] section.
 
 ### Without plugin manager
 This plugin consists of several parts which are "modules", that provide
 different functions to plugin.  There's central module that must be loaded
 before any other module, named `fzf.kak`, so in order to properly load
 **fzf.kak** plugin, you need to source it in your `kakrc`.
-
-Assuming that you've cloned **fzf.kak** repository to your Kakoune configuration
-folder:
 
 ```sh
 source "/path/to/fzf.kak/rc/fzf.kak" # loading base fzf module
@@ -64,10 +62,10 @@ source "/path/to/fzf.kak/rc/modules/VCS/fzf-hg.kak"  # Mercurial VCS
 source "/path/to/fzf.kak/rc/modules/VCS/fzf-svn.kak" # Subversion module
 ```
 
-You can see that we load less nested modules first, and then go deeper and
-deeper.  Besides that order of files within single depth level doesn't
-matter. This may look complex, but it makes plugin more versatile.  And plugin
-managers, like [plug.kak][11] for example, just does all those steps for you.
+Order of sourcing files should not matter, but it is preferable to source main
+script first, and then the modules. This may look complex, but it makes plugin
+more versatile.  And plugin managers, like [plug.kak][11] for example, just does
+all those steps for you.
 
 By the way, this structure makes it easy to extend plugin with new modules, and
 you [can add modules on your own][20]!
@@ -81,8 +79,11 @@ mapping to invoke `fzf-mode`:
 map global normal <c-p> ': fzf-mode<ret>'
 ```
 
-Each `fzf` sub-command has mnemonic mapping, like `f` for opening files, `t` for
-tags and so on.  Available mappings:
+Note that space between colon and command is intentional and will strip this
+command from command history.
+
+Each `fzf` module defines mnemonic mapping, like <kbd>f</kbd> for opening files,
+<kbd>t</kbd> for tags, <kbd>s</kbd> for search, and so on.  Available mappings:
 
 - <kbd>b</kbd> - Select buffer.
 - <kbd>c</kbd> - Switch server's working directory.
@@ -92,41 +93,77 @@ tags and so on.  Available mappings:
 - <kbd>s</kbd> - Search over buffer contents and jump to result line.
 - <kbd>t</kbd> - Browse ctags tags.
 - <kbd>Alt</kbd>+<kbd>t</kbd> - Select tag kind filter on per language basis.
+- <kbd>g</kbd> - Interactive grep.
 
 So for example pressing <kbd>Ctrl</kbd>+<kbd>p</kbd> <kbd>f</kbd> will open
-`fzf` at the bottom of the Kakoune buffer, showing you all possible files.
+`fzf` window, showing you all files from current directory recursively.
 
-### Configuration
+When Kakoune is being run in Tmux, **fzf.kak** will use bottom split to display
+`fzf`. Additional keybindings are available to open file in vertical or
+horizontal split. When Kakoune is used in plain terminal, the `terminal` command
+is being used to create new windows.
+
+## Configuration
 **fzf.kak** features a lot of settings via options that can be altered to change
 how **fzf.kak** behaves.
 
-#### Tmux
-When using inside tmux, `fzf` will use bottom split. Height of this split can be
-changed with `fzf_tmux_height` option.  `fzf_tmux_height_file_preview` option is
-used to control height of the split when you do file searching with file-preview
-turned on.
-
-#### File with preview window
+### File command
 You can configure what command to use to search for files, and it's arguments.
 Supported tools are [GNU Find][12], [The Silver Searcher][13], [ripgrep][14],
 [fd][15]. GNU find is used by default, but you can switch to another one. There
-are some default values for those, so you can go:
+are some default values for those, so you can just state the name of the tool:
 
 ```kak
 set-option global fzf_file_command 'rg' # 'ag', 'fd', or 'find'
 ```
 
-Or if you don't like default file arguments, which are `find -type f`, and would
-like to disable searching in, say `.svn` or `.git` directories you can set it
-like so:
+Or if you don't like default arguments, which for `find` are `find -type f`, and
+would like to disable searching in, say `.svn` and `.git` directories you can
+set option like this:
 
 ```kak
 set-option global fzf_file_command "find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type f -print"
 ```
 
-The same pattern applies for other commands, except `buffer`, and `cd`.
+This can give you the idea of how this plugin can be customized. Most of
+**fzf.kak** modules provide settings for their commands, so you should check all
+`fzf-optionname` available in prompt mode. All such options are well documented,
+so listing those in readme would make it unnecessary long.
 
-#### VCS
+### Preview
+**fzf.kak** tries to automatically detect where to show preview window,
+depending on aspect ratio of new terminal window.  By default if the doubled
+height is bigger than the width, preview occupies upper 60% of space. If height
+is smaller than the width, preview is shown at the right side.
+
+You can configure the amount of space for preview window with these options:
+`fzf_preview_height` and `fzf_preview_width`.
+
+When using **fzf.kak** inside `tmux`, bottom pane is used for all `fzf`
+commands, and preview window is displayed on the right side. When preview is
+turned on, height of `tmux` split is increased to provide more space. You can
+configure split height with `fzf_preview_tmux_height`
+
+Amount of lines in preview window can be changed with `fzf_preview_lines`
+option.
+
+If you don't want preview feature you can disable it by setting `fzf_preview`
+option to `false`.
+
+#### Highlighting preview window
+You also can highlight contents of the file displayed within preview window. To
+do so, you can specify which highlighter to use with `fzf_highlighter` option.
+Supported highlighters are:
+
+* [Bat][16]
+* [Coderay][17]
+* [Highlight][18]
+* [Rouge][19]
+
+Although other tools are not supported by the script, then should work fine as
+long as they work with `fzf`.
+
+### VCS
 This script supports these version control systems: Git, Subversion, GNU Bazaar,
 and Mercurial.  By default <kbd>v</kbd> mapping from `fzf` mode will detect your
 version control system and open `fzf` window for you.  If you wish to explicitly
@@ -145,51 +182,13 @@ Other VCS are not supported officially. Open a feature request if you want some
 unsupported VCS to be included.  You also can change one of options to contain
 your VCS command, and use this command explicitly from VCS sub-mode.
 
-#### ctags
-It is also possible to add parameters to ctags search executable. like `sort -u`
-and others:
+### Tmux
+When using inside tmux, `fzf` will use bottom split. Height of this split can be
+changed with `fzf_tmux_height` option.  `fzf_tmux_height_file_preview` option is
+used to control height of the split when you do file searching with file-preview
+turned on.
 
-```kak
-set-option global fzf_tag_command 'readtags -l | cut -f1 | sort -u | ... '
-```
-
-Though it is not recommended, since `sort` may slowdown `fzf-tag` on huge
-projects.
-
-##### Filtering tags
-Since ctags supports showing particular kind of tag for many languages,
-`fzf-tag` dynamically defines mappings for those languages with <kbd>Alt</kbd>
-key based on current filetype.  For example to show only functions while
-`fzf-tag` is active press <kbd>Alt</kbd>+<kbd>f</kbd>.  It will reload `fzf`
-window and only function tags will be listed.
-
-#### Preview
-When using X11 **fzf.kak** automatically tries to detect where to show preview
-window, depending on aspect ratio of new terminal window.  By default if the
-height is bigger than the width, preview occupies upper 60% of space. If height
-is smaller than the width, preview is shown at the right side.
-
-You can configure the amount of space for preview window with these options:
-`fzf_preview_height` and `fzf_preview_width`.
-
-When **fzf.kak** is used in tmux, it will show preview on the right side. Height
-of preview split can be adjusted with `fzf_tmux_height_file_preview`
-
-Amount of lines in preview window can be changed with `fzf_preview_lines`
-option.
-
-You also can specify which highlighter to use within the preview window with
-`fzf_highlighter` option.  Supported tools are:
-
-* [Bat][16]
-* [Coderay][17]
-* [Highlight][18]
-* [Rouge][19]
-
-You can disable the preview window in `fzf` window by setting `fzf_preview`
-option to `false`.
-
-### `fzf` command
+## `fzf` command
 `fzf` command can be used from prompt mode and for [scripting][20]. It supports
 these arguments:
 
@@ -212,7 +211,6 @@ these arguments:
   -f 1}`. Basically everything what `fzf` returns is piped to this filter
   command. See [fzf-search.kak][22] as example.
 - `-post-action`: Extra commands that are preformed after `-kak-cmd` command.
-
 
 ## Contributing
 If you want to contribute to **fzf.kak** by adding a module, you can submit one
@@ -258,4 +256,4 @@ various settings inside it. Feel free to look how existing modules are made.
 [20]: #writing-a-module
 [21]: rc/modules/sk-grep.kak
 [22]: rc/modules/fzf-search.kak
-[23]:
+[23]: #configuration

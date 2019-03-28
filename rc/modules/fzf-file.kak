@@ -24,6 +24,7 @@ Default arguments:
 " \
 str fzf_file_command "find"
 
+try %{ declare-user-mode fzf }
 map global fzf -docstring "open file" 'f' '<esc>: fzf-file<ret>'
 
 define-command -hidden fzf-file %{ evaluate-commands %sh{
@@ -50,13 +51,13 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
 
     message="Open single or multiple files.
 <ret>: open file in new buffer.
-<c-w>: open file in new window"
+<c-w>: open file in new terminal"
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
 <c-s>: open file in horizontal split
 <c-v>: open file in vertical split"
 
     printf "%s\n" "info -title 'fzf file' '$message$tmux_keybindings'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf %{edit -existing} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf -preview -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ctrl-w $additional_flags}"
 }}
 

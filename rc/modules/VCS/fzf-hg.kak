@@ -17,6 +17,7 @@ Default arguments:
 " \
 str fzf_hg_command "hg"
 
+try %{ declare-user-mode fzf-vcs }
 map global fzf-vcs -docstring "edit file from mercurial tree" 'h' '<esc>: fzf-hg<ret>'
 
 define-command -hidden fzf-hg %{ evaluate-commands %sh{
@@ -29,6 +30,6 @@ define-command -hidden fzf-hg %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_hg_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf %{cd $repo_root; edit -existing} %{$cmd} %{-m --expect ctrl-w $additional_flags} %{cd $current_path}"
+    printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ctrl-w $additional_flags} -post-action %{cd $current_path}"
 }}
 

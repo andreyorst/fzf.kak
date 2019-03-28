@@ -29,11 +29,13 @@ str cd_preview_cmd "tree -d {}"
 declare-option -docstring 'maximum amount of previewed directories' \
 int fzf_preview_dirs '300'
 
+try %{ declare-user-mode fzf }
 map global fzf -docstring "change directory" 'c' '<esc>: fzf-cd<ret>'
 
 define-command -hidden fzf-cd %{ evaluate-commands %sh{
     tmux_height=$kak_opt_fzf_tmux_height
-    printf '%s\n' "info -title %{fzf change directory} %{Change the server's working directory}"
+    printf '%s\n' "info -title %{fzf change directory} %{Change the server's working directory
+current path: $(pwd)}"
 
     case $kak_opt_fzf_cd_command in
         find)
@@ -41,9 +43,10 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
         *)
             items_command=$kak_opt_fzf_cd_command ;;
     esac
-    if [ $kak_opt_fzf_cd_preview = "true" ]; then
+    if [ "$kak_opt_fzf_cd_preview" = "true" ]; then
+        preview_flag="-preview"
         preview="--preview '($kak_opt_cd_preview_cmd) 2>/dev/null | head -n $kak_opt_fzf_preview_dirs'"
     fi
-    printf "%s\n" "fzf %{change-directory} %{$items_command} %{$preview} %{fzf-cd}"
+    printf "%s\n" "fzf $preview_flag -kak-cmd %{change-directory} -items-cmd %{$items_command} -preview-cmd %{$preview} -post-action %{fzf-cd}"
 }}
 

@@ -11,37 +11,22 @@
 declare-option -docstring "a file where saved projects are stored" \
 str fzf_projects_file %sh{ echo "$HOME/.cache/fzf.kak/projects" }
 
-declare-option -docstring 'allow showing preview window while changing projects
-Default value:
-    false
-' \
-bool fzf_projects_preview false
-
-declare-option -docstring 'command to show list of directories in preview window
-Default value:
-    tree -d
-' \
-str fzf_projects_preview_cmd "tree -d {}"
-
-declare-option -docstring 'maximum amount of previewed directories' \
-int fzf_projects_preview_dirs '300'
-
+try %{ declare-user-mode fzf }
 map global fzf -docstring "open project" 'p' '<esc>: fzf-project<ret>'
 
-define-command -hidden fzf-project %{ evaluate-commands %sh{
-    tmux_height=$kak_opt_fzf_tmux_height
-    printf '%s\n' "info -title %{fzf open project} %{Change the server's working directory to selected project}"
+try %{ declare-user-mode fzf-project }
+map global fzf -docstring "project menu" '<a-p>' '<esc>: enter-user-mode fzf-project<ret>'
+map global fzf-project -docstring "save current path as project" 's' '<esc>: fzf-save-path-as-project<ret>'
+map global fzf-project -docstring "update project" 'u' '<esc>: fzf-update-project-path<ret>'
 
-    items_command="cat $kak_opt_fzf_projects_file"
-    if [ $kak_opt_fzf_cd_preview = "true" ]; then
-        preview="--preview '($kak_opt_cd_preview_cmd) 2>/dev/null | head -n $kak_opt_fzf_preview_dirs'"
-    fi
-    printf "%s\n" "fzf %{change-directory} %{$items_command} %{$preview} %{fzf-file}"
+define-command -hidden fzf-project %{ evaluate-commands %sh{
+    printf '%s\n' "info -title %{fzf open project} %{Change the server's working directory to selected project}"
+    printf "%s\n" "fzf -kak-cmd change-directory -items-cmd %{cat $kak_opt_fzf_projects_file} -preview-cmd %{$preview} -post-action fzf-file -filter %{sed 's/.*:  //'}"
 }}
 
 define-command fzf-save-path-as-project %{ prompt "Project's name: " %{ nop %sh{
     mkdir -p "${kak_opt_fzf_projects_file%/*}"
-    printf "%s: %s\n" "$kak_text" "$(pwd)" >> $kak_opt_fzf_projects_file
+    printf "%s:  %s\n" "$kak_text" "$(pwd)" >> $kak_opt_fzf_projects_file
 }}}
 
 # a command to get poject names if `prompt' will ever support `-shell-script-candidates'

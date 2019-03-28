@@ -17,9 +17,12 @@ Default arguments:
 " \
 str fzf_git_command "git"
 
+try %{ declare-user-mode fzf-vcs }
 map global fzf-vcs -docstring "edit file from Git tree" 'g' '<esc>: fzf-git<ret>'
 
-define-command -hidden fzf-git %{ evaluate-commands %sh{
+define-command -override -hidden fzf-git %{ evaluate-commands %sh{
+    current_path=$(pwd)
+    repo_root=$(git rev-parse --show-toplevel)
     case $kak_opt_fzf_git_command in
     git)
         cmd="git ls-tree --full-tree --name-only -r HEAD" ;;
@@ -27,6 +30,6 @@ define-command -hidden fzf-git %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_git_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf %{edit} %{$cmd} %{-m --expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ctrl-w $additional_flags} -post-action %{cd $current_path}"
 }}
 

@@ -11,6 +11,7 @@
 
 try %{ declare-user-mode fzf-vcs } catch %{echo -markup "{Error}Can't declare mode 'fzf-vcs' - already exists"}
 
+try %{ declare-user-mode fzf }
 map global fzf -docstring "edit file from vcs repo"      'v'     '<esc>: fzf-vcs<ret>'
 map global fzf -docstring "svitch to vcs selection mode" '<a-v>' '<esc>: fzf-vcs-mode<ret>'
 
@@ -45,7 +46,7 @@ bzr status"
 <c-v>: open file in vertical split"
             message="Open single or multiple files from git tree.
 <ret>: open file in new buffer.
-<c-w>: open file in new window $additional_keybindings"
+<c-w>: open file in new terminal $additional_keybindings"
             printf "%s\n" "info -title %{$title} %{$message}"
             printf "%s\n" "fzf-$vcs"
             exit

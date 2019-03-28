@@ -106,7 +106,7 @@ Switches:
     -items-cmd <items command>: A command that is used as a pipe to provide list of values to fzf
     -fzf-impl <implementation>: Owerride fzf implementation variable
     -fzf-args <args>: Additional flags for fzf program
-    -preview-cmd: A preview command
+    -preview-cmd <command>: A preview command
     -preview: Should fzf window include preview
     -filter <commands>: A pipe which will be applied to result provided by fzf
     -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command" \

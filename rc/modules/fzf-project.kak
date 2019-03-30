@@ -38,7 +38,7 @@ define-command -hidden fzf-save-path-as-project %{ prompt "Project's name: " %{ 
     else
         project="$kak_text"
         printf "%s\n" "prompt -shell-script-candidates %{printf '%s\n%s\n' 'y' 'n'} %{Project '$project' exists. Update? (y/N): } %{ evaluate-commands %sh{
-            if [ \"\$kak_text\" = 'y' ] || [ \"\$kak_text\" = 'yes' ]; then
+            if [ \"\$kak_text\" = 'y' ] || [ \"\$kak_text\" = 'Y' ] || [ \"\$kak_text\" = 'yes' ] || [ \"\$kak_text\" = 'Yes' ] || [ \"\$kak_text\" = 'YEs' ] || [ \"\$kak_text\" = 'YES' ]; then
                 printf \"%s\n\" \"fzf-update-project-path-impl %{$project}\"
                 printf \"%s\n\" \"echo -markup %{{Information}'$project' project updated}\"
             else

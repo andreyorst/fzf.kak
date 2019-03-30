@@ -192,7 +192,7 @@ fzf -params .. %{ evaluate-commands %sh{
     (   while [ -e ${fzfcmd} ]; do sleep 0.1; done
         if [ -s ${result} ]; then
             (
-                while read line; do
+                while read -r line; do
                     case ${line} in
                         ctrl-w) wincmd="fzf-window" ;;
                         ctrl-s) wincmd="fzf-vertical" ;;
@@ -204,7 +204,7 @@ fzf -params .. %{ evaluate-commands %sh{
                         break
                     fi
                 done
-                while read line; do
+                while read -r line; do
                     printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %{${multiple_cmd} %{${line}}}"
                 done
                 if [ -n "${post_action}" ]; then

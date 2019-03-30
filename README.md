@@ -94,6 +94,8 @@ Each `fzf` module defines mnemonic mapping, like <kbd>f</kbd> for opening files,
 - <kbd>t</kbd> - Browse ctags tags.
 - <kbd>Alt</kbd>+<kbd>t</kbd> - Select tag kind filter on per language basis.
 - <kbd>g</kbd> - Interactive grep.
+- <kbd>p</kbd> - Project selector.
+- <kbd>Alt</kbd>+<kbd>p</kbd> - Project related commands.
 
 So for example pressing <kbd>Ctrl</kbd>+<kbd>p</kbd> <kbd>f</kbd> will open
 `fzf` window, showing you all files from current directory recursively.

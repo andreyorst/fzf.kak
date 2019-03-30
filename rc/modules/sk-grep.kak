@@ -43,14 +43,17 @@ define-command -hidden fzf-sk-grep %{ evaluate-commands %sh{
     printf "%s\n" "fzf -kak-cmd %{fzf-sk-grep-handler} -fzf-impl %{sk -m -i -c '$kak_opt_fzf_sk_grep_command {}'} -fzf-args %{--expect ctrl-w $additional_flags} -multiple-cmd %{fzf-sk-populate-grep} -post-action %{buffer %opt{fzf_sk_first_file}}"
 }}
 
-define-command -hidden fzf-sk-grep-handler -params 1 %{ evaluate-commands %sh{
-    printf "%s\n" "$1" | awk '{
-             file = $0; sub(/:.*/, "", file); gsub("&", "&&", file);
-             line = $0; sub(/[^:]+:/, "", line); sub(/:.*/, "", line)
-             print "edit -existing %&" file "&; execute-keys %&" line "gxvc&"
-             print "set-option global fzf_sk_first_file %&" file "&"
-         }'
-}}
+define-command -hidden fzf-sk-grep-handler -params 1 %{
+    evaluate-commands %sh{
+        printf "%s\n" "$1" | awk '{
+                 file = $0; sub(/:.*/, "", file); gsub("&", "&&", file);
+                 line = $0; sub(/[^:]+:/, "", line); sub(/:.*/, "", line)
+                 print "edit -existing %&" file "&; execute-keys %&" line "gxvc&"
+                 print "set-option global fzf_sk_first_file %&" file "&"
+             }'
+    }
+    fzf-sk-populate-grep %arg{1}
+}
 
 define-command -hidden fzf-sk-populate-grep -params 1 %{
     try %{

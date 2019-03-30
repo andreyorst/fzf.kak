@@ -15,6 +15,8 @@ Default value:
     grep -RHn" \
 str fzf_sk_grep_command 'grep -RHn'
 
+declare-option -hidden str fzf_sk_first_file ''
+
 try %{ declare-user-mode fzf }
 
 evaluate-commands %sh{
@@ -38,14 +40,28 @@ define-command -hidden fzf-sk-grep %{ evaluate-commands %sh{
 
     printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf -kak-cmd %{fzf-sk-grep-handler} -fzf-impl %{sk -i -c '$kak_opt_fzf_sk_grep_command {}'} -fzf-args %{--expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf -kak-cmd %{fzf-sk-grep-handler} -fzf-impl %{sk -m -i -c '$kak_opt_fzf_sk_grep_command {}'} -fzf-args %{--expect ctrl-w $additional_flags} -multiple-cmd %{fzf-sk-populate-grep} -post-action %{buffer %opt{fzf_sk_first_file}}"
 }}
 
 define-command -hidden fzf-sk-grep-handler -params 1 %{ evaluate-commands %sh{
     printf "%s\n" "$1" | awk '{
              file = $0; sub(/:.*/, "", file); gsub("&", "&&", file);
              line = $0; sub(/[^:]+:/, "", line); sub(/:.*/, "", line)
-             print "edit -existing %&" file "&; execute-keys %&" line "gxvc&";
+             print "edit -existing %&" file "&; execute-keys %&" line "gxvc&"
+             print "set-option global fzf_sk_first_file %&" file "&"
          }'
 }}
+
+define-command -hidden fzf-sk-populate-grep -params 1 %{
+    try %{
+        buffer *grep*
+    } catch %{
+        edit -scratch *grep*
+        set-option buffer filetype grep
+    }
+    evaluate-commands -buffer *grep* %{
+        set-register dquote %arg{1}
+        execute-keys gjPo
+    }
+}
 

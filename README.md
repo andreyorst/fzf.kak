@@ -194,6 +194,8 @@ these arguments:
 
 - `-kak-cmd`: A Kakoune command that is applied to `fzf` resulting value, e.g.
   `edit -existing`, `change-directory`, e.t.c.
+- `-multiple-cmd`: A Kakoune command that is applied when multiple items
+  selected to every item but the first one.
 - `-items-cmd`: A command that is used as a pipe to provide list of values to
   `fzf`.  For example, if we want to pass list of all files recursively in
   current directory, we would use `-items-cmd %{find .}` which will be piped to

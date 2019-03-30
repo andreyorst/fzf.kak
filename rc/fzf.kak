@@ -103,6 +103,7 @@ define-command -docstring \
 
 Switches:
     -kak-cmd <command>: A Kakoune cmd that is applied to fzf resulting value
+    -multiple-cmd <command>: A Kakoune cmd that is applied all multiple selected files but the first one
     -items-cmd <items command>: A command that is used as a pipe to provide list of values to fzf
     -fzf-impl <implementation>: Owerride fzf implementation variable
     -fzf-args <args>: Additional flags for fzf program
@@ -112,6 +113,7 @@ Switches:
     -post-action <commands>: Extra commands that are preformed after `-kak-cmd' command" \
 -shell-script-completion %{
     printf "%s\n" "-kak-cmd
+-multiple-cmd
 -items-cmd
 -fzf-impl
 -fzf-args
@@ -125,16 +127,19 @@ fzf -params .. %{ evaluate-commands %sh{
 
     while [ $# -gt 0 ]; do
         case $1 in
-            -kak-cmd)     shift; kakoune_cmd="$1" ;;
-            -items-cmd)   shift; items_cmd="$1 |" ;;
-            -fzf-impl)    shift; fzf_impl="$1"    ;;
-            -fzf-args)    shift; fzf_args="$1"    ;;
-            -preview-cmd) shift; preview_cmd="$1" ;;
-            -preview)            preview="true"   ;;
-            -filter)      shift; filter="| $1"    ;;
-            -post-action) shift; post_action="$1" ;;
+            -kak-cmd)      shift; kakoune_cmd="$1"  ;;
+            -multiple-cmd) shift; multiple_cmd="$1" ;;
+            -items-cmd)    shift; items_cmd="$1 |"  ;;
+            -fzf-impl)     shift; fzf_impl="$1"     ;;
+            -fzf-args)     shift; fzf_args="$1"     ;;
+            -preview-cmd)  shift; preview_cmd="$1"  ;;
+            -preview)             preview="true"    ;;
+            -filter)       shift; filter="| $1"     ;;
+            -post-action)  shift; post_action="$1"  ;;
         esac; shift
     done
+
+    [ -z "$multiple_cmd" ] && multiple_cmd="$kakoune_cmd"
 
     if [ "${preview}" = "true" ]; then
         # bake position option to define them at runtime
@@ -196,7 +201,11 @@ fzf -params .. %{ evaluate-commands %sh{
                     esac
                     if [ -n "${item}" ]; then
                         printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %{${kakoune_cmd} %{${item}}}"
+                        break
                     fi
+                done
+                while read line; do
+                    printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %{${multiple_cmd} %{${line}}}"
                 done
                 if [ -n "${post_action}" ]; then
                     printf "%s\n" "evaluate-commands -client ${kak_client} %{${post_action}}"

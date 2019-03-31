@@ -154,7 +154,7 @@ option to `false`.
 
 #### Highlighting preview window
 You also can highlight contents of the file displayed within preview window. To
-do so, you can specify which highlighter to use with `fzf_highlighter` option.
+do so, you can specify which highlighter to use with `fzf_highlight_cmd` option.
 Supported highlighters are:
 
 * [Bat][16]

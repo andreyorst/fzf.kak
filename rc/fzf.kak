@@ -168,11 +168,18 @@ fzf -params .. %{ evaluate-commands %sh{
     fzfcmd="${fzf_tmp}/fzfcmd"
     result="${fzf_tmp}/result"
 
-    shell_executable="$(command -v sh)"
-
-    # compose entire fzf command with all args into single file which will be executed later
-    printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} SHELL=${shell_executable} ${fzf_impl} ${fzf_args} ${preview_cmd} ${filter} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
-
+    (
+        shell_path="$(command -v sh)"
+        if [ -n "${shell_path}" ]; then
+            # portable shebang
+            printf "%s\n" "#!${shell_path}"
+            # set SHELL because fzf preview uses it
+            printf "%s\n" "SHELL=${shell_path}"
+        fi
+        # compose entire fzf command with all args into single file which will be executed later
+        printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} ${fzf_impl} ${fzf_args} ${preview_cmd} ${filter} > ${result}"
+        printf "%s\n" "rm ${fzfcmd}"
+    ) >> ${fzfcmd}
     chmod 755 ${fzfcmd}
 
     if [ -n "${kak_client_env_TMUX}" ]; then

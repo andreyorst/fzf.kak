@@ -168,10 +168,11 @@ fzf -params .. %{ evaluate-commands %sh{
     fzfcmd="${fzf_tmp}/fzfcmd"
     result="${fzf_tmp}/result"
 
-    shell_executable="$(command -v sh)"
-
+    # portable shebang
+    shell_path="$(command -v sh)"
+    [ -n "${shell_path}" ] && printf "%s\n" "#!${shell_path}" > ${fzfcmd}
     # compose entire fzf command with all args into single file which will be executed later
-    printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} SHELL=${shell_executable} ${fzf_impl} ${fzf_args} ${preview_cmd} ${filter} > ${result}; rm ${fzfcmd}" > ${fzfcmd}
+    printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} ${fzf_impl} ${fzf_args} ${preview_cmd} ${filter} > ${result}; rm ${fzfcmd}" >> ${fzfcmd}
 
     chmod 755 ${fzfcmd}
 

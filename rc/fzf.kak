@@ -148,7 +148,7 @@ fzf -params .. %{ evaluate-commands %sh{
             # tmux height should be changed when preview is on
             tmux_height="${kak_opt_fzf_preview_tmux_height}"
         else
-            # this code chooses previewposition depending on window width at runtime
+            # this code chooses preview position depending on window width at runtime
             preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
         fi
         # handle preview if not defined explicitly with `-preview-cmd'

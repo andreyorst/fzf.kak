@@ -190,6 +190,14 @@ changed with `fzf_tmux_height` option.  `fzf_tmux_height_file_preview` option is
 used to control height of the split when you do file searching with file-preview
 turned on.
 
+### Projects
+**fzf.kak** can store and load your projects. For that It creates a hidden file
+in your `%val{config}` called `.fzf-projects`. You can change the location of
+this file and its name with `fzf_project_file` option. You also can choose which
+method to use when storing projects. You can either convert your `$HOME` to `~/`
+or use plain `$HOME` in your path. This behavior is configured with
+`fzf_project_use_tilda` option, which accepts `true` and `false` values.
+
 ## `fzf` command
 `fzf` command can be used from prompt mode and for [scripting][20]. It supports
 these arguments:

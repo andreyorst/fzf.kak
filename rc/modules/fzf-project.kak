@@ -23,7 +23,7 @@ declare-option -docstring %sh{ printf "%s\n" "use ~/ instead of $HOME" } bool fz
 define-command -hidden fzf-project %{ evaluate-commands %sh{
     if [ -s $kak_opt_fzf_project_file ]; then
         printf '%s\n' "info -title %{fzf open project} %{Change the server's working directory to selected project}"
-        printf "%s\n" "fzf -kak-cmd change-directory -items-cmd %{cat $kak_opt_fzf_project_file} -preview-cmd %{$preview} -post-action fzf-file -filter %{sed 's/.*:  //'}"
+        printf "%s\n" "fzf -kak-cmd change-directory -items-cmd %{cat $kak_opt_fzf_project_file} -preview-cmd %{$preview} -fzf-args %{--reverse} -post-action fzf-file -filter %{sed 's/.*:  //'}"
     else
         printf "%s\n" "echo -markup %{{Information}No project defined in '$kak_opt_fzf_project_file'}"
     fi

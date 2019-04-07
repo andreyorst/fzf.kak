@@ -72,8 +72,14 @@ define-command -hidden fzf-save-path-as-project-no-prompt %{ evaluate-commands %
 }}
 
 define-command -docstring \
-"fzf-add-project <path> [<name>]: add given <path> to project list with given <name>. If name omitted basename of the project is used for the name" \
+"fzf-add-project [<switches>] <path> [<name>]: add given <path> to project list with given <name>. If name omitted basename of the project is used for the name
+Switches:
+    -force: overwrite project if exists without asking" \
 fzf-add-project -file-completion -params 1..2 %{ evaluate-commands %sh{
+    if [ "$1" = "-force" ]; then
+        force="true"
+        shift
+    fi
     # portable version of `basename'
     base() {
         filename=$1
@@ -92,10 +98,9 @@ fzf-add-project -file-completion -params 1..2 %{ evaluate-commands %sh{
     mkdir -p "${kak_opt_fzf_project_file%/*}"
     project_path="$1"
     project_name="$2"
-    echo "echo -debug %{'$(base ${project_path})'}"
     [ -z "${project_name}" ] && project_name=$(base ${project_path})
     exists=$(grep "${project_name}:  " ${kak_opt_fzf_project_file})
-    if [ -z "${exists}" ]; then
+    if [ -z "${exists}" ] || [ "${force}" = "true" ]; then
         [ "${kak_opt_fzf_project_use_tilda}" = "false" ] || project_path=$(printf "%s\n" ${project_path} | perl -pe "s(${HOME})(~)")
         printf "%s:  %s\n" "${project_name}" "${project_path}" >> ${kak_opt_fzf_project_file}
         printf "%s\n" "echo -markup %{{Information}saved '${project_path}' project as '${project_name}'}"

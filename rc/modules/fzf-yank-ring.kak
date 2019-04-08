@@ -24,6 +24,6 @@ define-command -hidden fzf-yank-ring %{ evaluate-commands %sh{
 
     message="Swap between yanks."
 
-    printf "%s" "fzf -kak-cmd %{set-register dquote} -items-cmd %{cat $yanks} -filter %{sed \"s/␤/\\\n/g;s/^'|'$//\"}"
+    printf "%s\n" "fzf -kak-cmd %{set-register dquote} -items-cmd %{cat $yanks} -filter %{sed 's/␤/\\\\n/g;s/^.//;s/.\\\n$//'}"
 }}
 

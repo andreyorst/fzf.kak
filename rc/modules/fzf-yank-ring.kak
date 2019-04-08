@@ -13,12 +13,10 @@
 try %{ declare-user-mode fzf }
 
 # this will fail if yank-ring.kak isn't installed
-hook global -once WinCreate .* %{
-    try %{
-        set-option -add global yank_ring_history
-        map global fzf -docstring "open yank-ring" 'y' '<esc>: fzf-yank-ring<ret>'
-    }
-}
+hook global -once WinCreate .* %{ try %{
+    set-option -add global yank_ring_history
+    map global fzf -docstring "open yank-ring" 'y' '<esc>: fzf-yank-ring<ret>'
+}}
 
 define-command -hidden fzf-yank-ring %{ evaluate-commands %sh{
     yanks=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-yanks.XXXXXX)

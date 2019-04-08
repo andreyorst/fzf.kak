@@ -28,10 +28,10 @@ define-command -hidden fzf-yank-ring %{ evaluate-commands %sh{
     done
 
     message="Swap between items in yank-ring."
-    printf "%s\n" "fzf -kak-cmd %{fzf-yank-ring-set-dquote} -items-cmd %{cat $yanks}"
+    printf "%s\n" "fzf -kak-cmd %{fzf-yank-ring-set-dquote} -items-cmd %{cat $yanks} -preview -preview-cmd %{--preview 'printf \"%s\\\n\" {} | sed \"s/␤/\\\n/g\"'}"
 }}
 
 define-command -hidden fzf-yank-ring-set-dquote -params 1 %{
-    set-register dquote %sh{ printf "%s\n" "$1" | sed "s/␤/\n/g;" }
+    set-register dquote %sh{ printf "%s\n" "$1" | sed "s/␤/\n/g" }
 }
 

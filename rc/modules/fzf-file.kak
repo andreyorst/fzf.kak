@@ -49,6 +49,7 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
         cmd=$kak_opt_fzf_file_command ;;
     esac
 
+    cmd="$cmd 2>/dev/null"
     message="Open single or multiple files.
 <ret>: open file in new buffer.
 <c-w>: open file in new terminal"

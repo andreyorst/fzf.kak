@@ -20,8 +20,6 @@ hook global -once WinCreate .* %{
     }
 }
 
-declare-option -hidden str fzf_yank_ring_result
-
 define-command -hidden fzf-yank-ring %{ evaluate-commands %sh{
     yanks=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-yanks.XXXXXX)
     eval "set -- $kak_opt_yank_ring_history"
@@ -32,12 +30,10 @@ define-command -hidden fzf-yank-ring %{ evaluate-commands %sh{
     done
 
     message="Swap between items in yank-ring."
-    printf "%s\n" "fzf -kak-cmd %{set-option global fzf_yank_ring_result} -items-cmd %{cat $yanks} -post-action %{fzf-yank-ring-set-dquote}"
+    printf "%s\n" "fzf -kak-cmd %{fzf-yank-ring-set-dquote} -items-cmd %{cat $yanks}"
 }}
 
-define-command fzf-yank-ring-set-dquote %{
-    set-register dquote %sh{
-        printf "%s\n" "$kak_opt_fzf_yank_ring_result" | sed "s/␤/\n/g;"
-    }
+define-command -hidden fzf-yank-ring-set-dquote -params 1 %{
+    set-register dquote %sh{ printf "%s\n" "$1" | sed "s/␤/\n/g;" }
 }
 

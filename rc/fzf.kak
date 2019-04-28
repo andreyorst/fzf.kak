@@ -27,6 +27,12 @@ declare-option -docstring 'amount of lines to pass to preview window
 Default value: 100' \
 int fzf_preview_lines 100
 
+declare-option -docstring 'preview window position.
+Supported values: up (top),  down (bottom), left, right, auto
+
+Default value: auto' \
+str fzf_preview_pos "auto"
+
 declare-option -docstring 'Highlighter to use in preview window. You can provide
 only the name of the tool that you want to use, or specify a command.
 Supported tools:
@@ -143,14 +149,15 @@ fzf -params .. %{ evaluate-commands %sh{
 
     if [ "${preview}" = "true" ]; then
         # bake position option to define them at runtime
-        if [ -n "${kak_client_env_TMUX}" ]; then
-            preview_position="pos=right:${kak_opt_fzf_preview_width};"
-            # tmux height should be changed when preview is on
-            tmux_height="${kak_opt_fzf_preview_tmux_height}"
-        else
-            # this code chooses preview position depending on window width at runtime
-            preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
-        fi
+        [ -n "${kak_client_env_TMUX}" ] && tmux_height="${kak_opt_fzf_preview_tmux_height}"
+        case ${kak_opt_fzf_preview_pos} in
+            top|up) preview_position="pos=top:${kak_opt_fzf_preview_height};" ;;
+            bottom|down) preview_position="pos=down:${kak_opt_fzf_preview_height};" ;;
+            right) preview_position="pos=right:${kak_opt_fzf_preview_width};" ;;
+            left) preview_position="pos=left:${kak_opt_fzf_preview_width};" ;;
+            auto|*) preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
+        esac
+
         # handle preview if not defined explicitly with `-preview-cmd'
         if [ ${kak_opt_fzf_preview} = "true" ] && [ -z "${preview_cmd}" ]; then
             case ${kak_opt_fzf_highlight_cmd} in

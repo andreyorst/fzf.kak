@@ -8,19 +8,21 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
-try %{ declare-user-mode fzf }
+declare-option -docstring "file where saved projects are stored" str fzf_project_file "%val{config}/.fzf-projects"
+declare-option -docstring %sh{ printf "%s\n" "use '~/' instead of '${HOME}'" } bool fzf_project_use_tilda false
+
+hook global ModuleLoad fzf %§
+
 map global fzf -docstring "open project" 'p' '<esc>: fzf-project<ret>'
 
 try %{ declare-user-mode fzf-project }
+
 map global fzf -docstring "project menu" '<a-p>' '<esc>: enter-user-mode fzf-project<ret>'
 map global fzf-project -docstring "save current path as project" 's' '<esc>: fzf-save-path-as-project<ret>'
 map global fzf-project -docstring "save current path as project (use basename)" '<a-s>' '<esc>: fzf-save-path-as-project-no-prompt<ret>'
 map global fzf-project -docstring "update project" 'u' '<esc>: fzf-update-project-path<ret>'
 map global fzf-project -docstring "delete project from project list" 'd' '<esc>: fzf-delete-project<ret>'
 map global fzf-project -docstring "rename project" 'r' '<esc>: fzf-rename-project<ret>'
-
-declare-option -docstring "file where saved projects are stored" str fzf_project_file "%val{config}/.fzf-projects"
-declare-option -docstring %sh{ printf "%s\n" "use '~/' instead of '${HOME}'" } bool fzf_project_use_tilda false
 
 define-command -hidden fzf-project %{ evaluate-commands %sh{
     if [ -s ${kak_opt_fzf_project_file} ]; then
@@ -159,3 +161,4 @@ define-command -hidden fzf-rename-project %{
     }}
 }
 
+§

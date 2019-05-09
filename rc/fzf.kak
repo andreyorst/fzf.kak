@@ -8,7 +8,6 @@
 # │ different fzf commands.         │
 # ╰─────────────────────────────────╯
 
-try %{ declare-user-mode fzf }
 
 # Options
 declare-option -docstring 'implementation of fzf that you want to use.
@@ -73,7 +72,11 @@ fzf-mode contains mnemonic key bindings for every fzf.kak command
 Best used with mapping like:
     map global normal '<some key>' ': fzf-mode<ret>'
 " \
-fzf-mode %{ try %{ evaluate-commands 'enter-user-mode fzf' } }
+fzf-mode %{ require-module fzf; evaluate-commands 'enter-user-mode fzf' }
+
+provide-module fzf %§
+
+try %{ declare-user-mode fzf }
 
 define-command -hidden -docstring "wrapper command to create new vertical split" \
 fzf-vertical -params .. %{ try %{
@@ -230,3 +233,4 @@ fzf -params .. %{ evaluate-commands %sh{
     ) > /dev/null 2>&1 < /dev/null &
 }}
 
+§

@@ -17,7 +17,8 @@ Default arguments:
 " \
 str fzf_hg_command "hg"
 
-try %{ declare-user-mode fzf-vcs }
+hook global ModuleLoad fzf_vcs %§
+
 map global fzf-vcs -docstring "edit file from mercurial tree" 'h' '<esc>: fzf-hg<ret>'
 
 define-command -hidden fzf-hg %{ evaluate-commands %sh{
@@ -33,3 +34,4 @@ define-command -hidden fzf-hg %{ evaluate-commands %sh{
     printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ctrl-w $additional_flags} -post-action %{cd $current_path}"
 }}
 
+§

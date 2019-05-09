@@ -8,7 +8,8 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
-try %{ declare-user-mode fzf }
+hook global ModuleLoad fzf %§
+
 map global fzf -docstring "search in buffer" 's' '<esc>: fzf-buffer-search<ret>'
 
 define-command -hidden fzf-buffer-search %{ evaluate-commands %sh{
@@ -20,3 +21,4 @@ define-command -hidden fzf-buffer-search %{ evaluate-commands %sh{
     printf "%s\n" "fzf -kak-cmd %{execute-keys} -items-cmd %{(nl -b a -n ln $buffer_content; rm $buffer_content)} -fzf-args %{--reverse} -filter %{cut -f 1} -post-action %{execute-keys gx}"
 }}
 
+§

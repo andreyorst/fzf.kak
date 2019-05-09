@@ -24,7 +24,8 @@ Default arguments:
 " \
 str fzf_file_command "find"
 
-try %{ declare-user-mode fzf }
+hook global ModuleLoad fzf %§
+
 map global fzf -docstring "open file" 'f' '<esc>: fzf-file<ret>'
 
 define-command -hidden fzf-file %{ evaluate-commands %sh{
@@ -62,3 +63,4 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
     printf "%s\n" "fzf -preview -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ctrl-w $additional_flags}"
 }}
 
+§

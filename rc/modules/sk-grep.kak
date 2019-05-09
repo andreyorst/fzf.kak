@@ -17,7 +17,7 @@ str fzf_sk_grep_command 'grep -RHn'
 
 declare-option -hidden str fzf_sk_first_file ''
 
-try %{ declare-user-mode fzf }
+hook global ModuleLoad fzf %§
 
 evaluate-commands %sh{
     if [ -n "$(command -v sk)" ]; then
@@ -68,3 +68,4 @@ define-command -hidden fzf-sk-populate-grep -params 1 %{
     }
 }
 
+§

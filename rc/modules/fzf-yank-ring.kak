@@ -10,7 +10,7 @@
 # │ GitHub.com/alexherbo2/yank-ring.kak │
 # ╰─────────────────────────────────────╯
 
-try %{ declare-user-mode fzf }
+hook global ModuleLoad fzf %§
 
 # this will fail if yank-ring.kak isn't installed
 hook global -once WinCreate .* %{ try %{
@@ -35,3 +35,4 @@ define-command -hidden fzf-yank-ring-set-dquote -params 1 %{
     set-register dquote %sh{ printf "%s\n" "$1" | sed "s/␤/\n/g" }
 }
 
+§

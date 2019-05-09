@@ -17,7 +17,7 @@ Default arguments:
 " \
 str fzf_svn_command "svn"
 
-try %{ declare-user-mode fzf-vcs }
+hook global ModuleLoad fzf_vcs %§
 map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-svn<ret>'
 
 define-command -hidden fzf-svn %{ evaluate-commands %sh{
@@ -33,3 +33,4 @@ define-command -hidden fzf-svn %{ evaluate-commands %sh{
     printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ctrl-w $additional_flags} -post-action %{cd $current_path}"
 }}
 
+§

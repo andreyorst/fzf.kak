@@ -9,15 +9,20 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
-try %{ declare-user-mode fzf-vcs } catch %{echo -markup "{Error}Can't declare mode 'fzf-vcs' - already exists"}
+hook global ModuleLoad fzf %§
 
-try %{ declare-user-mode fzf }
-map global fzf -docstring "edit file from vcs repo"      'v'     '<esc>: fzf-vcs<ret>'
+map global fzf -docstring "edit file from vcs repo"      'v'     '<esc>: require-module fzf_vcs; fzf-vcs<ret>'
 map global fzf -docstring "svitch to vcs selection mode" '<a-v>' '<esc>: fzf-vcs-mode<ret>'
 
 define-command -docstring "Enter fzf-vcs-mode.
 This mode allows selecting specific vcs command." \
-fzf-vcs-mode %{ try %{ evaluate-commands 'enter-user-mode fzf-vcs' } }
+fzf-vcs-mode %{ require-module fzf_vcs; evaluate-commands 'enter-user-mode fzf-vcs' }
+
+§
+
+provide-module fzf_vcs %§
+
+declare-user-mode fzf-vcs
 
 define-command -hidden -docstring 'Wrapper command for fzf vcs to automatically decect
 used version control system.
@@ -55,3 +60,4 @@ bzr status"
     printf "%s\n" "echo -markup '{Information}No VCS found in current folder'"
 }}
 
+§

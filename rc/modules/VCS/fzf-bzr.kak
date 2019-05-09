@@ -17,7 +17,8 @@ Default arguments:
 " \
 str fzf_bzr_command "bzr"
 
-try %{ declare-user-mode fzf-vcs }
+hook global ModuleLoad fzf_vcs %§
+
 map global fzf-vcs -docstring "edit file from GNU Bazaar tree" 'b' '<esc>: fzf-bzr<ret>'
 
 define-command -hidden fzf-bzr %{ evaluate-commands %sh{
@@ -33,3 +34,4 @@ define-command -hidden fzf-bzr %{ evaluate-commands %sh{
     printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ctrl-w $additional_flags} -post-action %{cd $current_path}"
 }}
 
+§

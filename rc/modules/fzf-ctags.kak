@@ -11,7 +11,8 @@ declare-option -docstring "file that should be used by fzf-tag to provide tags.
 Default value: tags" \
 str fzf_tag_file_name "tags"
 
-try %{ declare-user-mode fzf }
+hook global ModuleLoad fzf %§
+
 map global fzf -docstring "find tag" 't' '<esc>: fzf-tag<ret>'
 
 # this huge try block defines filetype aware filter mappings for separate fzf-ctags mode
@@ -826,3 +827,5 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
     printf "%s\n" "set-option -add window ctagsfiles %{$path/$kak_opt_fzf_tag_file_name}"
     printf "%s\n" "fzf -kak-cmd %{ctags-search} -items-cmd %{$cmd | awk '!a[\$0]++'} -fzf-args %{--expect ctrl-w $additional_flags}"
 }}
+
+§

@@ -109,6 +109,17 @@ is being used to create new windows.
 **fzf.kak** features a lot of settings via options that can be altered to change
 how **fzf.kak** behaves.
 
+### Mappings
+You can define what keys to use in `fzf` window via these options:
+
+- `fzf_window_map` - mapping to perform an action in new window,
+- `fzf_vertical_map` - mapping to perform an action in new vertical split
+  (Tmux),
+- `fzf_horizontal_map` - mapping to perform an action in new horizontal split.
+
+These options should be set to work with fzf `--expect` parameter, so check out
+fzf documentation on this.
+
 ### File command
 You can configure what command to use to search for files, and it's arguments.
 Supported tools are [GNU Find][12], [The Silver Searcher][13], [ripgrep][14],

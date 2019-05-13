@@ -815,17 +815,17 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
 
     message="Jump to a symbol''s definition
 <ret>: open tag in new buffer
-<c-w>: open tag in new terminal"
+$kak_opt_fzf_window_map: open tag in new terminal"
 
     [ -n "${kak_client_env_TMUX}" ] && tmux_keybindings="
-<c-s>: open tag in horizontal split
-<c-v>: open tag in vertical split"
+$kak_opt_fzf_horizontal_map: open tag in horizontal split
+$kak_opt_fzf_vertical_map: open tag in vertical split"
 
     printf "%s\n" "info -title 'fzf tag' '$message$tmux_keybindings'"
 
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
     printf "%s\n" "set-option -add window ctagsfiles %{$path/$kak_opt_fzf_tag_file_name}"
-    printf "%s\n" "fzf -kak-cmd %{ctags-search} -items-cmd %{$cmd | awk '!a[\$0]++'} -fzf-args %{--expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf -kak-cmd %{ctags-search} -items-cmd %{$cmd | awk '!a[\$0]++'} -fzf-args %{--expect $kak_opt_fzf_window_map $additional_flags}"
 }}
 
 §

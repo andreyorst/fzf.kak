@@ -66,6 +66,15 @@ declare-option -docstring "height of preview window.
 Default value: 60%%" \
 str fzf_preview_height '60%'
 
+declare-option -docstring "mapping to execute action in new window" \
+str fzf_window_map 'ctrl-w'
+
+declare-option -docstring "mapping to execute action in new vertical split" \
+str fzf_vertical_map 'ctrl-v'
+
+declare-option -docstring "mapping to execute action in new horizontal split" \
+str fzf_horizontal_map 'ctrl-s'
+
 define-command -docstring "Enter fzf-mode.
 fzf-mode contains mnemonic key bindings for every fzf.kak command
 
@@ -211,10 +220,10 @@ fzf -params .. %{ evaluate-commands %sh{
             (
                 while read -r line; do
                     case ${line} in
-                        ctrl-w) wincmd="fzf-window" ;;
-                        ctrl-s) wincmd="fzf-vertical" ;;
-                        ctrl-v) wincmd="fzf-horizontal" ;;
-                        *)      item=${line} ;;
+                        ${kak_opt_fzf_window_map})     wincmd="fzf-window"     ;;
+                        ${kak_opt_fzf_vertical_map})   wincmd="fzf-vertical"   ;;
+                        ${kak_opt_fzf_horizontal_map}) wincmd="fzf-horizontal" ;;
+                        *)                             item=${line} ;;
                     esac
                     if [ -n "${item}" ]; then
                         printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %{${kakoune_cmd} %{${item}}}"

@@ -22,14 +22,14 @@ define-command -hidden fzf-buffer %{ evaluate-commands %sh{
 
     message="Set buffer to edit in current client.
 <ret>: switch to selected buffer.
-<c-w>: open buffer in new window"
+$kak_opt_fzf_window_map: open buffer in new window"
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
-<c-s>: open buffer in horizontal split
-<c-v>: open buffer in vertical split"
+$kak_opt_fzf_horizontal_map: open buffer in horizontal split
+$kak_opt_fzf_vertical_map: open buffer in vertical split"
     printf "%s\n" "info -title 'fzf buffer' '$message$tmux_keybindings'"
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
 
-    printf "%s\n" "fzf -kak-cmd %{buffer} -items-cmd %{(cat $buffers; rm $buffers)} -fzf-args %{--expect ctrl-w $additional_flags}"
+    printf "%s\n" "fzf -kak-cmd %{buffer} -items-cmd %{(cat $buffers; rm $buffers)} -fzf-args %{--expect $kak_opt_fzf_window_map $additional_flags}"
 }}
 
 §

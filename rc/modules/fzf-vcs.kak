@@ -47,11 +47,11 @@ bzr status"
             vcs=$(printf "%s\n" "$cmd" | awk '{print $1}')
             title="fzf $vcs"
             [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
-<c-s>: open file in horizontal split
-<c-v>: open file in vertical split"
+$kak_opt_fzf_horizontal_map: open file in horizontal split
+$kak_opt_fzf_vertical_map: open file in vertical split"
             message="Open single or multiple files from git tree.
 <ret>: open file in new buffer.
-<c-w>: open file in new terminal $additional_keybindings"
+$kak_opt_fzf_window_map: open file in new terminal $additional_keybindings"
             printf "%s\n" "info -title %{$title} %{$message}"
             printf "%s\n" "fzf-$vcs"
             exit

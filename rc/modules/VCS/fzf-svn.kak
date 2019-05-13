@@ -29,8 +29,8 @@ define-command -hidden fzf-svn %{ evaluate-commands %sh{
     svn*)
         cmd=$kak_opt_fzf_svn_command ;;
     esac
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ctrl-w $additional_flags} -post-action %{cd $current_path}"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
+    printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags} -post-action %{cd $current_path}"
 }}
 
 §

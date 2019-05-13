@@ -33,14 +33,14 @@ define-command -hidden fzf-sk-grep %{ evaluate-commands %sh{
     title="skim interactive grep"
     message="Interactively grep pattern from current directory
 <ret>: open search result in new buffer.
-<c-w>: open search result in new terminal"
+$kak_opt_fzf_window_map: open search result in new terminal"
     [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
-<c-s>: open search result in horizontal split
-<c-v>: open search result in vertical split"
+$kak_opt_fzf_horizontal_map: open search result in horizontal split
+$kak_opt_fzf_vertical_map: open search result in vertical split"
 
     printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ctrl-v --expect ctrl-s"
-    printf "%s\n" "fzf -kak-cmd %{fzf-sk-grep-handler} -fzf-impl %{sk -m -i -c '$kak_opt_fzf_sk_grep_command {}'} -fzf-args %{--expect ctrl-w $additional_flags} -multiple-cmd %{fzf-sk-populate-grep} -post-action %{buffer %opt{fzf_sk_first_file}}"
+    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
+    printf "%s\n" "fzf -kak-cmd %{fzf-sk-grep-handler} -fzf-impl %{sk -m -i -c '$kak_opt_fzf_sk_grep_command {}'} -fzf-args %{--expect $kak_opt_fzf_window_map $additional_flags} -multiple-cmd %{fzf-sk-populate-grep} -post-action %{buffer %opt{fzf_sk_first_file}}"
 }}
 
 define-command -hidden fzf-sk-grep-handler -params 1 %{

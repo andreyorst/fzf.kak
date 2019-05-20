@@ -7,6 +7,8 @@
 # │ GitHub.com/andreyorst/fzf.kak         │
 # ╰───────────────────────────────────────╯
 
+hook global ModuleLoad fzf_vcs %§
+
 declare-option -docstring "command to provide list of files in svn repository to fzf. Arguments are supported
 Supported tools:
     <package>:  <value>:
@@ -17,7 +19,6 @@ Default arguments:
 " \
 str fzf_svn_command "svn"
 
-hook global ModuleLoad fzf_vcs %§
 map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-svn<ret>'
 
 define-command -hidden fzf-svn %{ evaluate-commands %sh{

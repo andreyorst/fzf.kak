@@ -8,6 +8,15 @@
 # │ different fzf commands.         │
 # ╰─────────────────────────────────╯
 
+define-command -docstring "Enter fzf-mode.
+fzf-mode contains mnemonic key bindings for every fzf.kak command
+
+Best used with mapping like:
+    map global normal '<some key>' ': fzf-mode<ret>'
+" \
+fzf-mode %{ require-module fzf; evaluate-commands 'enter-user-mode fzf' }
+
+provide-module fzf %§
 
 # Options
 declare-option -docstring 'implementation of fzf that you want to use.
@@ -74,16 +83,6 @@ str fzf_vertical_map 'ctrl-v'
 
 declare-option -docstring "mapping to execute action in new horizontal split" \
 str fzf_horizontal_map 'ctrl-s'
-
-define-command -docstring "Enter fzf-mode.
-fzf-mode contains mnemonic key bindings for every fzf.kak command
-
-Best used with mapping like:
-    map global normal '<some key>' ': fzf-mode<ret>'
-" \
-fzf-mode %{ require-module fzf; evaluate-commands 'enter-user-mode fzf' }
-
-provide-module fzf %§
 
 try %{ declare-user-mode fzf }
 

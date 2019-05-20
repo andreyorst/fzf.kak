@@ -7,6 +7,8 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
+hook global ModuleLoad fzf_vcs %§
+
 declare-option -docstring "command to provide list of files in mercurial repository to fzf. Arguments are supported
 Supported tools:
     <package>:     <value>:
@@ -16,8 +18,6 @@ Default arguments:
     ""hg locate -f -0 -I .hg locate -f -0 -I .""
 " \
 str fzf_hg_command "hg"
-
-hook global ModuleLoad fzf_vcs %§
 
 map global fzf-vcs -docstring "edit file from mercurial tree" 'h' '<esc>: fzf-hg<ret>'
 

@@ -7,6 +7,8 @@
 # │ GitHub.com/andreyorst/fzf.kak         │
 # ╰───────────────────────────────────────╯
 
+hook global ModuleLoad fzf_vcs %§
+
 declare-option -docstring "command to provide list of files in GNU Bazaar repository to fzf. Arguments are supported
 Supported tools:
     <package>:  <value>:
@@ -16,8 +18,6 @@ Default arguments:
     ""bzr ls -R --versioned -0""
 " \
 str fzf_bzr_command "bzr"
-
-hook global ModuleLoad fzf_vcs %§
 
 map global fzf-vcs -docstring "edit file from GNU Bazaar tree" 'b' '<esc>: fzf-bzr<ret>'
 

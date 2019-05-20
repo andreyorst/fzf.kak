@@ -4,7 +4,7 @@
 ![Github commits (since latest release)][5] ![license][6]
 
 **fzf.kak** is a plugin for [Kakoune][7] editor, that brings integration with
-[fzf][8] tool.  This plugin is being tested against Kakoune 2018.09.04.
+[fzf][8] tool.  This plugin is being tested against Kakoune master branch.
 **fzf.kak** also supports [skim][9], which can be used via `fzf_implementation`
 option.
 
@@ -107,7 +107,13 @@ is being used to create new windows.
 
 ## Configuration
 **fzf.kak** features a lot of settings via options that can be altered to change
-how **fzf.kak** behaves.
+how **fzf.kak** behaves. All settings belong to `fzf` module, so in order to
+change variable values use `defer "fzf %{ ... }"` if you're using **plug.kak**,
+and if not, use `hook global ModuleLoad fzf %{ ... }`, or simply `requier-module
+fzf` before configuring options. Same goes for `fzf_vcs` module.
+
+From now on I assume that you're using one of the methods listed above for all
+configurations below.
 
 ### Mappings
 You can define what keys to use in `fzf` window via these options:

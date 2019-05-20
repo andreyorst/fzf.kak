@@ -7,6 +7,8 @@
 # │ GitHub.com/andreyorst/fzf.kak         │
 # ╰───────────────────────────────────────╯
 
+hook global ModuleLoad fzf_vcs %§
+
 declare-option -docstring "command to provide list of files in git tree to fzf. Arguments are supported
 Supported tools:
     <package>: <value>:
@@ -16,8 +18,6 @@ Default arguments:
     ""git ls-tree --full-tree --name-only -r HEAD""
 " \
 str fzf_git_command "git"
-
-hook global ModuleLoad fzf_vcs %§
 
 map global fzf-vcs -docstring "edit file from Git tree" 'g' '<esc>: fzf-git<ret>'
 

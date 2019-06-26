@@ -225,7 +225,7 @@ fzf -params .. %{ evaluate-commands %sh{
                         *)                             item=${line} ;;
                     esac
                     if [ -n "${item}" ]; then
-                        item=$(printf "%s\n" "${item}" | sed "s/@/@@/g")
+                        item=$(printf "%s\n" "${item}" | sed "s/@/@@/g;s/&/&&/g")
                         printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %&${kakoune_cmd} %@${item}@&"
                         break
                     fi

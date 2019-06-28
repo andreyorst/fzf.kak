@@ -20,7 +20,7 @@ hook global -once WinCreate .* %{ try %{
 
 define-command -hidden fzf-yank-ring %{ evaluate-commands %sh{
     yanks=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-yanks.XXXXXX)
-    eval "set -- $kak_opt_yank_ring_history"
+    eval "set -- $kak_quoted_opt_yank_ring_history"
     while [ $# -gt 0 ]; do
         item=$(printf "%s" "$1" | sed "s/^'//;s/'$//" | awk 1 ORS='␤')
         printf "%s\n" "$item" >> $yanks

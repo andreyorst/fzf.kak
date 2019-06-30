@@ -8,7 +8,7 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
-hook global ModuleLoad fzf %§
+hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "open buffer" 'b' '<esc>: fzf-buffer<ret>'
 

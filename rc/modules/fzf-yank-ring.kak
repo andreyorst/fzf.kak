@@ -10,7 +10,7 @@
 # │ GitHub.com/alexherbo2/yank-ring.kak │
 # ╰─────────────────────────────────────╯
 
-hook global ModuleLoad fzf %§
+hook global ModuleLoaded fzf %§
 
 # this will fail if yank-ring.kak isn't installed
 hook global -once WinCreate .* %{ try %{

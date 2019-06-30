@@ -7,7 +7,7 @@
 # │ GitHub.com/andreyorst/fzf.kak         │
 # ╰───────────────────────────────────────╯
 
-hook global ModuleLoad fzf_vcs %§
+hook global ModuleLoaded fzf_vcs %§
 
 declare-option -docstring "command to provide list of files in svn repository to fzf. Arguments are supported
 Supported tools:

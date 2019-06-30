@@ -17,7 +17,7 @@ str fzf_sk_grep_command 'grep -RHn'
 
 declare-option -hidden str fzf_sk_first_file ''
 
-hook global ModuleLoad fzf %§
+hook global ModuleLoaded fzf %§
 
 evaluate-commands %sh{
     if [ -n "$(command -v sk)" ]; then

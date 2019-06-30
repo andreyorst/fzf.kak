@@ -29,7 +29,7 @@ str cd_preview_cmd "tree -d {}"
 declare-option -docstring 'maximum amount of previewed directories' \
 int fzf_preview_dirs '300'
 
-hook global ModuleLoad fzf %§
+hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "change directory" 'c' '<esc>: fzf-cd<ret>'
 

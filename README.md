@@ -109,7 +109,7 @@ is being used to create new windows.
 **fzf.kak** features a lot of settings via options that can be altered to change
 how **fzf.kak** behaves. All settings belong to `fzf` module, so in order to
 change variable values use `defer "fzf %{ ... }"` if you're using **plug.kak**,
-and if not, use `hook global ModuleLoad fzf %{ ... }`, or simply `require-module
+and if not, use `hook global ModuleLoaded fzf %{ ... }`, or simply `require-module
 fzf` before configuring options. Same goes for `fzf_vcs` module.
 
 From now on I assume that you're using one of the methods listed above for all

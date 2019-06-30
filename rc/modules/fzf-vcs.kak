@@ -9,7 +9,7 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
-hook global ModuleLoad fzf %§
+hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "edit file from vcs repo"      'v'     '<esc>: require-module fzf_vcs; fzf-vcs<ret>'
 map global fzf -docstring "svitch to vcs selection mode" '<a-v>' '<esc>: fzf-vcs-mode<ret>'

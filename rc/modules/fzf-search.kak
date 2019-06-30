@@ -8,7 +8,7 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
-hook global ModuleLoad fzf %§
+hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "search in buffer" 's' '<esc>: fzf-buffer-search<ret>'
 

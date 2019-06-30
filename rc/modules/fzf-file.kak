@@ -24,7 +24,7 @@ Default arguments:
 " \
 str fzf_file_command "find"
 
-hook global ModuleLoad fzf %§
+hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "open file" 'f' '<esc>: fzf-file<ret>'
 

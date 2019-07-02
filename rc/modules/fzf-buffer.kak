@@ -14,7 +14,7 @@ map global fzf -docstring "open buffer" 'b' '<esc>: fzf-buffer<ret>'
 
 define-command -hidden fzf-buffer %{ evaluate-commands %sh{
     buffers=$(mktemp ${TMPDIR:-/tmp}/kak-fzf-buffers.XXXXXX)
-    eval "set -- $kak_quoted_quoted_buflist"
+    eval "set -- $kak_quoted_buflist"
     while [ $# -gt 0 ]; do
         printf "%s\n" "$1" >> $buffers
         shift

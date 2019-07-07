@@ -25,10 +25,8 @@ define-command -hidden fzf-bzr %{ evaluate-commands %sh{
     current_path=$(pwd)
     repo_root=$(bzr root)
     case $kak_opt_fzf_bzr_command in
-    bzr)
-        cmd="bzr ls -R --versioned -0" ;;
-    bzr*)
-        cmd=$kak_opt_fzf_bzr_command ;;
+        (bzr)  cmd="bzr ls -R --versioned -0" ;;
+        (bzr*) cmd=$kak_opt_fzf_bzr_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
     printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags} -post-action %{cd $current_path}"

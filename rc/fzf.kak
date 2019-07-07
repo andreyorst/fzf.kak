@@ -139,16 +139,17 @@ fzf -params .. %{ evaluate-commands %sh{
 
     while [ $# -gt 0 ]; do
         case $1 in
-            -kak-cmd)      shift; kakoune_cmd="$1"  ;;
-            -multiple-cmd) shift; multiple_cmd="$1" ;;
-            -items-cmd)    shift; items_cmd="$1 |"  ;;
-            -fzf-impl)     shift; fzf_impl="$1"     ;;
-            -fzf-args)     shift; fzf_args="$1"     ;;
-            -preview-cmd)  shift; preview_cmd="$1"  ;;
-            -preview)             preview="true"    ;;
-            -filter)       shift; filter="| $1"     ;;
-            -post-action)  shift; post_action="$1"  ;;
-        esac; shift
+            (-kak-cmd)      shift; kakoune_cmd="$1"  ;;
+            (-multiple-cmd) shift; multiple_cmd="$1" ;;
+            (-items-cmd)    shift; items_cmd="$1 |"  ;;
+            (-fzf-impl)     shift; fzf_impl="$1"     ;;
+            (-fzf-args)     shift; fzf_args="$1"     ;;
+            (-preview-cmd)  shift; preview_cmd="$1"  ;;
+            (-preview)             preview="true"    ;;
+            (-filter)       shift; filter="| $1"     ;;
+            (-post-action)  shift; post_action="$1"  ;;
+        esac
+        shift
     done
 
     [ -z "$multiple_cmd" ] && multiple_cmd="$kakoune_cmd"
@@ -157,11 +158,11 @@ fzf -params .. %{ evaluate-commands %sh{
         # bake position option to define them at runtime
         [ -n "${kak_client_env_TMUX}" ] && tmux_height="${kak_opt_fzf_preview_tmux_height}"
         case ${kak_opt_fzf_preview_pos} in
-            (top|up) preview_position="pos=top:${kak_opt_fzf_preview_height};" ;;
+            (top|up)      preview_position="pos=top:${kak_opt_fzf_preview_height};" ;;
             (bottom|down) preview_position="pos=down:${kak_opt_fzf_preview_height};" ;;
-            (right) preview_position="pos=right:${kak_opt_fzf_preview_width};" ;;
-            (left) preview_position="pos=left:${kak_opt_fzf_preview_width};" ;;
-            (auto|*) preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
+            (right)       preview_position="pos=right:${kak_opt_fzf_preview_width};" ;;
+            (left)        preview_position="pos=left:${kak_opt_fzf_preview_width};" ;;
+            (auto|*)      preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
         esac
 
         # handle preview if not defined explicitly with `-preview-cmd'

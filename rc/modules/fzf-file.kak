@@ -34,20 +34,14 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
         kak_opt_fzf_file_command="find"
     fi
     case $kak_opt_fzf_file_command in
-    find)
-        cmd="find -L . -type f" ;;
-    ag)
-        cmd="ag -l -f --hidden --one-device . " ;;
-    rg)
-        cmd="rg -L --hidden --files" ;;
-    fd)
-        cmd="fd --type f --follow" ;;
-    find*|ag*|rg*|fd*)
-        cmd=$kak_opt_fzf_file_command ;;
-    *)
-        items_executable=$(printf "%s\n" "$kak_opt_fzf_file_command" | grep -o -E "[[:alpha:]]+" | head -1)
-        printf "%s\n" "echo -markup '{Information}'Warning: '$executable'' is not supported by fzf.kak.'"
-        cmd=$kak_opt_fzf_file_command ;;
+        (find)              cmd="find -L . -type f" ;;
+        (ag)                cmd="ag -l -f --hidden --one-device . " ;;
+        (rg)                cmd="rg -L --hidden --files" ;;
+        (fd)                cmd="fd --type f --follow" ;;
+        (find*|ag*|rg*|fd*) cmd=$kak_opt_fzf_file_command ;;
+        (*)                 items_executable=$(printf "%s\n" "$kak_opt_fzf_file_command" | grep -o -E "[[:alpha:]]+" | head -1)
+                            printf "%s\n" "echo -markup '{Information}'Warning: '$executable'' is not supported by fzf.kak.'"
+                            cmd=$kak_opt_fzf_file_command ;;
     esac
 
     cmd="$cmd 2>/dev/null"

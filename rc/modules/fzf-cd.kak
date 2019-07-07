@@ -37,12 +37,9 @@ define-command -hidden fzf-cd %{ evaluate-commands %sh{
     tmux_height=$kak_opt_fzf_tmux_height
     printf '%s\n' "info -title %{fzf change directory} %{Change the server's working directory
 current path: $(pwd)}"
-
     case $kak_opt_fzf_cd_command in
-        find)
-            items_command="(echo .. && find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)" ;;
-        *)
-            items_command=$kak_opt_fzf_cd_command ;;
+        (find) items_command="(echo .. && find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)" ;;
+        (*)    items_command=$kak_opt_fzf_cd_command ;;
     esac
     if [ "$kak_opt_fzf_cd_preview" = "true" ]; then
         preview_flag="-preview"

@@ -25,10 +25,8 @@ define-command -hidden fzf-hg %{ evaluate-commands %sh{
     current_path=$(pwd)
     repo_root=$(hg root)
     case $kak_opt_fzf_hg_command in
-    hg)
-        cmd="hg locate -f -0 -I .hg locate -f -0 -I ." ;;
-    hg*)
-        cmd=$kak_opt_fzf_hg_command ;;
+        (hg)  cmd="hg locate -f -0 -I .hg locate -f -0 -I ." ;;
+        (hg*) cmd=$kak_opt_fzf_hg_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
     printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags} -post-action %{cd $current_path}"

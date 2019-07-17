@@ -49,16 +49,16 @@ define-command -hidden fzf-save-path-as-project-no-prompt %{ evaluate-commands %
     mkdir -p "${kak_opt_fzf_project_file%/*}"
     # portable version of `basename'
     base() {
-        filename=$1
+        filename="$1"
         case "$filename" in
-          */*[!/]*)
-            trail=${filename##*[!/]}
-            filename=${filename%%"$trail"}
-            base=${filename##*/} ;;
-          *[!/]*)
-            trail=${filename##*[!/]}
-            base=${filename%%"$trail"} ;;
-          *) base="/" ;;
+            (*/*[!/]*)
+                trail=${filename##*[!/]}
+                filename=${filename%%"$trail"}
+                base=${filename##*/} ;;
+            (*[!/]*)
+                trail=${filename##*[!/]}
+                base=${filename%%"$trail"} ;;
+            (*) base="/" ;;
         esac
         printf "%s\n" "${base}"
     }
@@ -84,16 +84,16 @@ fzf-add-project -file-completion -params 1..2 %{ evaluate-commands %sh{
     fi
     # portable version of `basename'
     base() {
-        filename=$1
+        filename="$1"
         case "$filename" in
-          */*[!/]*)
-            trail=${filename##*[!/]}
-            filename=${filename%%"$trail"}
-            base=${filename##*/} ;;
-          *[!/]*)
-            trail=${filename##*[!/]}
-            base=${filename%%"$trail"} ;;
-          *) base="/" ;;
+            (*/*[!/]*)
+                trail=${filename##*[!/]}
+                filename=${filename%%"$trail"}
+                base=${filename##*/} ;;
+            (*[!/]*)
+                trail=${filename##*[!/]}
+                base=${filename%%"$trail"} ;;
+            (*) base="/" ;;
         esac
         printf "%s\n" "${base}"
     }

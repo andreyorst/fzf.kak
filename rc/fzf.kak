@@ -57,7 +57,7 @@ These are default arguments for the tools above:
     highlight: "highlight --failsafe -O ansi {}"
     rouge:     "rougify {}"
 ' \
-str fzf_highlight_cmd "highlight"
+str fzf_highlight_command "highlight"
 
 declare-option -docstring "height of fzf tmux split in screen lines or percents.
 Default value: 25%%" \
@@ -84,34 +84,29 @@ str fzf_vertical_map 'ctrl-v'
 declare-option -docstring "mapping to execute action in new horizontal split" \
 str fzf_horizontal_map 'ctrl-s'
 
+declare-option -docstring 'command to use to create new window when not using tmux.
+
+Default value: terminal kak -c %val{session} -e "%arg{@}"' \
+str fzf_terminal_command 'terminal kak -c %val{session} -e "%arg{@}"'
+
 try %{ declare-user-mode fzf }
 
 define-command -hidden -docstring "wrapper command to create new vertical split" \
-fzf-vertical -params .. %{ try %{
+fzf-vertical -params .. %{ evaluate-commands %{
     tmux-terminal-vertical kak -c %val{session} -e "%arg{@}"
-} catch %{
-    tmux-new-vertical "%arg{@}"
 }}
 
 define-command -hidden -docstring "wrapper command to create new horizontal split" \
-fzf-horizontal -params .. %{ try %{
+fzf-horizontal -params .. %{ evaluate-commands %{
     tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
-} catch %{
-    tmux-new-horizontal "%arg{@}"
 }}
 
 define-command -hidden -docstring "wrapper command to create new terminal" \
-fzf-window -params .. %{ try %sh{
+fzf-window -params .. %{ evaluate-commands %sh{
     if [ -n "$kak_client_env_TMUX" ]; then
         printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{@}"'
     else
-        printf "%s\n" 'terminal kak -c %val{session} -e "%arg{@}"'
-    fi
-} catch %sh{
-    if [ -n "$kak_client_env_TMUX" ]; then
-        printf "%s\n" 'tmux-new-window "%arg{@}"'
-    else
-        printf "%s\n" 'new "%arg{@}"'
+        printf "%s\n" "$kak_opt_fzf_terminal_command"
     fi
 }}
 
@@ -144,16 +139,17 @@ fzf -params .. %{ evaluate-commands %sh{
 
     while [ $# -gt 0 ]; do
         case $1 in
-            -kak-cmd)      shift; kakoune_cmd="$1"  ;;
-            -multiple-cmd) shift; multiple_cmd="$1" ;;
-            -items-cmd)    shift; items_cmd="$1 |"  ;;
-            -fzf-impl)     shift; fzf_impl="$1"     ;;
-            -fzf-args)     shift; fzf_args="$1"     ;;
-            -preview-cmd)  shift; preview_cmd="$1"  ;;
-            -preview)             preview="true"    ;;
-            -filter)       shift; filter="| $1"     ;;
-            -post-action)  shift; post_action="$1"  ;;
-        esac; shift
+            (-kak-cmd)      shift; kakoune_cmd="$1"  ;;
+            (-multiple-cmd) shift; multiple_cmd="$1" ;;
+            (-items-cmd)    shift; items_cmd="$1 |"  ;;
+            (-fzf-impl)     shift; fzf_impl="$1"     ;;
+            (-fzf-args)     shift; fzf_args="$1"     ;;
+            (-preview-cmd)  shift; preview_cmd="$1"  ;;
+            (-preview)             preview="true"    ;;
+            (-filter)       shift; filter="| $1"     ;;
+            (-post-action)  shift; post_action="$1"  ;;
+        esac
+        shift
     done
 
     [ -z "$multiple_cmd" ] && multiple_cmd="$kakoune_cmd"
@@ -162,21 +158,21 @@ fzf -params .. %{ evaluate-commands %sh{
         # bake position option to define them at runtime
         [ -n "${kak_client_env_TMUX}" ] && tmux_height="${kak_opt_fzf_preview_tmux_height}"
         case ${kak_opt_fzf_preview_pos} in
-            top|up) preview_position="pos=top:${kak_opt_fzf_preview_height};" ;;
-            bottom|down) preview_position="pos=down:${kak_opt_fzf_preview_height};" ;;
-            right) preview_position="pos=right:${kak_opt_fzf_preview_width};" ;;
-            left) preview_position="pos=left:${kak_opt_fzf_preview_width};" ;;
-            auto|*) preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
+            (top|up)      preview_position="pos=top:${kak_opt_fzf_preview_height};" ;;
+            (bottom|down) preview_position="pos=down:${kak_opt_fzf_preview_height};" ;;
+            (right)       preview_position="pos=right:${kak_opt_fzf_preview_width};" ;;
+            (left)        preview_position="pos=left:${kak_opt_fzf_preview_width};" ;;
+            (auto|*)      preview_position="sleep 0.1; [ \$(tput cols) -gt \$(expr \$(tput lines) \* 2) ] && pos=right:${kak_opt_fzf_preview_width} || pos=top:${kak_opt_fzf_preview_height};"
         esac
 
         # handle preview if not defined explicitly with `-preview-cmd'
         if [ ${kak_opt_fzf_preview} = "true" ] && [ -z "${preview_cmd}" ]; then
-            case ${kak_opt_fzf_highlight_cmd} in
-                bat)       highlight_cmd="bat --color=always --style=plain {}" ;;
-                coderay)   highlight_cmd="coderay {}" ;;
-                highlight) highlight_cmd="highlight --failsafe -O ansi {}" ;;
-                rouge)     highlight_cmd="rougify {}" ;;
-                *)         highlight_cmd="${kak_opt_fzf_highlight_cmd}" ;;
+            case ${kak_opt_fzf_highlight_command} in
+                (bat)       highlight_cmd="bat --color=always --style=plain {}" ;;
+                (coderay)   highlight_cmd="coderay {}" ;;
+                (highlight) highlight_cmd="highlight --failsafe -O ansi {}" ;;
+                (rouge)     highlight_cmd="rougify {}" ;;
+                (*)         highlight_cmd="${kak_opt_fzf_highlight_command}" ;;
             esac
             preview_cmd="--preview '(${highlight_cmd} || cat {}) 2>/dev/null | head -n ${kak_opt_fzf_preview_lines}' --preview-window=\${pos}"
         fi
@@ -208,7 +204,7 @@ fzf -params .. %{ evaluate-commands %sh{
         # `terminal' doesn't support any kind of width and height parameters, so tmux panes are created by tmux itself
         cmd="nop %sh{ command tmux split-window ${measure} ${tmux_height%%%*} '${fzfcmd}' }"
     else
-        cmd="terminal %{${fzfcmd}}"
+        cmd="${kak_opt_fzf_terminal_command%% *} %{${fzfcmd}}"
     fi
 
     printf "%s\n" "${cmd}"
@@ -219,22 +215,26 @@ fzf -params .. %{ evaluate-commands %sh{
             (
                 while read -r line; do
                     case ${line} in
-                        ${kak_opt_fzf_window_map})     wincmd="fzf-window"     ;;
-                        ${kak_opt_fzf_vertical_map})   wincmd="fzf-vertical"   ;;
-                        ${kak_opt_fzf_horizontal_map}) wincmd="fzf-horizontal" ;;
-                        *)                             item=${line} ;;
+                        (${kak_opt_fzf_window_map})     wincmd="fzf-window"     ;;
+                        (${kak_opt_fzf_vertical_map})   wincmd="fzf-vertical"   ;;
+                        (${kak_opt_fzf_horizontal_map}) wincmd="fzf-horizontal" ;;
+                        (*)                             item=${line} ;;
                     esac
                     if [ -n "${item}" ]; then
                         item=$(printf "%s\n" "${item}" | sed "s/@/@@/g;s/&/&&/g")
+                        kakoune_cmd=$(printf "%s\n" "${kakoune_cmd}" | sed "s/&/&&/g")
                         printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %&${kakoune_cmd} %@${item}@&"
                         break
                     fi
                 done
+                [ -n "${multiple_cmd}" ] && multiple_cmd=$(printf "%s\n" "${multiple_cmd}" | sed "s/&/&&/g")
                 while read -r line; do
-                    printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %{${multiple_cmd} %{${line}}}"
+                    line=$(printf "%s\n" "${line}" | sed "s/@/@@/g;s/&/&&/g")
+                    printf "%s\n" "evaluate-commands -client ${kak_client} ${wincmd} %&${multiple_cmd} %@${line}@&"
                 done
                 if [ -n "${post_action}" ]; then
-                    printf "%s\n" "evaluate-commands -client ${kak_client} %{${post_action}}"
+                    post_action=$(printf "%s\n" "${post_action}" | sed "s/&/&&/g")
+                    printf "%s\n" "evaluate-commands -client ${kak_client} %&${post_action}&"
                 fi
             ) < ${result} | kak -p ${kak_session}
         fi

@@ -25,10 +25,8 @@ define-command -override -hidden fzf-git %{ evaluate-commands %sh{
     current_path=$(pwd)
     repo_root=$(git rev-parse --show-toplevel)
     case $kak_opt_fzf_git_command in
-    git)
-        cmd="git ls-tree --full-tree --name-only -r HEAD" ;;
-    git*)
-        cmd=$kak_opt_fzf_git_command ;;
+        (git)  cmd="git ls-tree --full-tree --name-only -r HEAD" ;;
+        (git*) cmd=$kak_opt_fzf_git_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
     printf "%s\n" "fzf -kak-cmd %{cd $repo_root; edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags} -post-action %{cd $current_path}"

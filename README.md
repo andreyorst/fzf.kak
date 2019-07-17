@@ -115,6 +115,15 @@ fzf` before configuring options. Same goes for `fzf_vcs` module.
 From now on I assume that you're using one of the methods listed above for all
 configurations below.
 
+### Windowing
+If you're using Tmux, you do not have to worry about windowing, since fzf.kak
+automatically creates all needed Tmux splits and panes for you. However in case
+you're not using Tmux, fzf.kak uses `fzf_terminal_command` option to call windowing
+command to create new windows. By default it is set to use `terminal` alias:
+`terminal kak -c %val{session} -e "%arg{@}"`, but some terminals can provide
+other aliases or commands, like `terminal-tab` in Kitty. You may want to edit
+this variable accordingly to your personal preferences.
+
 ### Mappings
 You can define what keys to use in `fzf` window via these options:
 
@@ -171,7 +180,7 @@ option to `false`.
 
 #### Highlighting preview window
 You also can highlight contents of the file displayed within preview window. To
-do so, you can specify which highlighter to use with `fzf_highlight_cmd` option.
+do so, you can specify which highlighter to use with `fzf_highlight_command` option.
 Supported highlighters are:
 
 * [Bat][16]

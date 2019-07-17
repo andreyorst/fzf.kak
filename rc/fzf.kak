@@ -57,7 +57,7 @@ These are default arguments for the tools above:
     highlight: "highlight --failsafe -O ansi {}"
     rouge:     "rougify {}"
 ' \
-str fzf_highlight_cmd "highlight"
+str fzf_highlight_command "highlight"
 
 declare-option -docstring "height of fzf tmux split in screen lines or percents.
 Default value: 25%%" \
@@ -87,7 +87,7 @@ str fzf_horizontal_map 'ctrl-s'
 declare-option -docstring 'command to use to create new window when not using tmux.
 
 Default value: terminal kak -c %val{session} -e "%arg{@}"' \
-str fzf_terminal_cmd 'terminal kak -c %val{session} -e "%arg{@}"'
+str fzf_terminal_command 'terminal kak -c %val{session} -e "%arg{@}"'
 
 try %{ declare-user-mode fzf }
 
@@ -106,7 +106,7 @@ fzf-window -params .. %{ evaluate-commands %sh{
     if [ -n "$kak_client_env_TMUX" ]; then
         printf "%s\n" 'tmux-terminal-window kak -c %val{session} -e "%arg{@}"'
     else
-        printf "%s\n" "$kak_opt_fzf_terminal_cmd"
+        printf "%s\n" "$kak_opt_fzf_terminal_command"
     fi
 }}
 
@@ -167,12 +167,12 @@ fzf -params .. %{ evaluate-commands %sh{
 
         # handle preview if not defined explicitly with `-preview-cmd'
         if [ ${kak_opt_fzf_preview} = "true" ] && [ -z "${preview_cmd}" ]; then
-            case ${kak_opt_fzf_highlight_cmd} in
+            case ${kak_opt_fzf_highlight_command} in
                 (bat)       highlight_cmd="bat --color=always --style=plain {}" ;;
                 (coderay)   highlight_cmd="coderay {}" ;;
                 (highlight) highlight_cmd="highlight --failsafe -O ansi {}" ;;
                 (rouge)     highlight_cmd="rougify {}" ;;
-                (*)         highlight_cmd="${kak_opt_fzf_highlight_cmd}" ;;
+                (*)         highlight_cmd="${kak_opt_fzf_highlight_command}" ;;
             esac
             preview_cmd="--preview '(${highlight_cmd} || cat {}) 2>/dev/null | head -n ${kak_opt_fzf_preview_lines}' --preview-window=\${pos}"
         fi
@@ -204,7 +204,7 @@ fzf -params .. %{ evaluate-commands %sh{
         # `terminal' doesn't support any kind of width and height parameters, so tmux panes are created by tmux itself
         cmd="nop %sh{ command tmux split-window ${measure} ${tmux_height%%%*} '${fzfcmd}' }"
     else
-        cmd="${kak_opt_fzf_terminal_cmd%% *} %{${fzfcmd}}"
+        cmd="${kak_opt_fzf_terminal_command%% *} %{${fzfcmd}}"
     fi
 
     printf "%s\n" "${cmd}"

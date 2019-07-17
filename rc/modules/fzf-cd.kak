@@ -24,7 +24,7 @@ declare-option -docstring 'command to show list of directories in preview window
 Default value:
     tree -d
 ' \
-str cd_preview_cmd "tree -d {}"
+str cd_preview_command "tree -d {}"
 
 declare-option -docstring 'maximum amount of previewed directories' \
 int fzf_preview_dirs '300'
@@ -43,7 +43,7 @@ current path: $(pwd)}"
     esac
     if [ "$kak_opt_fzf_cd_preview" = "true" ]; then
         preview_flag="-preview"
-        preview="--preview '($kak_opt_cd_preview_cmd) 2>/dev/null | head -n $kak_opt_fzf_preview_dirs'"
+        preview="--preview '($kak_opt_cd_preview_command) 2>/dev/null | head -n $kak_opt_fzf_preview_dirs'"
     fi
     printf "%s\n" "fzf $preview_flag -kak-cmd %{change-directory} -items-cmd %{$items_command} -preview-cmd %{$preview} -post-action %{fzf-cd}"
 }}

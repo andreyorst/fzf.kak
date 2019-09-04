@@ -808,9 +808,9 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
     fi
 
     if [ -n "$1" ]; then
-        cmd="cd $path; readtags -Q '(eq? \$kind \"$1\")' -l | cut -f1"
+        cmd="cd $path; readtags -t $kak_opt_fzf_tag_file_name -Q '(eq? \$kind \"$1\")' -l | cut -f1"
     else
-        cmd="cd $path; readtags -l | cut -f1"
+        cmd="cd $path; readtags -t $kak_opt_fzf_tag_file_name -l | cut -f1"
     fi
 
     message="Jump to a symbol''s definition

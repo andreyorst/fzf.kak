@@ -12,7 +12,7 @@
 hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "edit file from vcs repo"      'v'     '<esc>: require-module fzf_vcs; fzf-vcs<ret>'
-map global fzf -docstring "svitch to vcs selection mode" '<a-v>' '<esc>: fzf-vcs-mode<ret>'
+map global fzf -docstring "switch to vcs selection mode" '<a-v>' '<esc>: fzf-vcs-mode<ret>'
 
 define-command -docstring "Enter fzf-vcs-mode.
 This mode allows selecting specific vcs command." \

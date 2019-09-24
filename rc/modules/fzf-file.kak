@@ -54,7 +54,11 @@ $kak_opt_fzf_vertical_map: open file in vertical split"
 
     printf "%s\n" "info -title 'fzf file' '$message$tmux_keybindings'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
-    printf "%s\n" "fzf -preview -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags}"
+
+    if [ "$kak_opt_fzf_cd_preview" = "true" ]; then
+        preview_flag="-preview"
+    fi
+    printf "%s\n" "fzf $preview_flag -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags}"
 }}
 
 §

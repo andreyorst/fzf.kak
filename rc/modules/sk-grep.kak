@@ -62,7 +62,7 @@ define-command -hidden fzf-sk-populate-grep -params 1 %{
         edit -scratch *grep*
         set-option buffer filetype grep
     }
-    evaluate-commands -buffer *grep* %{
+    evaluate-commands -save-regs '"' -buffer *grep* %{
         set-register dquote %arg{1}
         execute-keys gjPo
     }

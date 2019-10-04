@@ -8,6 +8,8 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
+hook global ModuleLoaded fzf %§
+
 declare-option -docstring "command to provide list of files to fzf. Arguments are supported
 Supported tools:
     <package>:           <value>:
@@ -24,7 +26,11 @@ Default arguments:
 " \
 str fzf_file_command "find"
 
-hook global ModuleLoaded fzf %§
+declare-option -docstring 'allow showing preview window while searching for file
+Default value:
+    true
+' \
+bool fzf_file_preview true
 
 map global fzf -docstring "open file" 'f' '<esc>: fzf-file<ret>'
 
@@ -54,7 +60,8 @@ $kak_opt_fzf_vertical_map: open file in vertical split"
 
     printf "%s\n" "info -title 'fzf file' '$message$tmux_keybindings'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
-    printf "%s\n" "fzf -preview -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags}"
+    [ "$kak_opt_fzf_file_preview" = "true" ] && preview_flag="-preview"
+    printf "%s\n" "fzf $preview_flag -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags}"
 }}
 
 §

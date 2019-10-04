@@ -8,10 +8,10 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
+hook global ModuleLoaded fzf %§
+
 declare-option -docstring "file where saved projects are stored" str fzf_project_file "%val{config}/.fzf-projects"
 declare-option -docstring %sh{ printf "%s\n" "use '~/' instead of '${HOME}'" } bool fzf_project_use_tilda false
-
-hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "open project" 'p' '<esc>: fzf-project<ret>'
 

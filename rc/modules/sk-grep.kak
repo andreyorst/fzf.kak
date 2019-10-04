@@ -8,6 +8,8 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
+hook global ModuleLoaded fzf %§
+
 declare-option -docstring "what command to use to provide list of grep search matches.
 Grep output must follow the format of 'filename:line-number:text'
 
@@ -16,8 +18,6 @@ Default value:
 str fzf_sk_grep_command 'grep -RHn'
 
 declare-option -hidden str fzf_sk_first_file ''
-
-hook global ModuleLoaded fzf %§
 
 evaluate-commands %sh{
     if [ -n "$(command -v sk)" ]; then

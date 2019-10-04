@@ -8,6 +8,8 @@
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯
 
+hook global ModuleLoaded fzf %§
+
 declare-option -docstring "command to provide list of directories to fzf.
 Default value:
     find: (echo .. && find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type d -print)
@@ -29,7 +31,6 @@ str cd_preview_command "tree -d {}"
 declare-option -docstring 'maximum amount of previewed directories' \
 int fzf_preview_dirs '300'
 
-hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "change directory" 'c' '<esc>: fzf-cd<ret>'
 

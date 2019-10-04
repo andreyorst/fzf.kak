@@ -7,11 +7,12 @@
 # ╞════════════════════════════════════════╡
 # │ GitHub.com/andreyorst/fzf.kak          │
 # ╰────────────────────────────────────────╯
+
+hook global ModuleLoaded fzf %§
+
 declare-option -docstring "file that should be used by fzf-tag to provide tags.
 Default value: tags" \
 str fzf_tag_file_name "tags"
-
-hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "find tag" 't' '<esc>: fzf-tag<ret>'
 

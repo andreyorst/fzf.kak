@@ -1,9 +1,8 @@
 # ╭─────────────╥────────────────────────╮
 # │ Author:     ║ File:                  │
-# │ Andrey Orst ║ sk-grep.kak            │
+# │ Andrey Orst ║ fzf-grep.kak           │
 # ╞═════════════╩════════════════════════╡
-# │ Module running interactive grep with │
-# │ ski for fzf.kak                      │
+# │ Module for grepping file contents    │
 # ╞══════════════════════════════════════╡
 # │ GitHub.com/andreyorst/fzf.kak        │
 # ╰──────────────────────────────────────╯

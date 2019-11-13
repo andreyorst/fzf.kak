@@ -21,7 +21,7 @@ declare-option -hidden str fzf_sk_first_file ''
 
 evaluate-commands %sh{
     if [ -n "$(command -v sk)" ]; then
-        printf "%s\n" "map global fzf -docstring %{Interactive grep with skim} 'g' '<esc>: fzf-sk-grep<ret>'"
+        printf "%s\n" "map global fzf -docstring %{Interactive grep with skim} '<a-g>' '<esc>: fzf-sk-grep<ret>'"
     fi
 }
 

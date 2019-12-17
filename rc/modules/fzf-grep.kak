@@ -28,7 +28,7 @@ define-command -hidden fzf-grep %{ evaluate-commands %sh{
         (rg)        cmd="rg --line-number --no-column --no-heading --color=never ''" ;;
         (grep*|rg*) cmd=$kak_opt_fzf_grep_command ;;
         (*)         items_executable=$(printf "%s\n" "$kak_opt_fzf_grep_command" | grep -o -E "[[:alpha:]]+" | head -1)
-                    printf "%s\n" "echo -markup %{{Information}Warning: '$executable' is not supported by fzf.kak.}"
+                    printf "%s\n" "echo -markup %{{Information}Warning: '$items_executable' is not supported by fzf.kak.}"
                     cmd=$kak_opt_fzf_grep_command ;;
     esac
 

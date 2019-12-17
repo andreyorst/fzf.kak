@@ -46,7 +46,7 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
         (fd)                cmd="fd --type f --follow" ;;
         (find*|ag*|rg*|fd*) cmd=$kak_opt_fzf_file_command ;;
         (*)                 items_executable=$(printf "%s\n" "$kak_opt_fzf_file_command" | grep -o -E "[[:alpha:]]+" | head -1)
-                            printf "%s\n" "echo -markup '{Information}'Warning: '$executable'' is not supported by fzf.kak.'"
+                            printf "%s\n" "echo -markup %{{Information}Warning: '$items_executable' is not supported by fzf.kak.}"
                             cmd=$kak_opt_fzf_file_command ;;
     esac
 

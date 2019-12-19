@@ -15,7 +15,7 @@ Supported tools:
     GNU Bazaar: ""bzr""
 
 Default arguments:
-    '(cd $repo_root && bzr ls -R --versioned | awk \""{printf \\\""$repo_root/\\\"" \\\$0 \\\""\\\n\\\"" }\"")'
+    '(cd $repo_root && bzr ls -R --versioned)'
 " \
 str fzf_bzr_command "bzr"
 
@@ -24,11 +24,11 @@ map global fzf-vcs -docstring "edit file from GNU Bazaar tree" 'b' '<esc>: fzf-b
 define-command -hidden fzf-bzr %{ evaluate-commands %sh{
     repo_root=$(bzr root)
     case $kak_opt_fzf_bzr_command in
-        (bzr)  cmd="(cd $repo_root && bzr ls -R --versioned | awk \"{printf \\\"$repo_root/\\\" \\\$0 \\\"\\\n\\\" }\")" ;;
-        (bzr*) cmd=$kak_opt_fzf_bzr_command ;;
+        (bzr)  cmd="(cd $repo_root && bzr ls -R --versioned)" ;;
+        (*)    cmd=$kak_opt_fzf_bzr_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
-    printf "%s\n" "fzf -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags}"
+    printf "%s\n" "fzf -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags} -filter %{perl -pe \"if (/$kak_opt_fzf_window_map|$kak_opt_fzf_vertical_map|$kak_opt_fzf_horizontal_map|^$/) {} else {print \\\"$repo_root/\\\"}\"}"
 }}
 
 §

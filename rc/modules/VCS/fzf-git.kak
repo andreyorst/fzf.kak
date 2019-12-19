@@ -12,10 +12,10 @@ hook global ModuleLoaded fzf_vcs %§
 declare-option -docstring "command to provide list of files in git tree to fzf. Arguments are supported
 Supported tools:
     <package>: <value>:
-    Git :      ""git""
+    Git:       ""git""
 
 Default arguments:
-    'repo_root=$(git rev-parse --show-toplevel); git ls-tree --full-tree --name-only -r HEAD | awk ""{print \""$repo_root/\"" \$0}""'
+    'git ls-tree --full-tree --name-only -r HEAD'
 " \
 str fzf_git_command "git"
 

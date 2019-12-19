@@ -11,7 +11,7 @@
 hook global ModuleLoaded fzf %§
 
 map global fzf -docstring "open buffer" 'b' '<esc>: fzf-buffer<ret>'
-map global fzf -docstring "open buffer" '<a-b>' '<esc>: fzf-delete-buffer<ret>'
+map global fzf -docstring "delete buffer" '<a-b>' '<esc>: fzf-delete-buffer<ret>'
 
 define-command -hidden fzf-buffer %{ evaluate-commands %sh{
     buffers=""

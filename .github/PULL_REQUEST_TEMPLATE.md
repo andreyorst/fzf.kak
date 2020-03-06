@@ -1,6 +1,1 @@
-**Breaking change**: yes/no
-<!-- Please provide meaningful description about your contribution -->
-**Description**:
-
-
-<!-- note that code will be reviewed and changes much likely will be requested -->
+**NOTE**: This repository is a mirror for https://gitlab.com/andreyorst/fzf.kak. You can still submit your pull request, howver I will ask a permission to apply your patch manually on GitLab. If you have GitLab accout, please consider submitting pull requests there.

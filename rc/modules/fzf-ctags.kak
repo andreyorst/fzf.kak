@@ -808,17 +808,21 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
         printf "%s\n" "echo -markup %{{Information}'$kak_opt_fzf_tag_file_name' file found at $HOME. Check if it is right tag file}"
     fi
 
-    readtags_cmd="readtags"
-    if [ ! $(command -v ${readtags_cmd}) ]; then
-        printf "%s\n" "echo -markup %{{Information}'${readtags_cmd}' executable not found. Check if '${readtags_cmd} is installed}"
-        exit
-    fi
-
-    if [ -n "$1" ]; then
-        cmd="cd $path; ${readtags_cmd} -t $kak_opt_fzf_tag_file_name -Q '(eq? \$kind \"$1\")' -l | cut -f1"
+    cmd="cd $path;"
+    if [ "$(command -v readtags)" ]; then
+        if [ -n "$1" ]; then
+            cmd="${cmd} readtags -t $kak_opt_fzf_tag_file_name -Q '(eq? \$kind \"$1\")' -l"
+        else
+            cmd="${cmd} readtags -t $kak_opt_fzf_tag_file_name -l"
+        fi
     else
-        cmd="cd $path; ${readtags_cmd} -t $kak_opt_fzf_tag_file_name -l | cut -f1"
+        if [ -n "$1" ]; then
+            cmd="${cmd} grep '^\b\"$1\"\b.*\$/' $kak_opt_fzf_tag_file_name -o"
+        else
+            cmd="${cmd} grep -v '^!_TAG_*' $kak_opt_fzf_tag_file_name"
+        fi
     fi
+    cmd="${cmd} | cut -f1"
 
     message="Jump to a symbol''s definition
 <ret>: open tag in new buffer

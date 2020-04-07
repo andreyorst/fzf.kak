@@ -89,6 +89,9 @@ declare-option -docstring 'command to use to create new window when not using tm
 Default value: terminal kak -c %val{session} -e "%arg{@}"' \
 str fzf_terminal_command 'terminal kak -c %val{session} -e "%arg{@}"'
 
+declare-option -docstring "use main selection as default query for fzf if the selection is longer than 1 char." \
+bool fzf_use_main_selection true
+
 try %{ declare-user-mode fzf }
 
 define-command -hidden -docstring "wrapper command to create new vertical split" \
@@ -137,9 +140,9 @@ Switches:
 fzf -params .. %{ evaluate-commands %sh{
     fzf_impl="${kak_opt_fzf_implementation}"
 
-    if [ $(printf "%s" "${kak_selection}" | wc -m) -gt 1 ]; then
-        default_query="-i -q ${kak_selection}"
-    fi
+    [ "${kak_opt_fzf_use_main_selection}" = "true" ] && \
+    [ $(printf "%s" "${kak_selection}" | wc -m) -gt 1 ] && \
+    default_query="-i -q ${kak_selection}"
 
     while [ $# -gt 0 ]; do
         case $1 in

@@ -115,6 +115,12 @@ fzf` before configuring options. Same goes for `fzf_vcs` module.
 From now on I assume that you're using one of the methods listed above for all
 configurations below.
 
+### Default query
+**fzf.kak** by default will use main selection as default query for fzf, if the
+selection more than 1 character long (because cursor is simply 1-char
+selection). You can disable this behavior by setting `fzf_use_main_selection` to
+`false`.
+
 ### Windowing
 If you're using Tmux, you do not have to worry about windowing, since fzf.kak
 automatically creates all needed Tmux splits and panes for you. However in case

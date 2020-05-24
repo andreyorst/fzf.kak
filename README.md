@@ -278,6 +278,10 @@ Of course modules can and will be more complex, since a good module checks if
 command for providing item list is available on user's machine, and supports
 various settings inside it. Feel free to look how existing modules are made.
 
+### External modules
+Support for [yank-ring.kak][25] was externalized to separate plugin
+[fzf-yank-ring.kak][24]
+
 [1]: https://img.shields.io/github/release/andreyorst/fzf.kak.svg
 [2]: https://github.com/andreyorst/fzf.kak/releases
 [3]: https://img.shields.io/github/release-date/andreyorst/fzf.kak.svg
@@ -301,3 +305,5 @@ various settings inside it. Feel free to look how existing modules are made.
 [21]: rc/modules/sk-grep.kak
 [22]: rc/modules/fzf-search.kak
 [23]: #configuration
+[24]: https://gitlab.com/losnappas/fzf-yank-ring.kak
+[25]: https://github.com/alexherbo2/yank-ring.kak

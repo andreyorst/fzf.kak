@@ -1,3 +1,5 @@
+# THIS PLUGIN IS NOT ACTIVELY MAINTAINED. FOR MORE DETAILS PLEASE SEE [THIS DISCOURSE POST](https://discuss.kakoune.com/t/maintainance-warning-and-request)
+
 # fzf.kak
 
 [![GitHub release][1]][2] [![GitHub Release Date][3]][4]

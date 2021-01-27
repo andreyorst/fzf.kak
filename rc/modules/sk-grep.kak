@@ -40,7 +40,7 @@ $kak_opt_fzf_vertical_map: open search result in vertical split"
 
     printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
-    printf "%s\n" "fzf -kak-cmd %{fzf-sk-grep-handler} -fzf-impl %{sk -m -i -c '$kak_opt_fzf_sk_grep_command {}'} -fzf-args %{--expect $kak_opt_fzf_window_map $additional_flags} -multiple-cmd %{fzf-sk-populate-grep} -post-action %{buffer %opt{fzf_sk_first_file}}"
+    printf "%s\n" "fzf -kak-cmd %{fzf-sk-grep-handler} -fzf-impl %{sk --ansi -m -i -c '$kak_opt_fzf_sk_grep_command {}'} -fzf-args %{--expect $kak_opt_fzf_window_map $additional_flags} -multiple-cmd %{fzf-sk-populate-grep} -post-action %{buffer %opt{fzf_sk_first_file}}"
 }}
 
 define-command -hidden fzf-sk-grep-handler -params 1 %{

@@ -1,1 +1,1 @@
-**NOTE**: This repository is a mirror for https://gitlab.com/andreyorst/fzf.kak. You can still submit your pull request, howver I will ask a permission to apply your patch manually on GitLab. If you have GitLab accout, please consider submitting pull requests there.
+**NOTE**: This repository is not actively maintened. If you want to become a maintainer please contact github.com/andreyorst

@@ -34,14 +34,18 @@ define-command -hidden fzf-project %{ evaluate-commands %sh{
 }}
 
 define-command -hidden fzf-save-path-as-project %{ prompt -shell-script-candidates %{printf "%s\n" "${PWD##*/}"} "Project's name: " %{ evaluate-commands %sh{
-    mkdir -p "${kak_opt_fzf_project_file%/*}"
-    exists=$(grep "${kak_text}:  " ${kak_opt_fzf_project_file})
-    if [ -z "${exists}" ]; then
-        [ "${kak_opt_fzf_project_use_tilda}" = "false" ] && project_path=$(pwd) || project_path=$(pwd | perl -pe "s(${HOME})(~)")
-        printf "%s:  %s\n" "${kak_text}" "${project_path}" >> ${kak_opt_fzf_project_file}
-        printf "%s\n" "echo -markup %{{Information}saved '$(pwd)' project as '${kak_text}'}"
+    if [ -n "${kak_text}" ]; then
+        mkdir -p "${kak_opt_fzf_project_file%/*}"
+        exists=$(grep "${kak_text}:  " ${kak_opt_fzf_project_file})
+        if [ -z "${exists}" ]; then
+            [ "${kak_opt_fzf_project_use_tilda}" = "false" ] && project_path=$(pwd) || project_path=$(pwd | perl -pe "s(${HOME})(~)")
+            printf "%s:  %s\n" "${kak_text}" "${project_path}" >> ${kak_opt_fzf_project_file}
+            printf "%s\n" "echo -markup %{{Information}saved '$(pwd)' project as '${kak_text}'}"
+        else
+            printf "%s\n" "fzf-project-confirm-impl %{Project '${kak_text}' exists. Update? (y/N): } %{fzf-update-project-path-impl %{${kak_text}} %{${PWD}}} %{Project '${kak_text}' updated} %{Project '${kak_text}' kept}"
+        fi
     else
-        printf "%s\n" "fzf-project-confirm-impl %{Project '${kak_text}' exists. Update? (y/N): } %{fzf-update-project-path-impl %{${kak_text}} %{${PWD}}} %{Project '${kak_text}' updated} %{Project '${kak_text}' kept}"
+        printf "%s\n" "echo -markup %{{Error} Project name can't be empty}"
     fi
 }}}
 

@@ -44,7 +44,7 @@ $kak_opt_fzf_vertical_map: open search result in vertical split"
 
     printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
-    printf "%s\n" "fzf -kak-cmd %{evaluate-commands} -fzf-args %{--expect $kak_opt_fzf_window_map $additional_flags} -items-cmd %{$cmd} -filter %{sed -E 's/([^:]+):([^:]+):.*/edit -existing \1; execute-keys \2gvc/'}"
+    printf "%s\n" "fzf -kak-cmd %{evaluate-commands} -fzf-args %{--expect $kak_opt_fzf_window_map $additional_flags  --delimiter=':' -n'3..'} -items-cmd %{$cmd} -filter %{sed -E 's/([^:]+):([^:]+):.*/edit -existing \1; execute-keys \2gvc/'}"
 }}
 
 §

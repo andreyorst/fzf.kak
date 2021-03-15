@@ -145,6 +145,7 @@ fzf -params .. %{ evaluate-commands %sh{
 
     [ "${kak_opt_fzf_use_main_selection}" = "true" ] && \
     [ $(printf "%s" "${kak_selection}" | wc -m) -gt 1 ] && \
+    [ $(printf "%s" "${kak_selection}" | wc -l) -eq 1 ] && \
     default_query="-i -q ${kak_selection}"
 
     while [ $# -gt 0 ]; do

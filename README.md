@@ -3,17 +3,16 @@
 [![GitHub release][1]][2] [![GitHub Release Date][3]][4]
 ![Github commits (since latest release)][5] ![license][6]
 
-**fzf.kak** is a plugin for [Kakoune][7] editor, that brings integration with
-[fzf][8] tool.  This plugin is being tested against Kakoune master branch.
-**fzf.kak** also supports [skim][9], which can be used via `fzf_implementation`
-option.
+**fzf.kak** is a plugin for [Kakoune][7] editor, that brings integration with [fzf][8] tool.
+This plugin is being tested against Kakoune master branch.
+**fzf.kak** also supports [skim][9], which can be used via `fzf_implementation` option.
 
 ![showcase][10]
 
 ## Installation
 ### With [plug.kak][11] (recommended)
-Recommended way to install is to use plug.kak plugin manager.  You can install
-**fzf.kak** by adding this to your `kakrc`:
+Recommended way to install is to use plug.kak plugin manager.
+You can install **fzf.kak** by adding this to your `kakrc`:
 
 ```kak
 plug "andreyorst/fzf.kak"
@@ -23,18 +22,15 @@ Then reload Kakoune config or restart Kakoune and run `:plug-install`.
 Now you can proceed to the [configuration][23] section.
 
 ### Without plugin manager
-This plugin consists of several parts which are "modules", that provide
-different functions to plugin.  There's central module that must be loaded
-before any other module, named `fzf.kak`, so in order to properly load
-**fzf.kak** plugin, you need to source it in your `kakrc`.
+This plugin consists of several parts which are "modules", that provide different functions to plugin.
+There's central module that must be loaded before any other module, named `fzf.kak`, so in order to properly load **fzf.kak** plugin, you need to source it in your `kakrc`.
 
 ```sh
 source "/path/to/fzf.kak/rc/fzf.kak" # loading base fzf module
 ```
 
-This will load base `fzf` module, but It can't do anything on it's own. You can
-load only needed modules, to keep your configuration rather simple, or load
-every module if you need all plugin abilities:
+This will load base `fzf` module, but It can't do anything on it's own.
+You can load only needed modules, to keep your configuration rather simple, or load every module if you need all plugin abilities:
 
 ```sh
 source "/path/to/fzf.kak/rc/modules/fzf-file.kak"   # fzf file chooser
@@ -44,16 +40,15 @@ source "/path/to/fzf.kak/rc/modules/fzf-cd.kak"     # change server's working di
 source "/path/to/fzf.kak/rc/modules/fzf-ctags.kak"  # search for tag in your project ctags file
 ```
 
-The same principle is applied to handling different version control systems. You
-need a base module for `fzf`, called `fzf-vcs.kak` and its sub-modules for each
-VCS. There are plenty of version control systems, so modules come in handy.
+The same principle is applied to handling different version control systems.
+You need a base module for `fzf`, called `fzf-vcs.kak` and its sub-modules for each VCS.
+There are plenty of version control systems, so modules come in handy.
 
 ```sh
 source "/path/to/fzf.kak/rc/modules/fzf-vcs.kak" # VCS base module
 ```
 
-So if you never work with, say, GNU Bazaar, or Mercurial you can remove them
-from your configuration.
+So if you never work with, say, GNU Bazaar, or Mercurial you can remove them from your configuration.
 
 ```sh
 source "/path/to/fzf.kak/rc/modules/VCS/fzf-bzr.kak" # GNU Bazaar support
@@ -62,28 +57,24 @@ source "/path/to/fzf.kak/rc/modules/VCS/fzf-hg.kak"  # Mercurial VCS
 source "/path/to/fzf.kak/rc/modules/VCS/fzf-svn.kak" # Subversion module
 ```
 
-Order of sourcing files should not matter, but it is preferable to source main
-script first, and then the modules. This may look complex, but it makes plugin
-more versatile.  And plugin managers, like [plug.kak][11] for example, just does
-all those steps for you.
+Order of sourcing files should not matter, but it is preferable to source main script first, and then the modules.
+This may look complex, but it makes plugin more versatile.
+And plugin managers, like [plug.kak][11] for example, just does all those steps for you.
 
-By the way, this structure makes it easy to extend plugin with new modules, and
-you [can add modules on your own][20]!
+By the way, this structure makes it easy to extend plugin with new modules, and you [can add modules on your own][20]!
 
 ## Usage
-There's no default key binding to invoke `fzf`, but **fzf.kak** provides a
-`fzf-mode` command that can be mapped to preferred key.  You can set your own
-mapping to invoke `fzf-mode`:
+There's no default key binding to invoke `fzf`, but **fzf.kak** provides a `fzf-mode` command that can be mapped to preferred key.
+You can set your own mapping to invoke `fzf-mode`:
 
 ```kak
 map global normal <c-p> ': fzf-mode<ret>'
 ```
 
-Note that space between colon and command is intentional and will strip this
-command from command history.
+Note that space between colon and command is intentional and will strip this command from command history.
 
-Each `fzf` module defines mnemonic mapping, like <kbd>f</kbd> for opening files,
-<kbd>t</kbd> for tags, <kbd>s</kbd> for search, and so on.  Available mappings:
+Each `fzf` module defines mnemonic mapping, like <kbd>f</kbd> for opening files, <kbd>t</kbd> for tags, <kbd>s</kbd> for search, and so on.
+Available mappings:
 
 - <kbd>b</kbd> - Select buffer.
 - <kbd>c</kbd> - Switch server's working directory.
@@ -97,96 +88,76 @@ Each `fzf` module defines mnemonic mapping, like <kbd>f</kbd> for opening files,
 - <kbd>p</kbd> - Project selector.
 - <kbd>Alt</kbd>+<kbd>p</kbd> - Project related commands.
 
-So for example pressing <kbd>Ctrl</kbd>+<kbd>p</kbd> <kbd>f</kbd> will open
-`fzf` window, showing you all files from current directory recursively.
+So for example pressing <kbd>Ctrl</kbd>+<kbd>p</kbd> <kbd>f</kbd> will open `fzf` window, showing you all files from current directory recursively.
 
-When Kakoune is being run in Tmux, **fzf.kak** will use bottom split to display
-`fzf`. Additional keybindings are available to open file in vertical or
-horizontal split. When Kakoune is used in plain terminal, the `terminal` command
-is being used to create new windows.
+When Kakoune is being run in Tmux, **fzf.kak** will use bottom split to display `fzf`.
+Additional keybindings are available to open file in vertical or horizontal split.
+When Kakoune is used in plain terminal, the `terminal` command is being used to create new windows.
 
 ## Configuration
-**fzf.kak** features a lot of settings via options that can be altered to change
-how **fzf.kak** behaves. All settings belong to `fzf` module, so in order to
-change variable values use `defer "fzf %{ ... }"` if you're using **plug.kak**,
-and if not, use `hook global ModuleLoaded fzf %{ ... }`, or simply `require-module
-fzf` before configuring options. Same goes for `fzf_vcs` module.
+**fzf.kak** features a lot of settings via options that can be altered to change how **fzf.kak** behaves.
+All settings belong to `fzf` module, so in order to change variable values use `defer "fzf %{ ... }"` if you're using **plug.kak**, and if not, use `hook global ModuleLoaded fzf %{ ... }`, or simply `require-module fzf` before configuring options.
+Same goes for `fzf_vcs` module.
 
-From now on I assume that you're using one of the methods listed above for all
-configurations below.
+From now on I assume that you're using one of the methods listed above for all configurations below.
 
 ### Default query
-**fzf.kak** by default will use main selection as default query for fzf, if the
-selection more than 1 character long (because cursor is simply 1-char
-selection). You can disable this behavior by setting `fzf_use_main_selection` to
-`false`.
+**fzf.kak** by default will use main selection as default query for fzf, if the selection more than 1 character long (because cursor is simply 1-char selection).
+You can disable this behavior by setting `fzf_use_main_selection` to `false`.
 
 ### Windowing
-If you're using Tmux, you do not have to worry about windowing, since fzf.kak
-automatically creates all needed Tmux splits and panes for you. However in case
-you're not using Tmux, fzf.kak uses `fzf_terminal_command` option to call windowing
-command to create new windows. By default it is set to use `terminal` alias:
-`terminal kak -c %val{session} -e "%arg{@}"`, but some terminals can provide
-other aliases or commands, like `terminal-tab` in Kitty. You may want to edit
-this variable accordingly to your personal preferences.
+If you're using Tmux, you do not have to worry about windowing, since fzf.kak automatically creates all needed Tmux splits and panes for you.
+However in case you're not using Tmux, fzf.kak uses `fzf_terminal_command` option to call windowing command to create new windows.
+By default it is set to use `terminal` alias: `terminal kak -c %val{session} -e "%arg{@}"`, but some terminals can provide other aliases or commands, like `terminal-tab` in Kitty.
+You may want to edit this variable accordingly to your personal preferences.
 
 ### Mappings
 You can define what keys to use in `fzf` window via these options:
 
 - `fzf_window_map` - mapping to perform an action in new window,
-- `fzf_vertical_map` - mapping to perform an action in new vertical split
-  (Tmux),
+- `fzf_vertical_map` - mapping to perform an action in new vertical split (Tmux),
 - `fzf_horizontal_map` - mapping to perform an action in new horizontal split.
 
-These options should be set to work with fzf `--expect` parameter, so check out
-fzf documentation on this.
+These options should be set to work with fzf `--expect` parameter, so check out fzf documentation on this.
 
 ### File command
 You can configure what command to use to search for files, and it's arguments.
-Supported tools are [GNU Find][12], [The Silver Searcher][13], [ripgrep][14],
-[fd][15]. GNU find is used by default, but you can switch to another one. There
-are some default values for those, so you can just state the name of the tool:
+Supported tools are [GNU Find][12], [The Silver Searcher][13], [ripgrep][14], [fd][15].
+GNU find is used by default, but you can switch to another one.
+There are some default values for those, so you can just state the name of the tool:
 
 ```kak
 set-option global fzf_file_command 'rg' # 'ag', 'fd', or 'find'
 ```
 
-Or if you don't like default arguments, which for `find` are `find -type f`, and
-would like to disable searching in, say `.svn` and `.git` directories you can
-set option like this:
+Or if you don't like default arguments, which for `find` are `find -type f`, and would like to disable searching in, say `.svn` and `.git` directories you can set option like this:
 
 ```kak
 set-option global fzf_file_command "find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type f -print"
 ```
 
-This can give you the idea of how this plugin can be customized. Most of
-**fzf.kak** modules provide settings for their commands, so you should check all
-`fzf-optionname` available in prompt mode. All such options are well documented,
-so listing those in readme would make it unnecessary long.
+This can give you the idea of how this plugin can be customized.
+Most of **fzf.kak** modules provide settings for their commands, so you should check all `fzf-optionname` available in prompt mode.
+All such options are well documented, so listing those in readme would make it unnecessary long.
 
 ### Preview
-**fzf.kak** tries to automatically detect where to show preview window,
-depending on aspect ratio of new terminal window.  By default if the doubled
-height is bigger than the width, preview occupies upper 60% of space. If height
-is smaller than the width, preview is shown at the right side.
+**fzf.kak** tries to automatically detect where to show preview window, depending on aspect ratio of new terminal window.
+By default if the doubled height is bigger than the width, preview occupies upper 60% of space.
+If height is smaller than the width, preview is shown at the right side.
 
-You can configure the amount of space for preview window with these options:
-`fzf_preview_height` and `fzf_preview_width`.
+You can configure the amount of space for preview window with these options: `fzf_preview_height` and `fzf_preview_width`.
 
-When using **fzf.kak** inside `tmux`, bottom pane is used for all `fzf`
-commands, and preview window is displayed on the right side. When preview is
-turned on, height of `tmux` split is increased to provide more space. You can
-configure split height with `fzf_preview_tmux_height`
+When using **fzf.kak** inside `tmux`, bottom pane is used for all `fzf` commands, and preview window is displayed on the right side.
+When preview is turned on, height of `tmux` split is increased to provide more space.
+You can configure split height with `fzf_preview_tmux_height`
 
-Amount of lines in preview window can be changed with `fzf_preview_lines`
-option.
+Amount of lines in preview window can be changed with `fzf_preview_lines` option.
 
-If you don't want preview feature you can disable it by setting `fzf_preview`
-option to `false`.
+If you don't want preview feature you can disable it by setting `fzf_preview` option to `false`.
 
 #### Highlighting preview window
-You also can highlight contents of the file displayed within preview window. To
-do so, you can specify which highlighter to use with `fzf_highlight_command` option.
+You also can highlight contents of the file displayed within preview window.
+To do so, you can specify which highlighter to use with `fzf_highlight_command` option.
 Supported highlighters are:
 
 * [Bat][16]
@@ -194,93 +165,78 @@ Supported highlighters are:
 * [Highlight][18]
 * [Rouge][19]
 
-Although other tools are not supported by the script, then should work fine as
-long as they work with `fzf`.
+Although other tools are not supported by the script, then should work fine as long as they work with `fzf`.
 
 ### VCS
-This script supports these version control systems: Git, Subversion, GNU Bazaar,
-and Mercurial.  By default <kbd>v</kbd> mapping from `fzf` mode will detect your
-version control system and open `fzf` window for you.  If you wish to explicitly
-use some particular VCS command, you can use <kbd>Alt</kbd>+<kbd>v</kbd>
-mapping, which includes all supported VCS shortcuts.
+This script supports these version control systems: Git, Subversion, GNU Bazaar, and Mercurial.
+By default <kbd>v</kbd> mapping from `fzf` mode will detect your version control system and open `fzf` window for you.
+If you wish to explicitly use some particular VCS command, you can use <kbd>Alt</kbd>+<kbd>v</kbd> mapping, which includes all supported VCS shortcuts.
 
-You also able to set parameters to VCS command to use to provide project
-files. Supported options:
+You also able to set parameters to VCS command to use to provide project files.
+Supported options:
 
 * `fzf_git_command`
 * `fzf_svn_command`
 * `fzf_bzr_command`
 * `fzf_hg_command`
 
-Other VCS are not supported officially. Open a feature request if you want some
-unsupported VCS to be included.  You also can change one of options to contain
-your VCS command, and use this command explicitly from VCS sub-mode.
+Other VCS are not supported officially.
+Open a feature request if you want some unsupported VCS to be included.
+You also can change one of options to contain your VCS command, and use this command explicitly from VCS sub-mode.
 
 ### Tmux
-When using inside tmux, `fzf` will use bottom split. Height of this split can be
-changed with `fzf_tmux_height` option.  `fzf_tmux_height_file_preview` option is
-used to control height of the split when you do file searching with file-preview
-turned on.
+When using inside Tmux, `fzf` will use bottom split.
+Height of this split can be changed with `fzf_tmux_height` option.
+`fzf_tmux_height_file_preview` option is used to control height of the split when you do file searching with file-preview turned on.
 
 ### Projects
-**fzf.kak** can store and load your projects. For that It creates a hidden file
-in your `%val{config}` called `.fzf-projects`. You can change the location of
-this file and its name with `fzf_project_file` option. You also can choose which
-method to use when storing projects. You can either convert your `$HOME` to `~/`
-or use plain `$HOME` in your path. This behavior is configured with
-`fzf_project_use_tilda` option, which accepts `true` and `false` values.
+**fzf.kak** can store and load your projects.
+For that It creates a hidden file in your `%val{config}` called `.fzf-projects`.
+You can change the location of this file and its name with `fzf_project_file` option.
+You also can choose which method to use when storing projects.
+You can either convert your `$HOME` to `~/` or use plain `$HOME` in your path.
+This behavior is configured with `fzf_project_use_tilda` option, which accepts `true` and `false` values.
 
 ## `fzf` command
-`fzf` command can be used from prompt mode and for [scripting][20]. It supports
-these arguments:
+`fzf` command can be used from prompt mode and for [scripting][20].
+It supports these arguments:
 
-- `-kak-cmd`: A Kakoune command that is applied to `fzf` resulting value, e.g.
-  `edit -existing`, `change-directory`, e.t.c.
-- `-multiple-cmd`: A Kakoune command that is applied when multiple items
-  selected to every item but the first one.
-- `-items-cmd`: A command that is used as a pipe to provide list of values to
-  `fzf`.  For example, if we want to pass list of all files recursively in
-  current directory, we would use `-items-cmd %{find .}` which will be piped to
-  `fzf` tool.
-- `-fzf-impl`: Override `fzf` implementation variable. Can be used if command
-  needs to provide a different arguments to `fzf`. See [sk-grep.kak][21] as
-  example.
+- `-kak-cmd`: A Kakoune command that is applied to `fzf` resulting value, e.g. `edit -existing`, `change-directory`, e.t.c.
+- `-multiple-cmd`: A Kakoune command that is applied when multiple items selected to every item but the first one.
+- `-items-cmd`: A command that is used as a pipe to provide list of values to `fzf`.
+  For example, if we want to pass list of all files recursively in current directory, we would use `-items-cmd %{find .}` which will be piped to `fzf` tool.
+- `-fzf-impl`: Override `fzf` implementation variable.
+  Can be used if command needs to provide a different arguments to `fzf`.
+  See [sk-grep.kak][21] as example.
 - `-fzf-args`: Additional flags for `fzf` program.
-- `-preview-cmd`:  A preview command.  Can be  used to override  default preview
-  handling.
+- `-preview-cmd`: A preview command.
+  Can be used to override default preview handling.
 - `-preview`: If specified, command will ask for preview.
--  `-filter`: A pipe which will be applied to result provided by `fzf`.  For
-  example, if we are returning such line `3 hello, world!` from `fzf`, and we
-  are interested only in the first field which is `3`, we can use `-filter %{cut
-  -f 1}`. Basically everything what `fzf` returns is piped to this filter
-  command. See [fzf-search.kak][22] as example.
+- `-filter`: A pipe which will be applied to result provided by `fzf`.
+  For example, if we are returning such line `3 hello, world!` from `fzf`, and we are interested only in the first field which is `3`, we can use `-filter %{cut -f 1}`.
+  Basically everything what `fzf` returns is piped to this filter command.
+  See [fzf-search.kak][22] as example.
 - `-post-action`: Extra commands that are preformed after `-kak-cmd` command.
 
 ## Contributing
-If you want to contribute to **fzf.kak** by adding a module, you can submit one
-by providing a pull request, or just open a feature request and we'll see what
-can be done.
+If you want to contribute to **fzf.kak** by adding a module, you can submit one by providing a pull request, or just open a feature request and we'll see what can be done.
 
 ### Writing a module
-You can write a module for **fzf.kak**.  To create one, simply define a function
-in separate file, located in `rc/modules/`, and named after the
-function. **fzf.kak** provides a general purpose command, that can be called
-with some Kakoune command as first parameter, and command that provides list of
-items for `fzf` as a second parameter. Third optional parameter is for defining
-extra arguments for `fzf` itself, like additional keybindings.
+You can write a module for **fzf.kak**.
+To create one, simply define a function in separate file, located in `rc/modules/`, and named after the function.
+**fzf.kak** provides a general purpose command, that can be called with some Kakoune command as first parameter, and command that provides list of items for `fzf` as a second parameter.
+Third optional parameter is for defining extra arguments for `fzf` itself, like additional keybindings.
 
 Overall module structure is:
 * Define a `fzf-command` command
 * Prepare list of items for `fzf`, or define an item command
 * call `fzf` command and pass needed arguments to it.
 
-Of course modules can and will be more complex, since a good module checks if
-command for providing item list is available on user's machine, and supports
-various settings inside it. Feel free to look how existing modules are made.
+Of course modules can and will be more complex, since a good module checks if command for providing item list is available on user's machine, and supports various settings inside it.
+Feel free to look how existing modules are made.
 
 ### External modules
-Support for [yank-ring.kak][25] was externalized to separate plugin
-[fzf-yank-ring.kak][24]
+Support for [yank-ring.kak][25] was externalized to separate plugin [fzf-yank-ring.kak][24]
 
 [1]: https://img.shields.io/github/release/andreyorst/fzf.kak.svg
 [2]: https://github.com/andreyorst/fzf.kak/releases
@@ -307,3 +263,7 @@ Support for [yank-ring.kak][25] was externalized to separate plugin
 [23]: #configuration
 [24]: https://gitlab.com/losnappas/fzf-yank-ring.kak
 [25]: https://github.com/alexherbo2/yank-ring.kak
+
+<!--  LocalWords:  Github Kakoune fzf kak config VCS ctags Tmux fd sk
+      LocalWords:  ripgrep readme Coderay rc
+ -->

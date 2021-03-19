@@ -1,20 +1,17 @@
-# ╭─────────────╥──────────────────────────╮
-# │ Author:     ║ File:                    │
-# │ Andrey Orst ║ fzf-ctags.kak            │
-# ╞═════════════╩══════════════════════════╡
-# │ Module for searching tags with fzf     │
-# │ and universal-ctags for fzf.kak plugin │
-# ╞════════════════════════════════════════╡
-# │ GitHub.com/andreyorst/fzf.kak          │
-# ╰────────────────────────────────────────╯
+# Author: Andrey Listopadov
+# Module for searching tags with fzf and universal-ctags for fzf.kak plugin
+# https://github.com/andreyorst/fzf.kak
 
-hook global ModuleLoaded fzf %§
+hook global ModuleLoaded fzf %{
+    map global fzf -docstring "find tag" 't' '<esc>: require-module fzf-ctags; fzf-tag<ret>'
+}
+
+provide-module fzf-ctags %§
 
 declare-option -docstring "file that should be used by fzf-tag to provide tags.
 Default value: tags" \
 str fzf_tag_file_name "tags"
 
-map global fzf -docstring "find tag" 't' '<esc>: fzf-tag<ret>'
 
 declare-option -hidden bool fzf_tag_filters_defined false
 

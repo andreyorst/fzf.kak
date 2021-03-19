@@ -1,14 +1,12 @@
-# ╭─────────────╥────────────────────────╮
-# │ Author:     ║ File:                  │
-# │ Andrey Orst ║ fzf-file.kak           │
-# ╞═════════════╩════════════════════════╡
-# │ Module for opening files with fzf    │
-# │ for fzf.kak plugin                   │
-# ╞══════════════════════════════════════╡
-# │ GitHub.com/andreyorst/fzf.kak        │
-# ╰──────────────────────────────────────╯
+# Author: Andrey Listopadov
+# Module for opening files with fzf for fzf.kak plugin
+# https://github.com/andreyorst/fzf.kak
 
-hook global ModuleLoaded fzf %§
+hook global ModuleLoaded fzf %{
+    map global fzf -docstring "open file" 'f' '<esc>: require-module fzf-file; fzf-file<ret>'
+}
+
+provide-module fzf-file %§
 
 declare-option -docstring "command to provide list of files to fzf. Arguments are supported
 Supported tools:
@@ -32,7 +30,6 @@ Default value:
 ' \
 bool fzf_file_preview true
 
-map global fzf -docstring "open file" 'f' '<esc>: fzf-file<ret>'
 
 define-command -hidden fzf-file %{ evaluate-commands %sh{
     if [ -z "$(command -v $kak_opt_fzf_file_command)" ]; then

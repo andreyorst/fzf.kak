@@ -1,19 +1,18 @@
-# ╭─────────────╥────────────────────────╮
-# │ Author:     ║ File:                  │
-# │ Andrey Orst ║ fzf-project.kak        │
-# ╞═════════════╩════════════════════════╡
-# │ Module for storing and loading       │
-# │ projects with fzf for fzf.kak plugin │
-# ╞══════════════════════════════════════╡
-# │ GitHub.com/andreyorst/fzf.kak        │
-# ╰──────────────────────────────────────╯
+# Author: Andrey Listopadov
+# Module for storing and loading projects with fzf for fzf.kak plugin
+# https://github.com/andreyorst/fzf.kak
 
-hook global ModuleLoaded fzf %§
+hook global ModuleLoaded fzf %{
+    map global fzf -docstring "open project" 'p' '<esc>: require-module fzf-project; fzf-project<ret>'
+}
+
+provide-module fzf-project %§
+
+require-module fzf-file
 
 declare-option -docstring "file where saved projects are stored" str fzf_project_file "%val{config}/.fzf-projects"
 declare-option -docstring %sh{ printf "%s\n" "use '~/' instead of '${HOME}'" } bool fzf_project_use_tilda false
 
-map global fzf -docstring "open project" 'p' '<esc>: fzf-project<ret>'
 
 try %{ declare-user-mode fzf-project }
 

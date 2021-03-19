@@ -1,14 +1,16 @@
-# ╭─────────────╥────────────────────────╮
-# │ Author:     ║ File:                  │
-# │ Andrey Orst ║ sk-grep.kak            │
-# ╞═════════════╩════════════════════════╡
-# │ Module running interactive grep with │
-# │ ski for fzf.kak                      │
-# ╞══════════════════════════════════════╡
-# │ GitHub.com/andreyorst/fzf.kak        │
-# ╰──────────────────────────────────────╯
+# Author: Andrey Listopadov
+# Module running interactive grep with skim for fzf.kak
+# https://github.com/andreyorst/fzf.kak
 
 hook global ModuleLoaded fzf %§
+    evaluate-commands %sh{
+        if [ -n "$(command -v sk)" ]; then
+            printf "%s\n" "map global fzf -docstring %{Interactive grep with skim} '<a-g>' '<esc>: require-module fzf-sk-grep; fzf-sk-grep<ret>'"
+        fi
+    }
+§
+
+provide-module fzf-sk-grep %§
 
 declare-option -docstring "what command to use to provide list of grep search matches.
 Grep output must follow the format of 'filename:line-number:text'
@@ -18,12 +20,6 @@ Default value:
 str fzf_sk_grep_command 'grep -RHn'
 
 declare-option -hidden str fzf_sk_first_file ''
-
-evaluate-commands %sh{
-    if [ -n "$(command -v sk)" ]; then
-        printf "%s\n" "map global fzf -docstring %{Interactive grep with skim} '<a-g>' '<esc>: fzf-sk-grep<ret>'"
-    fi
-}
 
 define-command -hidden fzf-sk-grep %{ evaluate-commands %sh{
     if [ -z "$(command -v sk)" ]; then

@@ -1,13 +1,12 @@
-# ╭─────────────╥─────────────────────────╮
-# │ Author:     ║ File:                   │
-# │ Andrey Orst ║ fzf-svn.kak             │
-# ╞═════════════╩═════════════════════════╡
-# │ Submodule for Git support for fzf.kak │
-# ╞═══════════════════════════════════════╡
-# │ GitHub.com/andreyorst/fzf.kak         │
-# ╰───────────────────────────────────────╯
+# Author: Andrey Listopadov
+# Submodule for Git support for fzf.kak
+# https://github.com/andreyorst/fzf.kak
 
-hook global ModuleLoaded fzf_vcs %§
+hook global ModuleLoaded fzf-vcs %§
+    map global fzf-vcs -docstring "edit file from Git tree" 'g' '<esc>: require-module fzf-git; fzf-git<ret>'
+§
+
+provide-module fzf-git %§
 
 declare-option -docstring "command to provide list of files in git tree to fzf. Arguments are supported
 Supported tools:
@@ -19,9 +18,7 @@ Default arguments:
 " \
 str fzf_git_command "git"
 
-map global fzf-vcs -docstring "edit file from Git tree" 'g' '<esc>: fzf-git<ret>'
-
-define-command -override -hidden fzf-git %{ evaluate-commands %sh{
+define-command -hidden fzf-git %{ evaluate-commands %sh{
 
     case $kak_opt_fzf_git_command in
         (git)  cmd='git ls-tree --full-tree --name-only -r HEAD' ;;

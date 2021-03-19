@@ -1,14 +1,12 @@
-# ╭─────────────╥────────────────────────╮
-# │ Author:     ║ File:                  │
-# │ Andrey Orst ║ fzf-cd.kak             │
-# ╞═════════════╩════════════════════════╡
-# │ Module for changing directories with │
-# │ fzf for fzf.kak plugin               │
-# ╞══════════════════════════════════════╡
-# │ GitHub.com/andreyorst/fzf.kak        │
-# ╰──────────────────────────────────────╯
+# Author: Andrey Listopadov
+# Module for changing directories with fzf for fzf.kak plugin
+# https://github.com/andreyorst/fzf.kak
 
-hook global ModuleLoaded fzf %§
+hook global ModuleLoaded fzf %{
+    map global fzf -docstring "change directory" 'c' '<esc>: require-module fzf-cd; fzf-cd<ret>'
+}
+
+provide-module fzf-cd %§
 
 declare-option -docstring "command to provide list of directories to fzf.
 Default value:
@@ -30,9 +28,6 @@ str cd_preview_command "tree -d {}"
 
 declare-option -docstring 'maximum amount of previewed directories' \
 int fzf_preview_dirs '300'
-
-
-map global fzf -docstring "change directory" 'c' '<esc>: fzf-cd<ret>'
 
 define-command -hidden fzf-cd %{ evaluate-commands %sh{
     tmux_height=$kak_opt_fzf_tmux_height

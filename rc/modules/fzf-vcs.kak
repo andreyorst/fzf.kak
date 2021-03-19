@@ -1,26 +1,18 @@
-# ╭─────────────╥────────────────────────╮
-# │ Author:     ║ File:                  │
-# │ Andrey Orst ║ fzf-vcs.kak            │
-# ╞═════════════╩════════════════════════╡
-# │ Module that declares VCS submodule   │
-# │ for various version control systems  │
-# │ to open files with fzf               │
-# ╞══════════════════════════════════════╡
-# │ GitHub.com/andreyorst/fzf.kak        │
-# ╰──────────────────────────────────────╯
+# Author: Andrey Listopadov
+# Module that declares VCS submodule for various version control systems to open files with fzf
+# https://github.com/andreyorst/fzf.kak
 
 hook global ModuleLoaded fzf %§
-
-map global fzf -docstring "edit file from vcs repo"      'v'     '<esc>: require-module fzf_vcs; fzf-vcs<ret>'
-map global fzf -docstring "switch to vcs selection mode" '<a-v>' '<esc>: fzf-vcs-mode<ret>'
-
-define-command -docstring "Enter fzf-vcs-mode.
-This mode allows selecting specific vcs command." \
-fzf-vcs-mode %{ require-module fzf_vcs; evaluate-commands 'enter-user-mode fzf-vcs' }
-
+    map global fzf -docstring "edit file from vcs repo"      'v'     '<esc>: require-module fzf-vcs; fzf-vcs<ret>'
+    map global fzf -docstring "switch to vcs selection mode" '<a-v>' '<esc>: require-module fzf-vcs; enter-user-mode fzf-vcs<ret>'
 §
 
-provide-module fzf_vcs %§
+provide-module fzf-vcs %§
+
+require-module fzf-git
+require-module fzf-svn
+require-module fzf-hg
+require-module fzf-bzr
 
 declare-user-mode fzf-vcs
 

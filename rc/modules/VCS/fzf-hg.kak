@@ -1,13 +1,12 @@
-# ╭─────────────╥────────────────────────╮
-# │ Author:     ║ File:                  │
-# │ Andrey Orst ║ fzf-svn.kak            │
-# ╞═════════════╩════════════════════════╡
-# │ Submodule for Hg support for fzf.kak │
-# ╞══════════════════════════════════════╡
-# │ GitHub.com/andreyorst/fzf.kak        │
-# ╰──────────────────────────────────────╯
+# Author: Andrey Listopadov
+# Submodule for Hg support for fzf.kak
+# https://github.com/andreyorst/fzf.kak
 
-hook global ModuleLoaded fzf_vcs %§
+hook global ModuleLoaded fzf-vcs %{
+    map global fzf-vcs -docstring "edit file from mercurial tree" 'h' '<esc>: require-module fzf-hg; fzf-hg<ret>'
+}
+
+provide-module fzf-hg %§
 
 declare-option -docstring "command to provide list of files in mercurial repository to fzf. Arguments are supported
 Supported tools:
@@ -19,7 +18,6 @@ Default arguments:
 " \
 str fzf_hg_command "hg"
 
-map global fzf-vcs -docstring "edit file from mercurial tree" 'h' '<esc>: fzf-hg<ret>'
 
 define-command -hidden fzf-hg %{ evaluate-commands %sh{
     case $kak_opt_fzf_hg_command in

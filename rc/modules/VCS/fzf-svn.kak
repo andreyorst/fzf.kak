@@ -1,13 +1,12 @@
-# ╭─────────────╥─────────────────────────╮
-# │ Author:     ║ File:                   │
-# │ Andrey Orst ║ fzf-svn.kak             │
-# ╞═════════════╩═════════════════════════╡
-# │ Submodule for Svn support for fzf.kak │
-# ╞═══════════════════════════════════════╡
-# │ GitHub.com/andreyorst/fzf.kak         │
-# ╰───────────────────────────────────────╯
+# Author: Andrey Listopadov
+# Submodule for Svn support for fzf.kak
+# https://github.com/andreyorst/fzf.kak
 
-hook global ModuleLoaded fzf_vcs %§
+hook global ModuleLoaded fzf-vcs %§
+    map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: require-module fzf-svn; fzf-svn<ret>'
+§
+
+provide-module fzf-svn %§
 
 declare-option -docstring "command to provide list of files in svn repository to fzf. Arguments are supported
 Supported tools:
@@ -18,8 +17,6 @@ Default arguments:
     ""svn list -R $(svn info | awk -F': ' '/Working Copy Root Path: .*/ {print $2}') | grep -v '$/'""
 " \
 str fzf_svn_command "svn"
-
-map global fzf-vcs -docstring "edit file from Subversion tree" 's' '<esc>: fzf-svn<ret>'
 
 define-command -hidden fzf-svn %{ evaluate-commands %sh{
     current_path=$(pwd)

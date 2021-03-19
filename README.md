@@ -81,7 +81,9 @@ See [plug.kak manual section for `defer`](https://github.com/andreyorst/plug.kak
 
 ### Default query
 
-| module | `fzf` |
+| module |
+|--------|
+| `fzf`  |
 
 By default main selection is used as the default query for `fzf`, but only if the selection more than 1 character long.
 This can be disabled by setting `fzf_use_main_selection` to `false`.
@@ -89,7 +91,9 @@ This can be disabled by setting `fzf_use_main_selection` to `false`.
 
 ### Windowing
 
-| module | `fzf` |
+| module |
+|--------|
+| `fzf`  |
 
 When using Tmux fzf.kak automatically creates all needed Tmux splits and panes for you.
 In other cases **fzf.kak** uses `fzf_terminal_command` option to call windowing command to create new windows.
@@ -98,7 +102,9 @@ By default it is set to use `terminal` alias: `terminal kak -c %val{session} -e 
 
 ### Mappings
 
-| module | `fzf` |
+| module |
+|--------|
+| `fzf`  |
 
 Keys that are used in the `fzf` window can be configured with these options:
 
@@ -111,7 +117,9 @@ These options should be set to work with fzf `--expect` parameter, so check out 
 
 ### File command
 
-| module | `fzf-file` |
+| module     |
+|------------|
+| `fzf-file` |
 
 A command that is used to search for files and it's arguments can be configured by changing the value of `fzf_file_command` variable, that is available in the `fzf-file` module.
 
@@ -131,7 +139,9 @@ set-option global fzf_file_command "find . \( -path '*/.svn*' -o -path '*/.git*'
 
 ### Preview
 
-| module | `fzf-file` |
+| module     |
+|------------|
+| `fzf-file` |
 
 **fzf.kak** tries to automatically detect where to show preview window, depending on aspect ratio of the new terminal window.
 By default if the doubled height is bigger than the width, preview occupies upper 60% of space.
@@ -149,7 +159,9 @@ Preview feature can be disabled entirely by setting `fzf_preview` option to `fal
 
 #### Highlighting preview window
 
-| module | `fzf-file` |
+| module     |
+|------------|
+| `fzf-file` |
 
 Contents of the file displayed within preview window can be syntax highlighted.
 This can be enabled by specifying highlighter to use with the `fzf_highlight_command` option.
@@ -165,7 +177,9 @@ Although other tools are not supported by the script, then should work fine as l
 
 ### VCS
 
-| module | `fzf-vcs` |
+| module    |
+|-----------|
+| `fzf-vcs` |
 
 This script supports these version control systems: Git, Subversion, GNU Bazaar, and Mercurial.
 By default <kbd>v</kbd> mapping from `fzf` mode will detect your version control system  automatically.
@@ -184,7 +198,9 @@ Feature requests and merge requests are welcome.
 
 ### Tmux
 
-| module | `fzf` |
+| module |
+|--------|
+| `fzf`  |
 
 When running inside Tmux, `fzf` will use bottom split.
 Height of this split can be changed with the `fzf_tmux_height` option.
@@ -193,7 +209,9 @@ Height of this split can be changed with the `fzf_tmux_height` option.
 
 ### Projects
 
-| module | `fzf-project` |
+| module        |
+|---------------|
+| `fzf-project` |
 
 **fzf.kak** has basic project manipulation capabilities.
 

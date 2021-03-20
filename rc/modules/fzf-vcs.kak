@@ -33,17 +33,17 @@ bzr status"
     IFS='
 '
     for cmd in $commands; do
-        eval $cmd >/dev/null 2>&1
+        eval "$cmd" >/dev/null 2>&1
         res=$?
         if [ "$res"  = "0" ]; then
             vcs=$(printf "%s\n" "$cmd" | awk '{print $1}')
             title="fzf $vcs"
-            [ ! -z "${kak_client_env_TMUX}" ] && additional_keybindings="
-$kak_opt_fzf_horizontal_map: open file in horizontal split
-$kak_opt_fzf_vertical_map: open file in vertical split"
+            [ -n "${kak_client_env_TMUX:-}" ] && additional_keybindings="
+${kak_opt_fzf_horizontal_map:-}: open file in horizontal split
+${kak_opt_fzf_vertical_map:-}: open file in vertical split"
             message="Open single or multiple files from git tree.
 <ret>: open file in new buffer.
-$kak_opt_fzf_window_map: open file in new terminal $additional_keybindings"
+${kak_opt_fzf_window_map:?}: open file in new terminal $additional_keybindings"
             printf "%s\n" "info -title %{$title} %{$message}"
             printf "%s\n" "fzf-$vcs"
             exit

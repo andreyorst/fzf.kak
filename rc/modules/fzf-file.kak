@@ -32,7 +32,7 @@ bool fzf_file_preview true
 
 
 define-command -hidden fzf-file %{ evaluate-commands %sh{
-    if [ -z "$(command -v $kak_opt_fzf_file_command)" ]; then
+    if [ -z "$(command -v "${kak_opt_fzf_file_command%% *}")" ]; then
         printf "%s\n" "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
         kak_opt_fzf_file_command="find"
     fi
@@ -50,14 +50,14 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
     cmd="$cmd 2>/dev/null"
     message="Open single or multiple files.
 <ret>: open file in new buffer.
-$kak_opt_fzf_window_map: open file in new terminal"
-    [ ! -z "${kak_client_env_TMUX}" ] && tmux_keybindings="
-$kak_opt_fzf_horizontal_map: open file in horizontal split
-$kak_opt_fzf_vertical_map: open file in vertical split"
+${kak_opt_fzf_window_map:?}: open file in new terminal"
+    [ -n "${kak_client_env_TMUX:-}" ] && tmux_keybindings="
+${kak_opt_fzf_horizontal_map:-}: open file in horizontal split
+${kak_opt_fzf_vertical_map:-}: open file in vertical split"
 
     printf "%s\n" "info -title 'fzf file' '$message$tmux_keybindings'"
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
-    [ "$kak_opt_fzf_file_preview" = "true" ] && preview_flag="-preview"
+    [ -n "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
+    [ "${kak_opt_fzf_file_preview:-}" = "true" ] && preview_flag="-preview"
     printf "%s\n" "fzf $preview_flag -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags}"
 }}
 

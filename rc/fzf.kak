@@ -222,9 +222,9 @@ fzf -params .. %{ evaluate-commands %sh{
             (
                 while read -r line; do
                     case ${line} in
-                        ("${kak_opt_fzf_window_map:-}")     wincmd="fzf-window"     ;;
-                        ("${kak_opt_fzf_vertical_map:-}")   wincmd="fzf-vertical"   ;;
-                        ("${kak_opt_fzf_horizontal_map:-}") wincmd="fzf-horizontal" ;;
+                        ("${kak_opt_fzf_window_map:-ctrl-w}")     wincmd="fzf-window"     ;;
+                        ("${kak_opt_fzf_vertical_map:-ctrl-v}")   wincmd="fzf-vertical"   ;;
+                        ("${kak_opt_fzf_horizontal_map:-ctrl-s}") wincmd="fzf-horizontal" ;;
                         (*)                                 item=${line} ;;
                     esac
                     if [ -n "${item}" ]; then

@@ -24,8 +24,8 @@ define-command -hidden fzf-bzr %{ evaluate-commands %sh{
         (bzr)  cmd="(cd $repo_root && bzr ls -R --versioned)" ;;
         (*)    cmd=$kak_opt_fzf_bzr_command ;;
     esac
-    [ -n "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
-    printf "%s\n" "fzf -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect $kak_opt_fzf_window_map $additional_flags} -filter %{perl -pe \"if (/$kak_opt_fzf_window_map|$kak_opt_fzf_vertical_map|$kak_opt_fzf_horizontal_map|^$/) {} else {print \\\"$repo_root/\\\"}\"}"
+    [ -n "${kak_client_env_TMUX}" ] && additional_flags="--expect ${kak_opt_fzf_vertical_map:-ctrl-v} --expect ${kak_opt_fzf_horizontal_map:-ctrl-s}"
+    printf "%s\n" "fzf -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ${kak_opt_fzf_window_map:-ctrl-w} $additional_flags} -filter %{perl -pe \"if (/${kak_opt_fzf_window_map:-ctrl-w}|${kak_opt_fzf_vertical_map:-ctrl-v}|${kak_opt_fzf_horizontal_map:-ctrl-s}|^$/) {} else {print \\\"$repo_root/\\\"}\"}"
 }}
 
 §

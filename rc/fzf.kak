@@ -138,10 +138,13 @@ Switches:
 fzf -params .. %{ evaluate-commands %sh{
     fzf_impl="${kak_opt_fzf_implementation:?}"
 
+    # trims selection and escapes single quotes
+    selection=$(printf "%s" "${kak_selection:-}" | sed -e "s/^[[:blank:]]*//g;s/[[:blank:]]*$//g;s/'/'\\\\''/g")
+
     [ "${kak_opt_fzf_use_main_selection:-}" = "true" ] && \
-    [ "$(printf "%s" "${kak_selection:-}" | wc -m)" -gt 1 ] && \
-    [ "$(printf "%s" "${kak_selection:-}" | wc -l)" -eq 1 ] && \
-    default_query="-i -q ${kak_selection:-}"
+    [ "$(printf "%s" "$kak_selection" | wc -m)" -gt 1 ] && \
+    [ "$(printf "%s\n" "$selection" | wc -l)" -eq 1 ] && \
+    default_query="-i -q '$selection'"
 
     while [ $# -gt 0 ]; do
         case $1 in

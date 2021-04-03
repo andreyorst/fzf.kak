@@ -23,9 +23,9 @@ try %{
 # this huge try block defines filetype aware filter mappings for separate fzf-ctags mode
 define-command -hidden fzf-setup-filter-tags %{
     evaluate-commands %sh{
-        [ "$opt_fzf_tag_filters_defined" = "true" ] && exit
+        [ "${kak_opt_fzf_tag_filters_defined:-}" = "true" ] && exit
 
-        case $kak_opt_filetype in
+        case ${kak_opt_filetype:-} in
             (ada) printf "%s\n" "
                 map global fzf-ctags '<a-p>' ': fzf-tag P<ret>' -docstring 'package specifications'
                 map global fzf-ctags 'p'     ': fzf-tag p<ret>' -docstring 'packages'
@@ -898,7 +898,7 @@ define-command -hidden fzf-setup-filter-tags %{
 define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
     path=$PWD
     while [ "$path" != "$HOME" ]; do
-        if [ -e "./$kak_opt_fzf_tag_file_name" ]; then
+        if [ -e "./${kak_opt_fzf_tag_file_name:-}" ]; then
             break
         else
             cd ..
@@ -914,7 +914,7 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
     fi
 
     cmd="cd $path;"
-    if [ -n "$(command -v ${kak_opt_readtagscmd})" ]; then
+    if [ -n "$(command -v "${kak_opt_readtagscmd%% *}")" ]; then
         if [ -n "$1" ]; then
             cmd="${cmd} ${kak_opt_readtagscmd} -t $kak_opt_fzf_tag_file_name -Q '(eq? \$kind \"$1\")' -l"
         else
@@ -928,17 +928,17 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
 
     message="Jump to a symbol''s definition
 <ret>: open tag in new buffer
-$kak_opt_fzf_window_map: open tag in new terminal"
+${kak_opt_fzf_window_map:-ctrl-w}: open tag in new terminal"
 
-    [ -n "${kak_client_env_TMUX}" ] && tmux_keybindings="
-$kak_opt_fzf_horizontal_map: open tag in horizontal split
-$kak_opt_fzf_vertical_map: open tag in vertical split"
+    [ -n "${kak_client_env_TMUX:?}" ] && tmux_keybindings="
+${kak_opt_fzf_horizontal_map:-ctrl-s}: open tag in horizontal split
+${kak_opt_fzf_vertical_map:-ctrl-v}: open tag in vertical split"
 
     printf "%s\n" "info -title 'fzf tag' '$message$tmux_keybindings'"
 
-    [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect $kak_opt_fzf_vertical_map --expect $kak_opt_fzf_horizontal_map"
+    [ -n "${kak_client_env_TMUX}" ] && additional_flags="--expect ${kak_opt_fzf_vertical_map:-ctrl-v} --expect ${kak_opt_fzf_horizontal_map:-ctrl-s}"
     printf "%s\n" "set-option -add window ctagsfiles %{$path/$kak_opt_fzf_tag_file_name}"
-    printf "%s\n" "fzf -kak-cmd %{ctags-search} -items-cmd %{$cmd | awk '!a[\$0]++'} -fzf-args %{--expect $kak_opt_fzf_window_map $additional_flags}"
+    printf "%s\n" "fzf -kak-cmd %{ctags-search} -items-cmd %{$cmd | awk '!a[\$0]++'} -fzf-args %{--expect ${kak_opt_fzf_window_map:-ctrl-w} $additional_flags}"
 }}
 
 §

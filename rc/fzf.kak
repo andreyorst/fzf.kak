@@ -201,7 +201,7 @@ fzf -params .. %{ evaluate-commands %sh{
         fi
         # compose entire fzf command with all args into single file which will be executed later
         printf "%s\n" "export FZF_DEFAULT_OPTS=\"${kak_opt_fzf_default_opts:-}\""
-        printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} ${fzf_impl} ${default_query} ${fzf_args} ${preview_cmd} ${filter} > ${result}"
+        printf "%s\n" "cd \"${PWD}\" && ${preview_position} ${items_cmd} ${fzf_impl} ${default_query} ${fzf_args} ${preview_cmd} ${filter} 2>&1 > ${result} | tee \"${TMPDIR:-/tmp}/fzf.kak.errors\""
         printf "%s\n" "rm ${fzfcmd}"
     ) >> "${fzfcmd}"
     chmod 755 "${fzfcmd}"

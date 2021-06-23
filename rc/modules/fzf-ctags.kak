@@ -930,7 +930,7 @@ define-command -hidden fzf-tag -params ..2 %{ evaluate-commands %sh{
 <ret>: open tag in new buffer
 ${kak_opt_fzf_window_map:-ctrl-w}: open tag in new terminal"
 
-    [ -n "${kak_client_env_TMUX:?}" ] && tmux_keybindings="
+    [ -n "${kak_client_env_TMUX:-}" ] && tmux_keybindings="
 ${kak_opt_fzf_horizontal_map:-ctrl-s}: open tag in horizontal split
 ${kak_opt_fzf_vertical_map:-ctrl-v}: open tag in vertical split"
 

@@ -262,6 +262,17 @@ See how existing modules are implemented to understand the idea of how modules a
 
 Support for [yank-ring.kak][25] was externalized to separate plugin [fzf-yank-ring.kak][24]
 
+
+# Alternatives
+
+There are another (often more simple and robust) plugins, which add support for integration with `fzf` or other fuzzy finders that you might be interested in:
+
+1. [peneira][26] - a fuzzy finder implemented specifically for Kakoune.
+2. [connect.kak][27] - a tool that allows you to connect Kakoune with various applications like `fzf` and more.
+3. [kakoune.cr][28] - a similar tool to `connect.kak`, but written in the Crystal language.
+   Also allows you to connect Kakoune to other applications, including `fzf`.
+
+
 [1]: https://img.shields.io/github/release/andreyorst/fzf.kak.svg
 [2]: https://github.com/andreyorst/fzf.kak/releases
 [3]: https://img.shields.io/github/release-date/andreyorst/fzf.kak.svg
@@ -287,7 +298,9 @@ Support for [yank-ring.kak][25] was externalized to separate plugin [fzf-yank-ri
 [23]: #configuration
 [24]: https://gitlab.com/losnappas/fzf-yank-ring.kak
 [25]: https://github.com/alexherbo2/yank-ring.kak
-
+[26]: https://github.com/gustavo-hms/peneira
+[27]: https://github.com/kakounedotcom/connect.kak
+[28]: https://github.com/kakounedotcom/connect.kak
 <!--  LocalWords:  Github Kakoune fzf kak config VCS ctags Tmux fd sk
       LocalWords:  ripgrep readme Coderay rc
  -->

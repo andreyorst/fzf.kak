@@ -300,7 +300,8 @@ There are another (often more simple and robust) plugins, which add support for 
 [25]: https://github.com/alexherbo2/yank-ring.kak
 [26]: https://github.com/gustavo-hms/peneira
 [27]: https://github.com/kakounedotcom/connect.kak
-[28]: https://github.com/kakounedotcom/connect.kak
+[28]: https://github.com/alexherbo2/kakoune.cr
+
 <!--  LocalWords:  Github Kakoune fzf kak config VCS ctags Tmux fd sk
       LocalWords:  ripgrep readme Coderay rc
  -->

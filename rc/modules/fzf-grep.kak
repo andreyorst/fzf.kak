@@ -8,11 +8,13 @@ hook global ModuleLoaded fzf %{
 
 provide-module fzf-grep %§
 
-declare-option -docstring "what command to use to provide list of grep search matches.
-Grep output must follow the format of 'filename:line-number:text'
+declare-option -docstring "hat command to use to provide a list of grep search matches.
+Grep output must follow the format of 'filename:line-number:text', and specify a pattern to match across all file contents.
+By default, an empty pattern is searched, effectively matching every line in every file.
+GNU grep and ripgrep are supported by default.
 
 Default value:
-    grep -RHn" \
+    grep -RHn '' ." \
 str fzf_grep_command 'grep'
 
 

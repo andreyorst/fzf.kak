@@ -4,6 +4,7 @@
 
 hook global ModuleLoaded fzf %{
     map global fzf -docstring "open file" 'f' '<esc>: require-module fzf-file; fzf-file<ret>'
+    map global fzf -docstring "open file in dir of currently displayed file" 'F' '<esc>: require-module fzf-file; fzf-file buffile-dir<ret>'
 }
 
 provide-module fzf-file %§
@@ -31,7 +32,15 @@ Default value:
 bool fzf_file_preview true
 
 
-define-command -hidden fzf-file %{ evaluate-commands %sh{
+define-command -hidden fzf-file -params 0..1 %{ evaluate-commands %sh{
+    search_dir="."
+    if [ "$1" = "buffile-dir" ]; then
+        # dirname will return '.' if the file is non-existent.
+        # This value is a fail-safe default if we ever use buffile-dir functionality
+        # by mistake on files that do not have a directory e.g. *scratch*
+        search_dir=$(dirname "$kak_buffile")
+    fi
+
     if [ -z "$(command -v "${kak_opt_fzf_file_command%% *}")" ]; then
         printf "%s\n" "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
         kak_opt_fzf_file_command="find"
@@ -47,7 +56,7 @@ define-command -hidden fzf-file %{ evaluate-commands %sh{
                             cmd=$kak_opt_fzf_file_command ;;
     esac
 
-    cmd="$cmd 2>/dev/null"
+    cmd="cd $search_dir; $cmd 2>/dev/null"
     message="Open single or multiple files.
 <ret>: open file in new buffer.
 ${kak_opt_fzf_window_map:-ctrl-w}: open file in new terminal"

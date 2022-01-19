@@ -33,11 +33,13 @@ bool fzf_file_preview true
 
 
 define-command -hidden fzf-file -params 0..1 %{ evaluate-commands %sh{
+    # Default fzf-file behavior
     search_dir="."
     if [ "$1" = "buffile-dir" ]; then
-        # dirname will return '.' if the file is non-existent.
-        # This value is a fail-safe default if we ever use buffile-dir functionality
-        # by mistake on files that do not have a directory e.g. *scratch*
+        # If the buffile-dir functionality (which is currently mapped to <fzf-mode> F) is
+        # invoked by mistake on a buffile like `*scratch*` or `*grep*` and similar, there will be
+        # no slashes in the buffile name and `dirname` will return `.` which means the functionality
+        # will revert to the normal fzf-file behavior -- which is what we want in this scenario.
         search_dir=$(dirname "$kak_buffile")
     fi
 

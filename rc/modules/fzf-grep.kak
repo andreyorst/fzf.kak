@@ -18,12 +18,12 @@ Default value:
 str fzf_grep_command 'grep'
 
 declare-option -docstring "Whether to enable preview in grep window." \
-bool fzf_grep_preview false
+bool fzf_grep_preview true
 
 declare-option -docstring "Preview command for seeing file contents of the selected item.
 
 Default value:
-    cat \$(echo {} | sed ""s/:.*//g"")" \
+    cat {1}" \
 str fzf_grep_preview_command 'cat'
 
 
@@ -52,8 +52,9 @@ ${kak_opt_fzf_horizontal_map:-ctrl-s}: open search result in horizontal split
 ${kak_opt_fzf_vertical_map:-ctrl-v}: open search result in vertical split"
 
     case $kak_opt_fzf_grep_preview_command in
-        (cat) preview_cmd="-preview-cmd %{--preview 'cat \$(echo {} | sed \"s/:.*//g\")'}";;
-        (cat*) preview_cmd="-preview-cmd %{--preview '($kak_opt_fzf_grep_preview_command)'}";;
+        (cat) preview_cmd="-preview-cmd %{--preview '(cat {1})'}";;
+        (bat) preview_cmd="-preview-cmd %{--preview '(bat --color=always --highlight-line {2} {1})'}";;
+        (cat*|bat*) preview_cmd="-preview-cmd %{--preview '($kak_opt_fzf_grep_preview_command)'}";;
         (*)        items_executable=$(printf "%s\n" "$kak_opt_fzf_grep_command" | grep -o -E "[[:alpha:]]+" | head -1)
                    printf "%s\n" "echo -markup %{{Information}Warning: '$items_executable' is not supported by fzf.kak.}"
                    preview_cmd="-preview-cmd %{--preview '($kak_opt_fzf_grep_preview_command)'}" ;;

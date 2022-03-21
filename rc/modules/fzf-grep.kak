@@ -23,7 +23,7 @@ bool fzf_grep_preview false
 declare-option -docstring "Preview command for seeing file contents of the selected item.
 
 Default value:
-    cat \$(echo {} | sed \"s/:.*//g\")" \
+    cat \$(echo {} | sed ""s/:.*//g"")" \
 str fzf_grep_preview_command 'cat'
 
 

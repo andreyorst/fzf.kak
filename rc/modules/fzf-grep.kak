@@ -52,19 +52,22 @@ ${kak_opt_fzf_horizontal_map:-ctrl-s}: open search result in horizontal split
 ${kak_opt_fzf_vertical_map:-ctrl-v}: open search result in vertical split"
 
     case $kak_opt_fzf_grep_preview_command in
-        (cat) preview_cmd="-preview-cmd %{--preview '(cat {1})'}";;
-        (bat) preview_cmd="-preview-cmd %{--preview '(bat --color=always --highlight-line {2} {1})'}";;
-        (cat*|bat*) preview_cmd="-preview-cmd %{--preview '($kak_opt_fzf_grep_preview_command)'}";;
-        (*)        items_executable=$(printf "%s\n" "$kak_opt_fzf_grep_command" | grep -o -E "[[:alpha:]]+" | head -1)
-                   printf "%s\n" "echo -markup %{{Information}Warning: '$items_executable' is not supported by fzf.kak.}"
-                   preview_cmd="-preview-cmd %{--preview '($kak_opt_fzf_grep_preview_command)'}" ;;
+        (cat)       highlight_cmd="cat {1}";;
+        (bat)       highlight_cmd="bat --color=always --highlight-line {2} {1}";;
+        (cat*|bat*) highlight_cmd="$kak_opt_fzf_grep_preview_command";;
+        (*)         items_executable=$(printf "%s\n" "$kak_opt_fzf_grep_command" | grep -o -E "[[:alpha:]]+" | head -1)
+                    printf "%s\n" "echo -markup %{{Information}Warning: '$items_executable' is not supported by fzf.kak.}"
+                    highlight_cmd="$kak_opt_fzf_grep_preview_command" ;;
     esac
 
-    [ "${kak_opt_fzf_grep_preview:-}" != "true" ] && preview_cmd=""
+    preview_cmd=""
+    if [ "${kak_opt_fzf_grep_preview:-}" = "true" ]; then
+        preview_cmd="-preview -preview-cmd %{--preview '(${highlight_cmd} || cat {1}) 2>/dev/null | head -n ${kak_opt_fzf_preview_lines:-}' --preview-window=\${pos}}"
+    fi
 
     printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"
     [ -n "${kak_client_env_TMUX}" ] && additional_flags="--expect ${kak_opt_fzf_vertical_map:-ctrl-v} --expect ${kak_opt_fzf_horizontal_map:-ctrl-s}"
-    printf "%s\n" "fzf -kak-cmd %{evaluate-commands} $preview_cmd -fzf-args %{--expect ${kak_opt_fzf_window_map:-ctrl-w} $additional_flags  --delimiter=':' -n'3..'} -items-cmd %{$cmd} -filter %{sed -E 's/([^:]+):([^:]+):.*/edit -existing \1; execute-keys \2gvc/'}"
+    printf "%s\n" "fzf -kak-cmd %{evaluate-commands} ${preview_cmd} -fzf-args %{--expect ${kak_opt_fzf_window_map:-ctrl-w} $additional_flags  --delimiter=':' -n'3..'} -items-cmd %{$cmd} -filter %{sed -E 's/([^:]+):([^:]+):.*/edit -existing \1; execute-keys \2gvc/'}"
 }}
 
 §

@@ -5,6 +5,7 @@
 hook global ModuleLoaded fzf %§
     evaluate-commands %sh{
         if [ -n "$(command -v sk)" ]; then
+            printf "%s\n" "echo -debug -- %{skim support is deprecated and will be removed in future release, use fzf-grep instead}"
             printf "%s\n" "map global fzf -docstring %{Interactive grep with skim} '<a-g>' '<esc>: require-module fzf-sk-grep; fzf-sk-grep<ret>'"
         fi
     }
@@ -33,7 +34,7 @@ ${kak_opt_fzf_window_map:-ctrl-w}: open search result in new terminal"
     [ -n "${kak_client_env_TMUX:-}" ] && tmux_keybindings="
 ${kak_opt_fzf_horizontal_map:-ctrl-s}: open search result in horizontal split
 ${kak_opt_fzf_vertical_map:-ctrl-v}: open search result in vertical split"
-
+    printf "%s\n" "echo -markup %{{Information}skim support is deprecated and will be removed in future release, use fzf-grep instead}"
     printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"
     [ -n "${kak_client_env_TMUX}" ] && additional_flags="--expect ${kak_opt_fzf_vertical_map:-ctrl-v} --expect ${kak_opt_fzf_horizontal_map:-ctrl-s}"
     printf "%s\n" "fzf -kak-cmd %{fzf-sk-grep-handler} -fzf-impl %{sk --ansi -m -i -c '${kak_opt_fzf_sk_grep_command:-} {}'} -fzf-args %{--expect ${kak_opt_fzf_window_map:-ctrl-w} $additional_flags} -multiple-cmd %{fzf-sk-populate-grep} -post-action %{buffer %opt{fzf_sk_first_file}}"

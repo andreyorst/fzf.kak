@@ -32,10 +32,10 @@ Default value:
 bool fzf_file_preview true
 
 
-define-command -hidden fzf-file -params 0..1 %{ evaluate-commands %sh{
+define-command -hidden fzf-file -params 0..2 %{ evaluate-commands %sh{
     # Default fzf-file behavior
     search_dir="."
-    if [ "$1" = "buffile-dir" ]; then
+    if [ "$1" = "buffile-dir" ] || [ "$2" = "buffile-dir" ]; then
         # If the buffile-dir functionality (which is currently mapped to <fzf-mode> F) is
         # invoked by mistake on a buffile like `*scratch*` or `*grep*` and similar, there will be
         # no slashes in the buffile name and `dirname` will return `.` which means the functionality
@@ -47,18 +47,26 @@ define-command -hidden fzf-file -params 0..1 %{ evaluate-commands %sh{
         printf "%s\n" "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
         kak_opt_fzf_file_command="find"
     fi
+    cmd_append=""
+    case "$1" in
+       (extra-switch=*) cmd_append="${1#extra-switch=}" ;;
+    esac
+    case "$2" in
+       (extra-switch=*) cmd_append="${2#extra-switch=}" ;;
+    esac
     case $kak_opt_fzf_file_command in
-        (find)              cmd="find -L . -type f" ;;
-        (ag)                cmd="ag -l -f --hidden --one-device . " ;;
-        (rg)                cmd="rg -L --hidden --files" ;;
-        (fd)                cmd="fd --type f --follow" ;;
-        (find*|ag*|rg*|fd*) cmd=$kak_opt_fzf_file_command ;;
-        (*)                 items_executable=$(printf "%s\n" "$kak_opt_fzf_file_command" | grep -o -E "[[:alpha:]]+" | head -1)
+        (find)              cmd="find -L . -type f $cmd_append" ;;
+        (ag)                cmd="ag -l -f --hidden --one-device $cmd_append . " ;;
+        (rg)                cmd="rg -L --hidden --files $cmd_append" ;;
+        (fd)                cmd="fd --type f --follow $cmd_append" ;;
+        (find*|ag*|rg*|fd*) cmd="$kak_opt_fzf_file_command $cmd_append";;
+        (*)                 items_executable=$(printf "%s\n" "$kak_opt_fzf_file_command $cmd_append" | grep -o -E "[[:alpha:]]+" | head -1)
                             printf "%s\n" "echo -markup %{{Information}Warning: '$items_executable' is not supported by fzf.kak.}"
-                            cmd=$kak_opt_fzf_file_command ;;
+                            cmd="$kak_opt_fzf_file_command $cmd_append";;
     esac
 
     cmd="cd $search_dir; $cmd 2>/dev/null"
+
     maybe_filter_param=""
     if [ "$search_dir" != "." ]; then
         # Since we cd-ed into search dir in $cmd, prefix the $search_dir path after fzf returns the results by using -filter switch of fzf.

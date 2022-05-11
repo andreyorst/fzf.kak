@@ -4,6 +4,7 @@
 
 hook global ModuleLoaded fzf %{
     map global fzf -docstring "open file" 'f' '<esc>: require-module fzf-file; fzf-file<ret>'
+    map global fzf -docstring "open file using the alternative command" '<a-f>' '<esc>: require-module fzf-file; fzf-file alternative-command<ret>'
     map global fzf -docstring "open file in dir of currently displayed file" 'F' '<esc>: require-module fzf-file; fzf-file buffile-dir<ret>'
 }
 
@@ -25,6 +26,25 @@ Default arguments:
 " \
 str fzf_file_command "find"
 
+declare-option -docstring "Alternate command to provide list of files to fzf.
+Just like the str option fzf_file_command. It allows you to provide a variant e.g. use
+another program or pass a different set of switches to your favorite file file command.
+Arguments are supported
+Supported tools:
+    <package>:           <value>:
+    GNU Find:            ""find""
+    The Silver Searcher: ""ag""
+    ripgrep:             ""rg""
+    fd:                  ""fd""
+
+Default arguments:
+    find: ""find -L . -type f""
+    ag:   ""ag -l -f --hidden --one-device .""
+    rg:   ""rg -L --hidden --files""
+    fd:   ""fd --type f --follow""
+" \
+str fzf_file_alternative_command "find"
+
 declare-option -docstring 'allow showing preview window while searching for file
 Default value:
     true
@@ -43,26 +63,22 @@ define-command -hidden fzf-file -params 0..2 %{ evaluate-commands %sh{
         search_dir=$(dirname "$kak_buffile")
     fi
 
+    if [ "$1" = "alternative-command" ] || [ "$2" = "alternative-command" ]; then
+        kak_opt_fzf_file_command=$kak_opt_fzf_file_alternative_command
+    fi
     if [ -z "$(command -v "${kak_opt_fzf_file_command%% *}")" ]; then
         printf "%s\n" "echo -markup '{Information}''$kak_opt_fzf_file_command'' is not installed. Falling back to ''find'''"
         kak_opt_fzf_file_command="find"
     fi
-    cmd_append=""
-    case "$1" in
-       (extra-switch=*) cmd_append="${1#extra-switch=}" ;;
-    esac
-    case "$2" in
-       (extra-switch=*) cmd_append="${2#extra-switch=}" ;;
-    esac
     case $kak_opt_fzf_file_command in
-        (find)              cmd="find -L . -type f $cmd_append" ;;
-        (ag)                cmd="ag -l -f --hidden --one-device $cmd_append . " ;;
-        (rg)                cmd="rg -L --hidden --files $cmd_append" ;;
-        (fd)                cmd="fd --type f --follow $cmd_append" ;;
-        (find*|ag*|rg*|fd*) cmd="$kak_opt_fzf_file_command $cmd_append";;
-        (*)                 items_executable=$(printf "%s\n" "$kak_opt_fzf_file_command $cmd_append" | grep -o -E "[[:alpha:]]+" | head -1)
+        (find)              cmd="find -L . -type f" ;;
+        (ag)                cmd="ag -l -f --hidden --one-device . " ;;
+        (rg)                cmd="rg -L --hidden --files" ;;
+        (fd)                cmd="fd --type f --follow" ;;
+        (find*|ag*|rg*|fd*) cmd=$kak_opt_fzf_file_command ;;
+        (*)                 items_executable=$(printf "%s\n" "$kak_opt_fzf_file_command" | grep -o -E "[[:alpha:]]+" | head -1)
                             printf "%s\n" "echo -markup %{{Information}Warning: '$items_executable' is not supported by fzf.kak.}"
-                            cmd="$kak_opt_fzf_file_command $cmd_append";;
+                            cmd=$kak_opt_fzf_file_command ;;
     esac
 
     cmd="cd $search_dir; $cmd 2>/dev/null"

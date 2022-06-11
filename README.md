@@ -23,6 +23,15 @@ plug "andreyorst/fzf.kak"
 
 Then reload the configuration file or restart Kakoune and run `:plug-install`.
 
+To configure the plugin modules:
+
+```kak
+plug "andreyorst/fzf.kak" config %{
+  map global normal <c-p> ': fzf-mode<ret>'
+} defer <module-name> %{
+  <settings of module>
+} 
+```
 
 ### Without plugin manager
 
@@ -136,6 +145,20 @@ Default arguments can be changed by setting the complete command to execute:
 set-option global fzf_file_command "find . \( -path '*/.svn*' -o -path '*/.git*' \) -prune -o -type f -print"
 ```
 
+### Grep command
+
+| module     |
+|------------|
+| `fzf-grep` |
+
+A command that is used to search for text in files can be configured by changing the value of the `fzf_grep_command` variable, which is available in the `fzf-grep` module.
+
+Supported tools are [GNU Find][12], [The Silver Searcher][13], [ripgrep][14].
+A default set of arguments is provided for each of these searchers, only the name of the tool can be assigned to the `fzf_grep_command` variable:
+
+```kak
+set-option global fzf_grep_command 'rg' # 'ag', or 'find'
+```
 
 ### Preview
 

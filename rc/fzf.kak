@@ -26,10 +26,6 @@ Default value:
 ' \
 bool fzf_preview true
 
-declare-option -docstring 'amount of lines to pass to preview window
-Default value: 100' \
-int fzf_preview_lines 100
-
 declare-option -docstring 'preview window position.
 Supported values: up (top),  down (bottom), left, right, auto
 
@@ -183,7 +179,7 @@ fzf -params .. %{ evaluate-commands %sh{
                 (rouge)     highlight_cmd="rougify {}" ;;
                 (*)         highlight_cmd="${kak_opt_fzf_highlight_command}" ;;
             esac
-            preview_cmd="--preview '(${highlight_cmd} || cat {}) 2>/dev/null | head -n ${kak_opt_fzf_preview_lines:-}' --preview-window=\${pos}"
+            preview_cmd="--preview '(${highlight_cmd} || cat {}) 2>/dev/null' --preview-window=\${pos}:+2-/2"
         fi
     fi
 

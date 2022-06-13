@@ -62,7 +62,7 @@ ${kak_opt_fzf_vertical_map:-ctrl-v}: open search result in vertical split"
 
     preview_cmd=""
     if [ "${kak_opt_fzf_grep_preview:-}" = "true" ]; then
-        preview_cmd="-preview -preview-cmd %{--preview '(${highlight_cmd} || cat {1}) 2>/dev/null | head -n ${kak_opt_fzf_preview_lines:-}' --preview-window=\${pos}}"
+        preview_cmd="-preview -preview-cmd %{--preview '(${highlight_cmd} || cat {1}) 2>/dev/null' --preview-window=\${pos}:+{2}-/2}"
     fi
 
     printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"

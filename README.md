@@ -175,7 +175,7 @@ When using fzf.kak inside `tmux`, the bottom pane is used for all `fzf` commands
 When the preview is turned on, the height of the `tmux` split is increased to provide more space.
 Split height can be configured with the `fzf_preview_tmux_height` variable.
 
-Amount of lines in the preview window can be changed with the `fzf_preview_lines` option.
+*NOTE:* The `fzf_preview_lines` option has been removed to accomodate automatically centering the location of match results.
 
 The preview feature can be disabled entirely by setting the `fzf_preview` option to `false`.
 

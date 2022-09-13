@@ -194,6 +194,7 @@ These highlighters are are supported out of the box:
 * [Coderay][17]
 * [Highlight][18]
 * [Rouge][19]
+* [Clp][29]
 
 Although other tools are not supported by the script, they should work fine as long as they work with `fzf`.
 
@@ -324,6 +325,7 @@ There are another (often more simple and robust) plugins, which add support for 
 [26]: https://github.com/gustavo-hms/peneira
 [27]: https://github.com/kakounedotcom/connect.kak
 [28]: https://github.com/alexherbo2/kakoune.cr
+[29]: https://jeskin.net/blog/clp/
 
 <!--  LocalWords:  Github Kakoune fzf kak config VCS ctags Tmux fd sk
       LocalWords:  ripgrep readme Coderay rc

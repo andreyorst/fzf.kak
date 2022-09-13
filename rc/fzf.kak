@@ -40,6 +40,7 @@ Supported tools:
     Coderay:   "coderay"
     Highlight: "highlight"
     Rouge:     "rouge"
+    clp:       "clp"
 
 These are default arguments for the tools above:
     <tool>:    <value>:
@@ -47,6 +48,7 @@ These are default arguments for the tools above:
     coderay:   "coderay {}"
     highlight: "highlight --failsafe -O ansi {}"
     rouge:     "rougify {}"
+    clp:       "clp {}"
 ' \
 str fzf_highlight_command "highlight"
 
@@ -183,6 +185,7 @@ fzf -params .. %{ evaluate-commands %sh{
                 (coderay)   highlight_cmd="coderay {}" ;;
                 (highlight) highlight_cmd="highlight --failsafe -O ansi {}" ;;
                 (rouge)     highlight_cmd="rougify {}" ;;
+                (clp)       highlight_cmd="clp {}" ;;
                 (*)         highlight_cmd="${kak_opt_fzf_highlight_command}" ;;
             esac
             preview_cmd="--preview '(${highlight_cmd} || cat {}) 2>/dev/null' --preview-window=\${pos}:+2-/2"

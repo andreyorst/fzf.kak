@@ -19,10 +19,9 @@ Default arguments:
 str fzf_jj_command "jj"
 
 define-command -hidden fzf-jj %{ evaluate-commands %sh{
-
     case $kak_opt_fzf_jj_command in
         (jj)  cmd='jj file list' ;;
-        (*)    cmd=$kak_opt_fzf_jj_command ;;
+        (*)   cmd=$kak_opt_fzf_jj_command ;;
     esac
     [ ! -z "${kak_client_env_TMUX}" ] && additional_flags="--expect ${kak_opt_fzf_vertical_map:-ctrl-v} --expect ${kak_opt_fzf_horizontal_map:-ctrl-s}"
     printf "%s\n" "fzf -kak-cmd %{edit -existing} -items-cmd %{$cmd} -fzf-args %{-m --expect ${kak_opt_fzf_window_map:-ctrl-w} $additional_flags} -filter %{perl -pe \"if (/${kak_opt_fzf_window_map:-ctrl-w}|${kak_opt_fzf_vertical_map:-ctrl-v}|${kak_opt_fzf_horizontal_map:-ctrl-s}|^$/) {} else {print \\\"$(jj workspace root)/\\\"}\"}"

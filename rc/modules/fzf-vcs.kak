@@ -13,6 +13,7 @@ require-module fzf-git
 require-module fzf-svn
 require-module fzf-hg
 require-module fzf-bzr
+require-module fzf-jj
 
 declare-user-mode fzf-vcs
 
@@ -24,12 +25,14 @@ Supported vcs:
     Subversion:    "svn"
     Mercurial SCM: "hg"
     GNU Bazaar:    "bzr"
+    Jujutsu:       "jj"
 ' \
 fzf-vcs %{ evaluate-commands %sh{
     commands="git rev-parse --is-inside-work-tree
 svn info
 hg --cwd . root
-bzr status"
+bzr status
+jj workspace root"
     IFS='
 '
     for cmd in $commands; do

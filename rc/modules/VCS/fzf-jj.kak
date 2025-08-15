@@ -1,5 +1,5 @@
-# Author: Andrey Listopadov
-# Submodule for Git support for fzf.kak
+# Author: Ben J 
+# Submodule for Jujutsu support for fzf.kak
 # https://github.com/andreyorst/fzf.kak
 
 hook global ModuleLoaded fzf-vcs %§

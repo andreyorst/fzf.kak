@@ -3,7 +3,7 @@
 # https://github.com/andreyorst/fzf.kak
 
 hook global ModuleLoaded fzf-vcs %§
-    map global fzf-vcs -docstring "edit file from Jujutsu tree" 'g' '<esc>: require-module fzf-jj; fzf-jj<ret>'
+    map global fzf-vcs -docstring "edit file from Jujutsu tree" 'j' '<esc>: require-module fzf-jj; fzf-jj<ret>'
 §
 
 provide-module fzf-jj %§

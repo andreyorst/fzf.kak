@@ -126,7 +126,7 @@ Switches:
     -kak-cmd <command>: A Kakoune cmd that is applied to fzf resulting value
     -multiple-cmd <command>: A Kakoune cmd that is applied all multiple selected files but the first one
     -items-cmd <items command>: A command that is used as a pipe to provide list of values to fzf
-    -fzf-impl <implementation>: Owerride fzf implementation variable
+    -fzf-impl <implementation>: Override fzf implementation variable
     -fzf-args <args>: Additional flags for fzf program
     -preview-cmd <command>: A preview command
     -preview: Should fzf window include preview

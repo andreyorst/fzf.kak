@@ -81,6 +81,7 @@ If all modules were loaded, the following mappings are available:
 - <kbd>p</kbd> - Project selector.
 - <kbd>Alt</kbd>+<kbd>p</kbd> - Project related commands.
 - <kbd>r</kbd> - List of recent files open.
+- <kbd>Shift</kbd>+<kbd>c</kbd> - Change colorscheme.
 
 When Kakoune runs inside Tmux, fzf.kak will use the bottom split to display the `fzf` window.
 Additional keybindings are also made available to open files in a vertical or horizontal split.
@@ -165,6 +166,24 @@ A default set of arguments is provided for each of these searchers, only the nam
 ```kak
 set-option global fzf_grep_command 'rg' # 'ag', or 'find'
 ```
+
+
+### Colorscheme
+
+| module            |
+|-------------------|
+| `fzf-colorscheme` |
+
+`fzf-colorscheme` lists all colorschemes found in `%val{config}/colors` and `%val{runtime}/colors` and applies the selected one with the `colorscheme` command.
+
+While browsing the list, the highlighted colorscheme is applied to the current client on the fly, so schemes can be previewed before committing to one.
+Aborting the picker restores the last colorscheme that was applied with `fzf-colorscheme`, if any.
+Live previewing requires fzf 0.38 or higher and can be disabled by setting the `fzf_colorscheme_live_preview` option to `false`:
+
+```kak
+set-option global fzf_colorscheme_live_preview false
+```
+
 
 ### Preview
 

@@ -28,11 +28,11 @@ Supported vcs:
     Jujutsu:       "jj"
 ' \
 fzf-vcs %{ evaluate-commands %sh{
-    commands="git rev-parse --is-inside-work-tree
+    commands="jj workspace root
+git rev-parse --is-inside-work-tree
 svn info
 hg --cwd . root
-bzr status
-jj workspace root"
+bzr status"
     IFS='
 '
     for cmd in $commands; do

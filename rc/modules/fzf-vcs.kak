@@ -17,7 +17,7 @@ require-module fzf-jj
 
 declare-user-mode fzf-vcs
 
-define-command -hidden -docstring 'Wrapper command for fzf vcs to automatically decect
+define-command -hidden -docstring 'Wrapper command for fzf vcs to automatically detect
 used version control system.
 
 Supported vcs:

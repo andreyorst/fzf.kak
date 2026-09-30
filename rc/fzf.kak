@@ -233,7 +233,7 @@ fzf -params .. %{ evaluate-commands %sh{
             tmux_height="${tmux_height%%%*}"
         fi
         # `terminal' doesn't support any kind of width and height parameters, so tmux panes are created by tmux itself
-        cmd="nop %sh{ command tmux ${tmux_command} -t '${kak_client_env_TMUX_PANE:-}' ${measure} ${tmux_height} ${popup_width_measure} ${popup_width} env ${fzfcmd} < /dev/null > /dev/null 2>&1 }"
+        cmd="nop %sh{ command tmux ${tmux_command} -t '${kak_client_env_TMUX_PANE:-}' ${measure} ${tmux_height} ${popup_width_measure} ${popup_width} env sh ${fzfcmd} < /dev/null > /dev/null 2>&1 }"
         echo $cmd > /tmp/fzf.kak.test
     else
         cmd="${kak_opt_fzf_terminal_command%% *} %{${fzfcmd}}"

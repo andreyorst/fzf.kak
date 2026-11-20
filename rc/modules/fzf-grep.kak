@@ -26,6 +26,11 @@ Default value:
     cat {1}" \
 str fzf_grep_preview_command 'cat'
 
+declare-option -docstring "fzf field index expression for limiting scope. Passed to --nth.
+By default the output is split on ':' and only the 3rd field is searchable. This covers the common format of path:linenumber:contents.
+Set to '..' to search all fields.
+" \
+str fzf_grep_nth "3.."
 
 define-command -hidden fzf-grep %{ evaluate-commands %sh{
     if [ -z "$(command -v "${kak_opt_fzf_grep_command%% *}")" ]; then
@@ -68,7 +73,7 @@ ${kak_opt_fzf_vertical_map:-ctrl-v}: open search result in vertical split"
 
     printf "%s\n" "info -title '${title}' '${message}${tmux_keybindings}'"
     [ -n "${kak_client_env_TMUX}" ] && additional_flags="--expect ${kak_opt_fzf_vertical_map:-ctrl-v} --expect ${kak_opt_fzf_horizontal_map:-ctrl-s}"
-    printf "%s\n" "fzf -kak-cmd %{evaluate-commands} ${preview_cmd} -fzf-args %{--expect ${kak_opt_fzf_window_map:-ctrl-w} $additional_flags  --delimiter=':' -n'3..'} -items-cmd %{$cmd} -filter %{sed -E 's/([^:]+):([^:]+):.*/edit -existing \1; execute-keys \2gvc/'}"
+    printf "%s\n" "fzf -kak-cmd %{evaluate-commands} ${preview_cmd} -fzf-args %{--expect ${kak_opt_fzf_window_map:-ctrl-w} $additional_flags  --delimiter=':' --nth="${kak_opt_fzf_grep_nth}"} -items-cmd %{$cmd} -filter %{sed -E 's/([^:]+):([^:]+):.*/edit -existing \1; execute-keys \2gvc/'}"
 }}
 
 §
